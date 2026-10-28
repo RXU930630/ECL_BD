@@ -6,7 +6,7 @@
 
 ## 日常使用：只改两个文件
 
-完成下文的依赖和项目安装后：
+安装下文的依赖后即可运行，无需先安装项目本身。请保留完整目录，尤其是 `src/persson_contact`，不要只复制 `main.py`：
 
 1. 在 **`main.py`** 中选择功能开关。
 2. 在 **`parameters.py`** 中修改所有工况、材料、PSD 路径与修正参数。
@@ -51,8 +51,7 @@
 ```powershell
 py -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pip install -e .
-.\.venv\Scripts\python.exe -m persson_contact examples/dry_contact.json --output results/example --plot
+.\.venv\Scripts\python.exe main.py
 ```
 
 macOS/Linux 终端：
@@ -60,11 +59,19 @@ macOS/Linux 终端：
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python -m pip install -e .
-.venv/bin/python -m persson_contact examples/dry_contact.json --output results/example --plot
+.venv/bin/python main.py
 ```
 
-计算后查看 `results/example` 中的表格、诊断 JSON 和 PNG 图。示例参数及概率分布的限制见下文。
+计算后查看 `results/contact` 中的表格、诊断 JSON 和 PNG 图。示例参数及概率分布的限制见下文。
+
+如果直接使用终端中的 `python`，应使用同一个解释器安装依赖：
+
+```bash
+python -m pip install -r requirements.txt
+python main.py
+```
+
+只有使用旧的 `python -m persson_contact ...` 入口或在其他项目中导入本库时，才需要先执行 `python -m pip install -e .`。若旧版出现 `No module named 'persson_contact'`，也可用此安装命令修复；最新版 `main.py` 已能自行定位本地源码目录。
 
 ## 当前云环境中运行
 
