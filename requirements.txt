@@ -1,0 +1,4 @@
+# Versions available and tested in the initial cloud environment.
+numpy==2.3.5
+scipy==1.17.0
+matplotlib==3.10.8

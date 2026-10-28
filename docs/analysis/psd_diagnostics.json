@@ -1,0 +1,40 @@
+{
+  "source_filename": "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum_block",
+  "source_sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+  "roadtype": "BD_thick_rubber_block_for_mixlub",
+  "header": {
+    "q0_m_inverse": 10.0,
+    "qr_m_inverse": 10.0,
+    "q1_m_inverse": 1000000000.0,
+    "h0_raw": 1.0,
+    "H_raw": 1.0
+  },
+  "point_count": 80,
+  "assumptions": [
+    "isotropic 2D PSD: q in m^-1, C in m^4",
+    "base-10 logarithms",
+    "piecewise linear in log-log space",
+    "scaleC=1",
+    "no polynomial smoothing",
+    "integrals limited to [q0,q1]"
+  ],
+  "hrms_m": 1.409922364445373e-06,
+  "rms_slope": 0.17830181740253923,
+  "last_segment": {
+    "q_start_m_inverse": 2344228.8153199228,
+    "q_end_m_inverse": 1000000000.0,
+    "decades": 2.63,
+    "power_law_exponent": -4.600760456273765,
+    "fraction_of_height_variance": 0.00016776024567466408,
+    "fraction_of_slope_variance": 0.24299143444701865
+  },
+  "diagnostic_integration_stopped_before_last_segment": {
+    "hrms_m": 1.4098040950238175e-06,
+    "rms_slope": 0.15513370570418772
+  },
+  "relative_difference_analytic_vs_adaptive_quadrature": {
+    "height_variance": 0.0,
+    "slope_variance": 1.7142280165475338e-16
+  },
+  "status": "Input diagnostics only; original Fortran solver not compiled or run."
+}

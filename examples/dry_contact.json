@@ -1,0 +1,18 @@
+{
+  "description": "Demonstration only: real supplied PSD, illustrative material, pressures and numerical parameters; not the user's calibrated research case.",
+  "psd": {
+    "path": "data/roughness_psd.dat",
+    "scale_c": 1.0,
+    "tail_is_extrapolated": true
+  },
+  "material": {
+    "effective_modulus_pa": 10000000.0
+  },
+  "pressures_pa": [10000.0, 20000.0, 50000.0, 100000.0, 200000.0, 500000.0, 1000000.0],
+  "options": {
+    "gamma": 0.4,
+    "n_q": 256,
+    "pdf_afact": 1.0,
+    "n_gap": 600
+  }
+}
