@@ -1,5 +1,6 @@
 """Run a dry-contact case from an explicit JSON configuration."""
 import argparse
+import csv
 from dataclasses import asdict, is_dataclass
 import hashlib
 import json
@@ -40,7 +41,14 @@ def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, p
         raise FileExistsError(f'输出目录非空，请使用新的 output_directory: {output}')
     np.savetxt(output / 'contact_table.csv',
                np.column_stack((table.pressures_pa, table.mean_gaps_m, table.contact_fractions)),
-               delimiter=',', header='nominal_contact_pressure_Pa,mean_gap_m,contact_area_fraction', comments='')
+               delimiter=',', header='nominal_contact_pressure_Pa,mean_gap_m,relative_contact_area', comments='')
+    critical = [model.critical_separation(float(p), options.critical_relative_contact_area,
+                                         options.critical_area_tolerance) for p in table.pressures_pa]
+    with (output / 'critical_separation.csv').open('w', newline='', encoding='utf-8') as stream:
+        records = [asdict(value) for value in critical]
+        writer = csv.DictWriter(stream, fieldnames=records[0].keys())
+        writer.writeheader()
+        writer.writerows(records)
     hrms = float(problem.psd.hrms)
     smax = max(20 * hrms, 10 * float(np.max(table.mean_gaps_m)))
     smin = max(hrms * 1e-7, np.finfo(float).tiny)
@@ -50,25 +58,30 @@ def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, p
         if table.contact_fractions[index] == 1.0:
             pdf_diagnostics.append({'pressure_pa': float(pressure), 'status': 'full_contact_to_floating_point_precision; conditional positive-gap density undefined'})
             continue
-        distribution = model.gap_distribution(float(pressure), gaps)
+        # Density is defined/sampled for u>0. Evaluate CDF there too, then add
+        # its known zero origin for bin probabilities without sampling a
+        # potentially singular density at u=0.
+        distribution = model.gap_distribution(float(pressure), gaps[1:])
+        continuous_cdf = np.r_[0., distribution.continuous_cdf]
+        positive_cdf = np.r_[0., distribution.positive_cdf]
         filename = f'gap_pdf_{index:03d}.csv'
         # The Dirac atom is separate, and arbitrarily narrow positive-gap
         # components make density(0) unsuitable as a tabulated point sample.
-        positive = gaps > 0
         np.savetxt(output / filename,
-                   np.column_stack((gaps[positive], distribution.continuous_density_per_m[positive],
-                                    distribution.positive_density_per_m[positive],
-                                    distribution.continuous_cdf[positive], distribution.positive_cdf[positive])),
+                   np.column_stack((distribution.gaps_m, distribution.continuous_density_per_m,
+                                    distribution.positive_density_per_m,
+                                    distribution.continuous_cdf, distribution.positive_cdf)),
                    delimiter=',', header='microgap_m,nominal_area_density_per_m,conditional_positive_density_per_m,resolved_nominal_area_cdf,resolved_conditional_positive_cdf', comments='')
         bin_filename = f'gap_bins_{index:03d}.csv'
         np.savetxt(output / bin_filename,
-                   np.column_stack((gaps[:-1], gaps[1:], np.diff(distribution.continuous_cdf),
-                                    np.diff(distribution.positive_cdf),
-                                    np.diff(distribution.continuous_cdf) / np.diff(gaps),
-                                    np.diff(distribution.positive_cdf) / np.diff(gaps))),
+                   np.column_stack((gaps[:-1], gaps[1:], np.diff(continuous_cdf),
+                                    np.diff(positive_cdf),
+                                    np.diff(continuous_cdf) / np.diff(gaps),
+                                    np.diff(positive_cdf) / np.diff(gaps))),
                    delimiter=',', header='left_microgap_m,right_microgap_m,nominal_area_probability,conditional_positive_probability,bin_average_nominal_density_per_m,bin_average_conditional_density_per_m', comments='')
-        pdf_diagnostics.append({'pressure_pa': float(pressure), 'contact_fraction': float(distribution.contact_fraction),
+        pdf_diagnostics.append({'pressure_pa': float(pressure), 'relative_contact_area': float(distribution.contact_fraction),
                                 'file': filename, 'bin_file': bin_filename,
+                                'exported_bin_mass': float(continuous_cdf[-1]),
                                 'diagnostics': _jsonable(distribution.diagnostics)})
     summary = {
         'description': problem.description,
@@ -85,6 +98,21 @@ def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, p
         'options': _jsonable(options),
         'compute_gap_pdf': compute_gap_pdf,
         'valid_mean_gap_range_m': table.valid_gap_range_m,
+        'pressure_scan': {'minimum_pa': float(table.pressures_pa[0]),
+                          'maximum_pa': float(table.pressures_pa[-1]),
+                          'number_of_points': len(table.pressures_pa),
+                          'reference_pa': problem.reference_pressure_pa,
+                          'reference_index': next((i for i, p in enumerate(table.pressures_pa)
+                                                   if p == problem.reference_pressure_pa), None),
+                          'pressures_pa': table.pressures_pa.tolist()},
+        'area_convention': 'A is real contact area; A/A0 is relative contact area. No dimensional A is calculated without nominal area A0.',
+        'critical_separation': {'definition': 'uc=u1 near critical relative contact area; alpha=1',
+                                'target_relative_contact_area': options.critical_relative_contact_area,
+                                'absolute_area_tolerance': options.critical_area_tolerance,
+                                'status_counts': {status: sum(value.status == status for value in critical)
+                                                  for status in sorted({value.status for value in critical})},
+                                'reference_result': next((asdict(value) for value in critical
+                                                          if value.pressure_pa == problem.reference_pressure_pa), None)},
         'pdf_diagnostics': pdf_diagnostics,
     }
     (output / 'diagnostics.json').write_text(json.dumps(summary, indent=2, allow_nan=False) + '\n', encoding='utf-8')
@@ -92,20 +120,31 @@ def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, p
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
-        fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout='constrained')
+        fig, axes = plt.subplots(1, 4, figsize=(16, 4), layout='constrained')
         if problem.description:
             fig.suptitle(textwrap.fill(problem.description, width=130), fontsize=10)
         axes[0].plot(problem.psd.log10_q, problem.psd.log10_c, '.-')
         axes[0].set(xlabel='log10(q / m$^{-1}$)', ylabel='log10(C / m$^4$)', title='Input PSD')
         axes[1].semilogx(table.pressures_pa / 1e6, table.contact_fractions, 'o-')
-        axes[1].set(xlabel='Nominal dry pressure (MPa)', ylabel='A/A0', title='Standard Persson area')
+        axes[1].set(xlabel='Nominal dry pressure (MPa)', ylabel='Relative contact area A/A0', title='Relative contact area')
         axes[2].semilogx(table.pressures_pa / 1e6, table.mean_gaps_m * 1e6, 'o-')
         axes[2].set(xlabel='Nominal dry pressure (MPa)', ylabel=r'Mean gap ($\mu$m)', title='Mean separation')
+        axes[3].semilogx(table.pressures_pa/1e6,
+                        [value.critical_separation_m*1e6 if value.critical_separation_m is not None else np.nan
+                         for value in critical], 'o-')
+        axes[3].set(xlabel='Nominal dry pressure (MPa)', ylabel=r'$u_c=u_1$ ($\mu$m)',
+                    title=f'Critical separation (A/A0 ~ {options.critical_relative_contact_area:g})')
+        if problem.reference_pressure_pa is not None:
+            for ax in axes[1:]:
+                ax.axvline(problem.reference_pressure_pa/1e6, color='grey', linestyle=':', label='Reference pressure')
+                ax.legend()
         for ax in axes:
             ax.grid(alpha=0.25)
         fig.savefig(output / 'dry_contact.png', dpi=180)
         plt.close(fig)
     print(f'接触表与诊断已保存到 {output.resolve()}')
+    print(f'压力范围 {table.pressures_pa[0]:g}–{table.pressures_pa[-1]:g} Pa，'
+          f'共 {len(table.pressures_pa)} 点；A/A0 为 relative contact area。')
     if compute_gap_pdf:
         print('间隙分布仍是实验版，请查看概率与第一矩诊断。')
     return summary

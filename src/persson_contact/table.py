@@ -14,6 +14,10 @@ class ContactResponse:
     gap_distribution: Any = None
     interpolation_mean_gap_error_m: float | None = None
 
+    @property
+    def relative_contact_area(self):
+        return self.contact_fraction
+
 
 @dataclass
 class ContactTable:
@@ -21,6 +25,11 @@ class ContactTable:
     pressures_pa: np.ndarray
     mean_gaps_m: np.ndarray
     contact_fractions: np.ndarray
+
+    @property
+    def relative_contact_areas(self):
+        """Relative contact area A/A0; A itself is the real contact area."""
+        return self.contact_fractions
 
     def __post_init__(self):
         p, h, a = (np.asarray(v, dtype=float).copy() for v in
@@ -34,7 +43,7 @@ class ContactTable:
         if np.any(h <= 0) or np.any(np.diff(h) >= 0):
             raise ValueError('Mean gaps must be positive and strictly decreasing; narrow the pressure range or refine the model grid.')
         if np.any((a < 0) | (a > 1)) or np.any(np.diff(a) < -1e-12):
-            raise ValueError('Contact fractions must lie in [0,1] and increase with pressure.')
+            raise ValueError('Relative contact areas must lie in [0,1] and increase with pressure.')
         self.pressures_pa, self.mean_gaps_m, self.contact_fractions = p, h, a
         # Interpolate log pressure to keep its positivity, without extrapolation.
         self._log_pressure = PchipInterpolator(h[::-1], np.log(p[::-1]), extrapolate=False)

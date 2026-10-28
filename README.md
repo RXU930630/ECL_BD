@@ -24,6 +24,26 @@
 
 `parameters.py` 中提供粗糙度、材料、名义干接触压力序列、积分及修正参数、输出目录。`leakage` 与 `mixed_friction` 分组暂仅预留，`None` 表示尚未给定。路径始终相对于项目中的 `parameters.py`，不随启动终端的目录改变。为避免把新工况和旧结果混在一起，非空输出目录会被拒绝，请修改 `output_directory` 后重新运行。
 
+压力扫描现在只需设置参考压力：
+
+```python
+'contact_pressure': {
+    'reference_pa': 1e5,
+    'upper_factor': 2.0,
+    'number_of_points': 110,
+}
+```
+
+本例自动生成 10 Pa 到 200000 Pa 的 110 个正压力点。下限固定为参考压力的 1e-4 倍；上限为参考压力乘以上限倍率。点近似对数分布，替换一个邻近节点以准确保留参考压力和总点数。`upper_factor` 至少为 1。仍可使用旧的 `pressures_pa` 列表，但不能与 `contact_pressure` 同时提供。110 点是默认分辨率，不代表对所有工况都已保证插值精度。
+
+术语统一：**A 为 real contact area；A/A0 为 relative contact area**。没有输入名义面积 A0 时，不输出带面积单位的 A。`contact_table.csv` 第三列现命名为 `relative_contact_area`。
+
+临界分离量定义为 `uc=u1`（修正系数 alpha=1）。`options.critical_relative_contact_area=0.42`，`critical_area_tolerance=0.005` 表示 A/A0 的绝对容差，接受接近 0.42 而非严格相等的尺度。先检查 PSD 的倍率范围确实跨过阈值，再定位近似临界尺度；没有跨过时不以最接近的端点代替交点。
+
+`critical_separation.csv` 对每个压力输出临界倍率、实际 relative contact area、偏差、该尺度下的平均间隙、u1 和 uc，长度单位均为 m。u1 使用 A*ubar 对 A 的局部有限体积导数，自动缩小步长进行比较，并输出 `u1_refinement_relative_difference`。只有 `status=found` 时才提供 uc；未跨过阈值、面积分辨率不足、u1 未解析或导数未收敛时保留状态与空值，不填造数值。此表是实验性接触模型输出，尚非泄漏率结果，也未完成 Fortran 对照。
+
+`dry_contact.png` 现有四幅图：PSD、relative contact area—压力、平均间隙—压力、uc—压力。后面三幅图包含整组压力点，并以竖线标记参考压力；不是单一压力下的分布图。诊断 JSON 同时保存完整压力节点和参考压力的临界结果。
+
 材料输入互斥：
 
 ```python
@@ -99,11 +119,12 @@ Windows 下将 `.venv/bin/python` 换为 `.venv\Scripts\python.exe`。使用现�
 
 程序输出：
 
-- `contact_table.csv`：按名义面积平均的干接触压力 Pa、平均间隙 m、接触面积比。
+- `contact_table.csv`：按名义面积平均的干接触压力 Pa、平均间隙 m、relative contact area。
+- `critical_separation.csv`：各压力下的近似临界尺度、u1、uc 和查找状态。
 - `gap_pdf_*.csv`：微观间隙 m、按名义面积加权的连续密度 1/m、已知间隙大于零的条件密度 1/m。
 - `gap_bins_*.csv`：由高斯 CDF 差直接得到各间隙区间的概率，以及概率除以区间宽度得到的平均密度；优先用这些区间概率做积分。
 - `diagnostics.json`：材料及数值选项、有效查询范围、分布概率质量和第一矩检查。
-- `dry_contact.png`：使用 `--plot` 时输出 PSD、接触面积和平均间隙图。
+- `dry_contact.png`：PSD、relative contact area、平均间隙和 uc 四幅图。
 
 结果文件夹可重复生成，已从 Git 跟踪中排除。
 
@@ -121,7 +142,7 @@ model = PerssonModel(problem.psd, problem.effective_modulus_pa,
 table = build_contact_table(model, problem.pressures_pa)
 lower, upper = table.valid_gap_range_m
 response = evaluate_contact(table, (lower + upper) / 2)
-print(response.pressure_pa, response.contact_fraction)
+print(response.pressure_pa, response.relative_contact_area)
 ```
 
 PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的二维各向同性谱约定。前六行为名称、q0、qr、q1、h0、H；RMS 从谱积分计算，不直接采用头部 h0。超出 q0/q1 的查询会报错，不静默外推或修改 PSD。

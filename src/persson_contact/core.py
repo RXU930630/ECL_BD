@@ -112,6 +112,26 @@ class GapDistribution:
     continuous_cdf: np.ndarray
     positive_cdf: np.ndarray
 
+    @property
+    def relative_contact_area(self):
+        """A/A0; contact_fraction remains available as a legacy API alias."""
+        return self.contact_fraction
+
+
+@dataclass(frozen=True)
+class CriticalSeparation:
+    pressure_pa: float
+    target_relative_contact_area: float
+    status: str
+    magnification: float | None = None
+    wavevector_per_m: float | None = None
+    relative_contact_area: float | None = None
+    area_deviation: float | None = None
+    mean_gap_at_scale_m: float | None = None
+    u1_m: float | None = None
+    critical_separation_m: float | None = None
+    u1_refinement_relative_difference: float | None = None
+
 
 class PerssonModel:
     """Homogeneous elastic half-space against a rigid rough surface.
@@ -229,6 +249,70 @@ class PerssonModel:
         result = np.asarray([self._mean_gap_above(float(pi), self.q0) for pi in p.flat])
         result = result.reshape(p.shape)
         return float(result) if result.ndim == 0 else result
+
+    def critical_separation(self, pressure_pa, target=0.42, area_tolerance=0.005):
+        """Approximate u_c=u1 near A(zeta)/A0=target, with alpha fixed to one.
+
+        Only a bracketed threshold is accepted. Bisection stops at the stated
+        absolute area tolerance, not an exact root. u1 is evaluated from local
+        finite-volume derivatives of A*ubar with respect to A, with a half-step
+        comparison to expose derivative sensitivity. This retains the existing
+        experimental separation model, not a validated leakage-rate solver.
+        """
+        p_array = self._pressures(pressure_pa)
+        if p_array.ndim != 0:
+            raise ValueError('critical_separation requires one scalar pressure')
+        p = float(p_array)
+        target, tolerance = float(target), float(area_tolerance)
+        if not (np.isfinite(target) and 0 < target < 1
+                and np.isfinite(tolerance) and 0 < tolerance < min(target, 1-target)):
+            raise ValueError('invalid critical relative contact area or absolute tolerance')
+        if self.area(p) > target:
+            return CriticalSeparation(p, target, 'threshold_not_reached')
+        low, high = np.log(self.q0), np.log(self.q1)
+        for _ in range(80):
+            center = (low + high) / 2
+            q = float(np.clip(np.exp(center), self.q0, self.q1))
+            a = self.area(p, q)
+            if abs(a - target) <= tolerance:
+                break
+            if a > target:
+                low = center
+            else:
+                high = center
+        else:
+            return CriticalSeparation(p, target, 'area_resolution_insufficient')
+        mean = self._mean_gap_above(p/a, q)
+        step = min(np.log(self.q1/self.q0)/(4*self.n_q),
+                   (center-np.log(self.q0))/4, (np.log(self.q1)-center)/4)
+
+        def local_u1(width):
+            ql, qr = np.exp(center-width), np.exp(center+width)
+            al, ar = self.area(p, ql), self.area(p, qr)
+            if al <= ar:
+                return None
+            ul = self._mean_gap_above(p/al, ql)
+            ur = self._mean_gap_above(p/ar, qr)
+            value = (al*ul-ar*ur)/(al-ar)
+            return float(value) if np.isfinite(value) and value > 0 else None
+
+        coarse = local_u1(step) if step > 0 else None
+        fine = local_u1(step/2) if step > 0 else None
+        difference = None
+        for _ in range(8):
+            if fine is None or coarse is None:
+                break
+            difference = abs(fine-coarse)/fine
+            if difference <= 1e-3:
+                break
+            step /= 2
+            coarse, fine = fine, local_u1(step/2)
+        difference = abs(fine-coarse)/fine if fine is not None and coarse is not None else None
+        resolved = fine is not None and difference is not None and difference <= 1e-3
+        status = 'found' if resolved else ('u1_unresolved' if fine is None else 'u1_derivative_unconverged')
+        return CriticalSeparation(
+            p, target, status, q/self.q0, q, a, a-target, mean, fine,
+            fine if resolved else None, difference)
 
     def gap_distribution(self, pressure_pa, gaps_m):
         """Approximate microgap distribution, including a separate zero atom.

@@ -23,12 +23,18 @@ PARAMETERS = {
     # {'model': 'viscoelastic', 'poisson_ratio': 0.5,
     #  'master_curve_file': 'data/master_curve.txt'}
     # 目前只校验该接口，尚不读取主曲线，也不进行黏弹性计算。
-    'pressures_pa': [1.0e4, 2.0e4, 5.0e4, 1.0e5, 2.0e5],  # 名义干接触压力 Pa
+    'contact_pressure': {
+        'reference_pa': 1.0e5,       # 关注的名义接触压力 Pa，保证包含该点
+        'upper_factor': 2.0,         # 扫描上限 = 参考压力 × 倍率
+        'number_of_points': 110,     # 近似对数分布，自动正下限 = 参考压力 × 1e-4
+    },
     'options': {
         'gamma': 0.4,       # 弹性能量修正，不是摩擦系数
         'n_q': 256,         # 波数/尺度分辨率，整数 >= 32
         'pdf_afact': 1.0,   # 分布展宽修正
         'n_gap': 600,       # 微观间隙输出网格，整数 >= 32
+        'critical_relative_contact_area': 0.42,
+        'critical_area_tolerance': 0.005,  # A/A0 的绝对容差，非相对百分数
     },
     'output_directory': 'results/contact',  # 非空时拒绝覆盖；新工况请换目录
     # 以下仅为未来接口，None 表示尚未给定；当前不参与接触计算。

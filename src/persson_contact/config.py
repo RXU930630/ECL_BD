@@ -25,6 +25,8 @@ class Options:
     n_q: int
     pdf_afact: float
     n_gap: int = 256
+    critical_relative_contact_area: float = 0.42
+    critical_area_tolerance: float = 0.005
 
     def __post_init__(self) -> None:
         for name in ("gamma", "pdf_afact"):
@@ -38,6 +40,16 @@ class Options:
             raise ValueError("pdf_afact must be nonnegative")
         object.__setattr__(self, "n_q", _integer(self.n_q, "n_q", 32))
         object.__setattr__(self, "n_gap", _integer(self.n_gap, "n_gap", 32))
+        for name in ('critical_relative_contact_area', 'critical_area_tolerance'):
+            value = getattr(self, name)
+            if isinstance(value, bool) or not math.isfinite(float(value)):
+                raise ValueError(f'{name} must be finite')
+            object.__setattr__(self, name, float(value))
+        if not 0 < self.critical_relative_contact_area < 1:
+            raise ValueError('critical_relative_contact_area must lie in (0,1)')
+        if not 0 < self.critical_area_tolerance < min(self.critical_relative_contact_area,
+                                                     1-self.critical_relative_contact_area):
+            raise ValueError('critical_area_tolerance must be positive and smaller than either area fraction')
 
 
 @dataclass(frozen=True)
@@ -49,6 +61,7 @@ class Problem:
     pressures_pa: np.ndarray
     psd_tail_is_extrapolated: bool = False
     description: str = ""
+    reference_pressure_pa: float | None = None
 
     def __post_init__(self) -> None:
         modulus = _positive_finite(self.effective_modulus_pa, "effective_modulus_pa")
@@ -74,6 +87,35 @@ def _keys(data: dict, allowed: set[str], context: str) -> None:
         raise ValueError(f"Unknown {context} field(s): {', '.join(sorted(unknown))}")
 
 
+def pressure_grid(spec):
+    """Exactly N logarithmic nodes, with reference and both bounds retained.
+
+    A nearby interior log node is replaced by the reference pressure. Thus the
+    grid is approximately logarithmic, with no extra node or interpolation of
+    the user's requested reference state. The automatic lower bound is 1e-4 p_ref.
+    """
+    _keys(spec, {'reference_pa', 'upper_factor', 'number_of_points'}, 'contact_pressure')
+    if 'reference_pa' not in spec:
+        raise ValueError('contact_pressure requires reference_pa')
+    reference = _positive_finite(spec['reference_pa'], 'reference_pa')
+    factor = _positive_finite(spec.get('upper_factor', 2.0), 'upper_factor')
+    if factor < 1:
+        raise ValueError('upper_factor must be >=1 to cover the reference pressure')
+    count = _integer(spec.get('number_of_points', 110), 'number_of_points', 3)
+    lower, upper = reference * 1e-4, reference * factor
+    if not (math.isfinite(upper) and lower > 0):
+        raise ValueError('pressure bounds exceed floating-point range')
+    values = np.geomspace(lower, upper, count)
+    if factor == 1:
+        values[-1] = reference
+    else:
+        index = 1 + int(np.argmin(abs(np.log(values[1:-1]) - math.log(reference))))
+        values[index] = reference
+    if not np.all(np.diff(values) > 0):
+        raise ValueError('pressure grid is not representable at this resolution')
+    return values
+
+
 def load_problem(path: str | Path) -> tuple[Problem, Options]:
     """Load a JSON configuration; resolve PSD paths relative to that JSON file.
 
@@ -92,10 +134,13 @@ def load_problem(path: str | Path) -> tuple[Problem, Options]:
 
 def problem_from_mapping(raw, base_directory=Path('.')) -> tuple[Problem, Options]:
     """Shared validation for Python parameters and the original JSON interface."""
-    _keys(raw, {"psd", "material", "pressures_pa", "options", "description"}, "problem")
-    for field in ("psd", "material", "pressures_pa", "options"):
+    _keys(raw, {"psd", "material", "pressures_pa", "contact_pressure", "options", "description"}, "problem")
+    for field in ("psd", "material", "options"):
         if field not in raw:
             raise ValueError(f"Missing required problem field: {field}")
+    if ('pressures_pa' in raw) == ('contact_pressure' in raw):
+        raise ValueError('Provide contact_pressure OR pressures_pa, not both')
+    pressures = pressure_grid(raw['contact_pressure']) if 'contact_pressure' in raw else raw['pressures_pa']
     material = parse_material(raw['material'], base_directory)
     effective_modulus = material.elastic_modulus()
     psd_config = raw["psd"]
@@ -109,13 +154,14 @@ def problem_from_mapping(raw, base_directory=Path('.')) -> tuple[Problem, Option
         psd_path = Path(base_directory) / psd_path
     psd = read_psd(psd_path, psd_config.get("scale_c", 1.0))
     opts = raw["options"]
-    _keys(opts, {"gamma", "n_q", "pdf_afact", "n_gap"}, "options")
+    _keys(opts, {"gamma", "n_q", "pdf_afact", "n_gap", "critical_relative_contact_area", "critical_area_tolerance"}, "options")
     for field in ("gamma", "n_q", "pdf_afact"):
         if field not in opts:
             raise ValueError(f"Missing required options field: {field}")
     options = Options(**opts)
-    problem = Problem(psd, effective_modulus, raw["pressures_pa"],
-                      psd_config.get("tail_is_extrapolated", False), raw.get("description", ""))
+    problem = Problem(psd, effective_modulus, pressures,
+                      psd_config.get("tail_is_extrapolated", False), raw.get("description", ""),
+                      float(raw['contact_pressure']['reference_pa']) if 'contact_pressure' in raw else None)
     return problem, options
 
 

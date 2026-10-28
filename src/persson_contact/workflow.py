@@ -16,7 +16,7 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
         print('没有启用计算功能；未创建任何结果文件。')
         return None
     base = Path(base_directory).resolve()
-    problem_keys = {'description', 'psd', 'material', 'pressures_pa', 'options'}
+    problem_keys = {'description', 'psd', 'material', 'pressures_pa', 'contact_pressure', 'options'}
     allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction'}
     if not isinstance(parameters, dict) or set(parameters) - allowed:
         raise ValueError('parameters.py 中存在未知参数分组。')

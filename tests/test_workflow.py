@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import numpy as np
 
 from persson_contact.material import parse_material
 from persson_contact.workflow import run_project
@@ -69,6 +70,16 @@ class WorkflowTests(unittest.TestCase):
     def test_disabled_tasks_do_not_require_inputs_or_create_outputs(self):
         self.assertIsNone(run_project({}, base_directory=self.directory, run_contact=False))
         self.assertFalse((self.directory / 'result').exists())
+
+    def test_positive_density_export_keeps_zero_origin_probability_bin(self):
+        summary = run_project(self.parameters, base_directory=self.directory,
+                              compute_gap_pdf=True, save_plots=False)
+        for record in summary['pdf_diagnostics']:
+            bins = np.genfromtxt(self.directory / 'result' / record['bin_file'], delimiter=',', names=True)
+            density = np.genfromtxt(self.directory / 'result' / record['file'], delimiter=',', names=True)
+            self.assertEqual(bins['left_microgap_m'][0], 0.)
+            self.assertTrue(np.all(density['microgap_m'] > 0))
+            self.assertAlmostEqual(np.sum(bins['nominal_area_probability']), record['exported_bin_mass'], places=12)
 
     def test_reserved_applications_fail_before_contact_calculation(self):
         for switches in ({'run_leakage': True}, {'run_mixed_friction': True},
