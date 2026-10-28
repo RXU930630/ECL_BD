@@ -1,0 +1,47 @@
+{
+  "compile": {
+    "command": [
+      "/workspace/fortran_reference/toolchain/bin/gfortran",
+      "-mcmodel=large",
+      "-ffree-line-length-none",
+      "-std=legacy",
+      "-fallow-argument-mismatch",
+      "-O3",
+      "AI.ContactMechanics.14.09.2026.f90",
+      "-o",
+      "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch"
+    ],
+    "cwd": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode2_d01/build",
+    "log": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/compile.log",
+    "returncode": 0,
+    "timed_out": false,
+    "elapsed_seconds": 38.14729770100166
+  },
+  "source": {
+    "file": "build/AI.ContactMechanics.14.09.2026.f90",
+    "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+    "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+    "modified": true,
+    "variant": "real-erf+dense-pdf-output",
+    "optimization": {
+      "name": "real-erf",
+      "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+      "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+      "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+      "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+    },
+    "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+    "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+    "output_patch_counts": {
+      "first_point_site": 2,
+      "thinning_site": 2
+    }
+  },
+  "compiler_flags": [
+    "-mcmodel=large",
+    "-ffree-line-length-none",
+    "-std=legacy",
+    "-fallow-argument-mismatch",
+    "-O3"
+  ]
+}

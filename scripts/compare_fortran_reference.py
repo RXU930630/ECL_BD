@@ -88,6 +88,12 @@ def completed_reference(directory, model, args):
     if len(manifests) != 1:
         raise ValueError(f"{directory}: require exactly one manifest.json or run_manifest.json")
     manifest = json.loads(manifests[0].read_text())
+    source = manifest.get('source', {})
+    if source.get('modified') and source.get('variant') not in ('real-erf', 'real-erf+dense-pdf-output'):
+        raise ValueError(f'{directory}: unsupported modified reference source')
+    if source.get('file') and source.get('compiled_sha256'):
+        if sha256(directory/source['file']) != source['compiled_sha256']:
+            raise ValueError(f'{directory}: reference source hash changed')
     run = manifest.get("run", {})
     if (manifest.get("status") != "validated" or run.get("returncode") != 0
             or run.get("timed_out") is not False
@@ -118,6 +124,12 @@ def completed_reference(directory, model, args):
         "directory": str(directory), "manifest": str(manifests[0]),
         "manifest_sha256": sha256(manifests[0]),
         "run_status": manifest["status"], "nominal_pressure_pa": material[0],
+        "source": source,
+        "code_variant": source.get('variant', 'legacy_manifest_unspecified'),
+        "compiler": manifest.get('compiler'),
+        "compile_flags": manifest.get('compile_flags'),
+        "binary": manifest.get('binary'),
+        "validated_outputs": manifest.get('validation', {}).get('outputs'),
         "delzeta": numeric[0], "source_wavevector_nodes": nn,
         "source_actual_max_q_per_m": float(model.q0 * np.exp(nn * numeric[0])),
         "input_sha256": {name: sha256(directory / name) for name in

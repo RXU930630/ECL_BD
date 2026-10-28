@@ -1,0 +1,2087 @@
+{
+  "case_count": 14,
+  "cases": [
+    {
+      "name": "E1p5_p100k_mode2_d01",
+      "young_modulus_pa": 1500000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 2000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 2,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p100k_mode2_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p100k_mode2_d01/manifest.json",
+        "manifest_sha256": "ba90af4a5209b47828ad12a782aa976f7537eaeafaf9014907f263eacbf9ee38",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "477b8e13a15769f67df6b1498804356fe0c1f42f2b38e45215a26bcd4aa662d4",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "5e1c6d571f2bc172043a0582ec880fc0e28a9e7d14502a9d68651cdcb1628391"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "374a62cf69e1293765698328c4d3dcec521e50dfc2fa68110d706bd13487b85c"
+          },
+          "RealUnits.1pressure.Pa.2average.interfacial.separation.meter.3A.4Aexact": {
+            "numeric_rows": 108,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "b83648437d44af0c0c193afcce6ac84fd50afb82d19f17cc6f36b7b0dcabd9f8"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.271090947300827e-05,
+        "max_relative": 0.0004855259040834861,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_pressure_curve": {
+        "max_absolute": 2.7674882101937778e-08,
+        "max_relative": 0.006025448240493231,
+        "relative_rows": 108,
+        "absolute_floor": 1e-12
+      },
+      "relative_contact_area_pressure_curve": {
+        "max_absolute": 0.00013999576275891545,
+        "max_relative": 0.0004983640740847671,
+        "relative_rows": 108,
+        "absolute_floor": 0.0
+      }
+    },
+    {
+      "name": "E1p5_p100k_mode3_d01",
+      "young_modulus_pa": 1500000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 2000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p100k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p100k_mode3_d01/manifest.json",
+        "manifest_sha256": "d7b395375e2d459dcc3937981c16f5da1ce05d5b7308e44dad5beb63cb6728dd",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "477b8e13a15769f67df6b1498804356fe0c1f42f2b38e45215a26bcd4aa662d4",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "374a62cf69e1293765698328c4d3dcec521e50dfc2fa68110d706bd13487b85c"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "7145dcb13e3feabd4df755fc4945aa5107503b89dc8a7bcffd383e7dbda4500c"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "562f53d6647a16f985ddd5a7aedad75f8936ef0aa5a5fe1b31246a6ba1fe09bb"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "92b7d96c0bf4bcefbbcabbe3f4da083eee719cddad56f85c2d08c606459d7ef5"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.271090947300827e-05,
+        "max_relative": 0.0004855259040834861,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.001722157420912751,
+        "max_relative": 0.0020438611688971646,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 4.4171150978899824e-10,
+        "max_relative": 0.02773063230220364,
+        "relative_rows": 123,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "python": {
+          "pressure_pa": 100000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "threshold_not_reached",
+          "magnification": null,
+          "wavevector_per_m": null,
+          "relative_contact_area": null,
+          "area_deviation": null,
+          "mean_gap_at_scale_m": null,
+          "u1_m": null,
+          "critical_separation_m": null,
+          "u1_refinement_relative_difference": null
+        },
+        "fortran_threshold_reached": false
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0003966515788191e-12,
+        "common_max_gap_m": 7.747783303823763e-06,
+        "common_cdf_max_absolute_difference": 0.0025096643105319005,
+        "common_density_L1_difference": 0.005162219791188411,
+        "fortran_common_mass": 0.5468451929060327,
+        "python_common_mass": 0.5483062989582566,
+        "fortran_native_first_moment_m": 8.664878e-08,
+        "fortran_energy_mean_gap_m": 8.957594e-08,
+        "fortran_first_moment_relative_error": -0.03267797133917871,
+        "python_native_first_moment_m": 9.489818652684341e-08,
+        "python_energy_mean_gap_m": 8.923352984987357e-08,
+        "python_first_moment_relative_error": 0.06348125739842475,
+        "common_first_moment_relative_difference": 0.021580637219792642,
+        "native_first_moment_relative_difference": 0.09520510879487754,
+        "python_common_first_moment_from_cdf_m": 8.851871972963748e-08,
+        "python_first_moment_outside_common_range_m": 6.379466797205933e-09,
+        "common_first_moment_cdf_relative_difference": 0.021580681570328775,
+        "fortran_native_continuous_mass": 0.5468455,
+        "fortran_standard_relative_contact_area": 0.425101,
+        "python_resolved_continuous_mass": 0.574665922852708,
+        "python_unresolved_continuous_mass": 0.0002360709360852975
+      }
+    },
+    {
+      "name": "E1p5_p10k_mode3_d01",
+      "young_modulus_pa": 1500000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 2000000.0,
+      "pressure_pa": 10000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p10k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p10k_mode3_d01/manifest.json",
+        "manifest_sha256": "acfd5941b404e9fb6be5c2045bacf12a30f0f22adc1b9850f86d7117c35b83ec",
+        "run_status": "validated",
+        "nominal_pressure_pa": 10000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "d53d9840b1f7b502741b872e0071663fde3ee0e39e3bb5f126e88fdc17cbf0b9",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "aa0907cd83178d5dc98510ed0fa13d771b63de2110708e680b6dff59895d9309"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "9fd041229e8e6ca8bdc8940edb03de6e8fc2c5aa608249f2f8f1de0dce4e124e"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "19451c9498ff88eb04a507ac9d3cd12f78d423f8f01a038ca4c13e9f7733b399"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "0eff1036c8fa094d980b164a07ac016094ff0d8b876ddb807f386f3f86406efc"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.3244012003100805e-06,
+        "max_relative": 0.00045013373354963366,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.0035987407866542864,
+        "max_relative": 0.0074185544973289766,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 2.4671678028828258e-09,
+        "max_relative": 0.027738344898028906,
+        "relative_rows": 125,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4222,
+        "fortran_nearest_magnification": 4447.0,
+        "fortran_uc_m": 1.007e-06,
+        "python": {
+          "pressure_pa": 10000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 4531.583637600826,
+          "wavevector_per_m": 45315.83637600826,
+          "relative_contact_area": 0.41585715119396943,
+          "area_deviation": -0.004142848806030552,
+          "mean_gap_at_scale_m": 5.178037009709094e-07,
+          "u1_m": 9.941282916456286e-07,
+          "critical_separation_m": 9.941282916456286e-07,
+          "u1_refinement_relative_difference": 0.00012080371679806913
+        },
+        "native_uc_relative_difference": -0.012782232725294402
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0004065014648734e-12,
+        "common_max_gap_m": 1.1487322816121442e-05,
+        "common_cdf_max_absolute_difference": 0.0020783425667864064,
+        "common_density_L1_difference": 0.004203157744850442,
+        "fortran_common_mass": 0.9513459813411497,
+        "python_common_mass": 0.9523061275828175,
+        "fortran_native_first_moment_m": 1.026429e-06,
+        "fortran_energy_mean_gap_m": 1.009591e-06,
+        "fortran_first_moment_relative_error": 0.01667804090963565,
+        "python_native_first_moment_m": 1.0316148258485029e-06,
+        "python_energy_mean_gap_m": 1.0111698627232114e-06,
+        "python_first_moment_relative_error": 0.020219118348949284,
+        "common_first_moment_relative_difference": 1.5992100834250067e-05,
+        "native_first_moment_relative_difference": 0.005052298647546749,
+        "python_common_first_moment_from_cdf_m": 1.0264454575567125e-06,
+        "python_first_moment_outside_common_range_m": 5.1693682917903794e-09,
+        "common_first_moment_cdf_relative_difference": 1.6033799427495055e-05,
+        "fortran_native_continuous_mass": 0.95134599,
+        "fortran_standard_relative_contact_area": 0.044726,
+        "python_resolved_continuous_mass": 0.9552611293986591,
+        "python_unresolved_continuous_mass": 1.32205822703374e-05
+      }
+    },
+    {
+      "name": "E1p5_p50k_mode3_d01",
+      "young_modulus_pa": 1500000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 2000000.0,
+      "pressure_pa": 50000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p50k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E1p5_p50k_mode3_d01/manifest.json",
+        "manifest_sha256": "d834bdf7a5229ff485a3f82b3a16c3150d118ef103ca06d8342f772452234412",
+        "run_status": "validated",
+        "nominal_pressure_pa": 50000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "ab5ad48c556d123bed95737fee6a708a3ee0a4caff16997d7d0a0d8f18753d0b",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "d613bf4f750769901770e39fecbf4e1a811b9412fdb1feceb660aae08a969b32"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "d96cbdca90003a446bdd30a072a0e005cc2682d421af6575987f8aca13fd3bd5"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "0f474b1a6a2017952b955a2733e95c7b21b21213ce937e140f733509fab1232b"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "c28f5c2f2906a6eaae8a22d220a995f1008eca7ca2bf1e2a71c6cd6250fc3671"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.156272292422548e-05,
+        "max_relative": 0.0004855259040834861,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.0028315115364802024,
+        "max_relative": 0.0036540567692303224,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 6.640994063860796e-10,
+        "max_relative": 0.027342689180587892,
+        "relative_rows": 124,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4193,
+        "fortran_nearest_magnification": 27450.0,
+        "fortran_uc_m": 1.249e-07,
+        "python": {
+          "pressure_pa": 50000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 27384.19634264365,
+          "wavevector_per_m": 273841.9634264365,
+          "relative_contact_area": 0.420685115973098,
+          "area_deviation": 0.000685115973098005,
+          "mean_gap_at_scale_m": 1.9148784938494273e-08,
+          "u1_m": 1.242755298413271e-07,
+          "critical_separation_m": 1.242755298413271e-07,
+          "u1_refinement_relative_difference": 2.850436814739124e-05
+        },
+        "native_uc_relative_difference": -0.0049997610782456835
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0003999259629903e-12,
+        "common_max_gap_m": 8.831545244943454e-06,
+        "common_cdf_max_absolute_difference": 0.002753982607086536,
+        "common_density_L1_difference": 0.005969338925766334,
+        "fortran_common_mass": 0.7637679268521516,
+        "python_common_mass": 0.7650354182979467,
+        "fortran_native_first_moment_m": 2.813034e-07,
+        "fortran_energy_mean_gap_m": 2.743734e-07,
+        "fortran_first_moment_relative_error": 0.02525755047683198,
+        "python_native_first_moment_m": 2.892703160104936e-07,
+        "python_energy_mean_gap_m": 2.738788649684636e-07,
+        "python_first_moment_relative_error": 0.05619802405637351,
+        "common_first_moment_relative_difference": 0.0052670755866535135,
+        "native_first_moment_relative_difference": 0.0283214351852612,
+        "python_common_first_moment_from_cdf_m": 2.827850972102121e-07,
+        "python_first_moment_outside_common_range_m": 6.485218800281511e-09,
+        "common_first_moment_cdf_relative_difference": 0.005267256670954179,
+        "fortran_native_continuous_mass": 0.7637681000000001,
+        "fortran_standard_relative_contact_area": 0.220849,
+        "python_resolved_continuous_mass": 0.779089040766022,
+        "python_unresolved_continuous_mass": 6.36535900997437e-05
+      }
+    },
+    {
+      "name": "E3_p100k_mode2_d005",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 2,
+      "delzeta": 0.005,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode2_d005",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode2_d005/manifest.json",
+        "manifest_sha256": "176c9798c3cb5cc84eb76bc0c3ee62ff05b6cde7ec70f70a1840713a4d8cf8c6",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.005,
+        "source_wavevector_nodes": 3684,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "db218ff41417050fcafd3a12d07fd526a3b49dfd627cfb5f4e80dc18b41e6b75",
+          "IN.mathematical": "9c6d0f7c3dc15305f4c3fba46a51bfa50f9034942944c1e7b489b30c9714a0cf",
+          "IN.flagparameters": "5e1c6d571f2bc172043a0582ec880fc0e28a9e7d14502a9d68651cdcb1628391"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "988e99abe92ca368474074275c78a2648d3d2c6811f31abb0c2e444fca519b69"
+          },
+          "RealUnits.1pressure.Pa.2average.interfacial.separation.meter.3A.4Aexact": {
+            "numeric_rows": 108,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "c6d5b6cd014384f672589a7386906edb46ae6d6cc5de30f6fcb8064d162672bb"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.128659209857611e-05,
+        "max_relative": 0.0004972808551062339,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_pressure_curve": {
+        "max_absolute": 1.4004278668063197e-08,
+        "max_relative": 0.002370793747767597,
+        "relative_rows": 108,
+        "absolute_floor": 1e-12
+      },
+      "relative_contact_area_pressure_curve": {
+        "max_absolute": 0.0001536525336706951,
+        "max_relative": 0.0006475033024470927,
+        "relative_rows": 108,
+        "absolute_floor": 0.0
+      }
+    },
+    {
+      "name": "E3_p100k_mode2_d01",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 2,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode2_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode2_d01/manifest.json",
+        "manifest_sha256": "d3f3fd0e738f16374d4d50c12b03dace9aa3fe8ce869bff68f71753498fd6a36",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "db218ff41417050fcafd3a12d07fd526a3b49dfd627cfb5f4e80dc18b41e6b75",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "5e1c6d571f2bc172043a0582ec880fc0e28a9e7d14502a9d68651cdcb1628391"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "9d232a14308688d8772fa0b450478df84e54c25656cd247c5291d291b12ff0d5"
+          },
+          "RealUnits.1pressure.Pa.2average.interfacial.separation.meter.3A.4Aexact": {
+            "numeric_rows": 108,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "706649ef3ce88cf665b13de339d92f6e09e886a7e7c577fe71bab8261245e38d"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.156272292422548e-05,
+        "max_relative": 0.0004855259040834861,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_pressure_curve": {
+        "max_absolute": 2.759707058684827e-08,
+        "max_relative": 0.004624948983886086,
+        "relative_rows": 108,
+        "absolute_floor": 1e-12
+      },
+      "relative_contact_area_pressure_curve": {
+        "max_absolute": 0.0001536525336706951,
+        "max_relative": 0.0006475033024470927,
+        "relative_rows": 108,
+        "absolute_floor": 0.0
+      }
+    },
+    {
+      "name": "E3_p100k_mode3_d005",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 3,
+      "delzeta": 0.005,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode3_d005",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode3_d005/manifest.json",
+        "manifest_sha256": "b2e0c965c118319537e03f101dfd2833a5315041501cd283fdb664dbec29e0d2",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.005,
+        "source_wavevector_nodes": 3684,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "db218ff41417050fcafd3a12d07fd526a3b49dfd627cfb5f4e80dc18b41e6b75",
+          "IN.mathematical": "9c6d0f7c3dc15305f4c3fba46a51bfa50f9034942944c1e7b489b30c9714a0cf",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "988e99abe92ca368474074275c78a2648d3d2c6811f31abb0c2e444fca519b69"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "b2461bc74f70d19b7097175c847517abf1401e4834ab77f1eb4c8646686b2adb"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "4cfa5e99ccba932cd0f08fc92609fe5afdbf902a7cab057083502c3e0276fe4b"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 3684,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "aad13ae84600de71afbffb0efd06707697f578431f7ca609899fd489bc0fb05b"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.128659209857611e-05,
+        "max_relative": 0.0004972808551062339,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.001447266705966066,
+        "max_relative": 0.001953570889006325,
+        "relative_rows": 3684,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 3.6952186592459324e-10,
+        "max_relative": 0.013995179793592199,
+        "relative_rows": 124,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4198,
+        "fortran_nearest_magnification": 27450.0,
+        "fortran_uc_m": 1.243e-07,
+        "python": {
+          "pressure_pa": 100000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 27384.19634264365,
+          "wavevector_per_m": 273841.9634264365,
+          "relative_contact_area": 0.420685115973098,
+          "area_deviation": 0.000685115973098005,
+          "mean_gap_at_scale_m": 1.9148784938494273e-08,
+          "u1_m": 1.242755298413271e-07,
+          "critical_separation_m": 1.242755298413271e-07,
+          "u1_refinement_relative_difference": 2.850436814739124e-05
+        },
+        "native_uc_relative_difference": -0.00019686370613751944
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0004010541756454e-12,
+        "common_max_gap_m": 9.239062677266015e-06,
+        "common_cdf_max_absolute_difference": 0.0015508879601325298,
+        "common_density_L1_difference": 0.003564382719023339,
+        "fortran_common_mass": 0.7637232360451622,
+        "python_common_mass": 0.7650367742340518,
+        "fortran_native_first_moment_m": 2.801682e-07,
+        "fortran_energy_mean_gap_m": 2.741364e-07,
+        "fortran_first_moment_relative_error": 0.022002915337036466,
+        "python_native_first_moment_m": 2.892703160104936e-07,
+        "python_energy_mean_gap_m": 2.738788649684636e-07,
+        "python_first_moment_relative_error": 0.05619802405637351,
+        "common_first_moment_relative_difference": 0.009384122008621931,
+        "native_first_moment_relative_difference": 0.03248804114990067,
+        "python_common_first_moment_from_cdf_m": 2.827973072301606e-07,
+        "python_first_moment_outside_common_range_m": 6.473008780333004e-09,
+        "common_first_moment_cdf_relative_difference": 0.00938403155733103,
+        "fortran_native_continuous_mass": 0.7637233999999999,
+        "fortran_standard_relative_contact_area": 0.2208457,
+        "python_resolved_continuous_mass": 0.779089040766022,
+        "python_unresolved_continuous_mass": 6.36535900997437e-05
+      }
+    },
+    {
+      "name": "E3_p100k_mode3_d01",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p100k_mode3_d01/manifest.json",
+        "manifest_sha256": "2e5c7d105b5a34532322191b5f424c85b62a8089814f20e0c4ff6fdbd2132904",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "db218ff41417050fcafd3a12d07fd526a3b49dfd627cfb5f4e80dc18b41e6b75",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "9d232a14308688d8772fa0b450478df84e54c25656cd247c5291d291b12ff0d5"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "f447b45a092b576591f2a9f2260ce79a776a292f6924c380fa9c29f716a23049"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "d59ae8d72aafa44f72dd8a50b4e0425361d1bef6f2cb61b21df43787f245353b"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "0878e43be998e817f50a093121841ea04417156b3ba82a646beb758f02bcf4c3"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.156272292422548e-05,
+        "max_relative": 0.0004855259040834861,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.0028315115364802024,
+        "max_relative": 0.0036540567692303224,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 6.640994063860796e-10,
+        "max_relative": 0.027342689180587892,
+        "relative_rows": 124,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4193,
+        "fortran_nearest_magnification": 27450.0,
+        "fortran_uc_m": 1.249e-07,
+        "python": {
+          "pressure_pa": 100000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 27384.19634264365,
+          "wavevector_per_m": 273841.9634264365,
+          "relative_contact_area": 0.420685115973098,
+          "area_deviation": 0.000685115973098005,
+          "mean_gap_at_scale_m": 1.9148784938494273e-08,
+          "u1_m": 1.242755298413271e-07,
+          "critical_separation_m": 1.242755298413271e-07,
+          "u1_refinement_relative_difference": 2.850436814739124e-05
+        },
+        "native_uc_relative_difference": -0.0049997610782456835
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0003999259629903e-12,
+        "common_max_gap_m": 8.831545244943454e-06,
+        "common_cdf_max_absolute_difference": 0.002753982607086536,
+        "common_density_L1_difference": 0.005969338925766334,
+        "fortran_common_mass": 0.7637679268521516,
+        "python_common_mass": 0.7650354182979467,
+        "fortran_native_first_moment_m": 2.813034e-07,
+        "fortran_energy_mean_gap_m": 2.743734e-07,
+        "fortran_first_moment_relative_error": 0.02525755047683198,
+        "python_native_first_moment_m": 2.892703160104936e-07,
+        "python_energy_mean_gap_m": 2.738788649684636e-07,
+        "python_first_moment_relative_error": 0.05619802405637351,
+        "common_first_moment_relative_difference": 0.0052670755866535135,
+        "native_first_moment_relative_difference": 0.0283214351852612,
+        "python_common_first_moment_from_cdf_m": 2.827850972102121e-07,
+        "python_first_moment_outside_common_range_m": 6.485218800281511e-09,
+        "common_first_moment_cdf_relative_difference": 0.005267256670954179,
+        "fortran_native_continuous_mass": 0.7637681000000001,
+        "fortran_standard_relative_contact_area": 0.220849,
+        "python_resolved_continuous_mass": 0.779089040766022,
+        "python_unresolved_continuous_mass": 6.36535900997437e-05
+      }
+    },
+    {
+      "name": "E3_p10k_mode3_d01",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 10000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p10k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p10k_mode3_d01/manifest.json",
+        "manifest_sha256": "dc9abd6b4105348351b49f9ba46722698d64f47b8b43af64d18df829fc1de3a1",
+        "run_status": "validated",
+        "nominal_pressure_pa": 10000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "539ef62f48407219ff5eb11130be8d34dc3e2e9db726f10d0d8838d5d3866075",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "886be378b2902a19ce6f1b930c12b4ae85a7ba3ed543adb17f2eec82f1efb758"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "0736dc7313c23b6826ce00586209363616c3a2636fdf74411cb483ae52a83a8b"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "622ce5d93af2032859bc22389cc4f9fe46f8182ba1d0e1b3442510f7575210fc"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "7895acb5705889322b9926b15be4b4fa318afae0904836f303cce17991f81288"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.1659214338577175e-06,
+        "max_relative": 0.0004783906408044548,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.004757972053754167,
+        "max_relative": 0.008208441674714184,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 5.37418920726563e-09,
+        "max_relative": 0.02799770031193983,
+        "relative_rows": 125,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.421,
+        "fortran_nearest_magnification": 2253.0,
+        "fortran_uc_m": 1.41e-06,
+        "python": {
+          "pressure_pa": 10000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 2287.573200318398,
+          "wavevector_per_m": 22875.73200318398,
+          "relative_contact_area": 0.41660833262212593,
+          "area_deviation": -0.0033916673778740525,
+          "mean_gap_at_scale_m": 8.672368988665018e-07,
+          "u1_m": 1.4111461310657508e-06,
+          "critical_separation_m": 1.4111461310657508e-06,
+          "u1_refinement_relative_difference": 0.0003737499585122424
+        },
+        "native_uc_relative_difference": 0.0008128589118799634
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0004090636227232e-12,
+        "common_max_gap_m": 1.272652760017292e-05,
+        "common_cdf_max_absolute_difference": 0.0016814251420694815,
+        "common_density_L1_difference": 0.0032590474306891694,
+        "fortran_common_mass": 0.9751467544404322,
+        "python_common_mass": 0.9761393579168747,
+        "fortran_native_first_moment_m": 1.430155e-06,
+        "fortran_energy_mean_gap_m": 1.416052e-06,
+        "fortran_first_moment_relative_error": 0.009959380022767528,
+        "python_native_first_moment_m": 1.434865916794133e-06,
+        "python_energy_mean_gap_m": 1.4193283874319932e-06,
+        "python_first_moment_relative_error": 0.010947099698507427,
+        "common_first_moment_relative_difference": 0.0003954709864577577,
+        "native_first_moment_relative_difference": 0.0032939903675708315,
+        "python_common_first_moment_from_cdf_m": 1.430720356411389e-06,
+        "python_first_moment_outside_common_range_m": 4.145560382744101e-09,
+        "common_first_moment_cdf_relative_difference": 0.00039531128541248073,
+        "fortran_native_continuous_mass": 0.97514675,
+        "fortran_standard_relative_contact_area": 0.02237179,
+        "python_resolved_continuous_mass": 0.9776217647134567,
+        "python_unresolved_continuous_mass": 6.6180952752598055e-06
+      }
+    },
+    {
+      "name": "E3_p50k_mode3_d01",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 50000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p50k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E3_p50k_mode3_d01/manifest.json",
+        "manifest_sha256": "e1949af62a4cca05342f30bda36bc36f50ee6af536e523a66aa54343fc13f793",
+        "run_status": "validated",
+        "nominal_pressure_pa": 50000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "c33b2d499a42262c8d4822d7651ec1d671aea88c12a8f2ed154a18b5eeb32174",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "f6c81f92f6490b0a4ffc9f125f8002b8df8e61920c5b25ab553c3eff1dc707ed"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "530dcd93df9d435ad89fd1c48dde3f18ad126748646de99698d034bb3a58cb28"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "337b285bb391b1487b299e0bde7f40f758c783a99b8fe150391fe5375c1d76c7"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "932ec79f8474fa45e5d0f9202bb37465a0b1596df81c32628532b118b07058ed"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 4.9594383842777034e-05,
+        "max_relative": 0.0004855259040834861,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.003147718375321462,
+        "max_relative": 0.005625193308304165,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 4.667480453066401e-10,
+        "max_relative": 0.02794090350453159,
+        "relative_rows": 125,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4196,
+        "fortran_nearest_magnification": 10300.0,
+        "fortran_uc_m": 4.742e-07,
+        "python": {
+          "pressure_pa": 50000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 10366.32928437698,
+          "wavevector_per_m": 103663.2928437698,
+          "relative_contact_area": 0.4192080228692284,
+          "area_deviation": -0.0007919771307715595,
+          "mean_gap_at_scale_m": 1.6010711139705807e-07,
+          "u1_m": 4.698071176199098e-07,
+          "critical_separation_m": 4.698071176199098e-07,
+          "u1_refinement_relative_difference": 4.3211783167799604e-05
+        },
+        "native_uc_relative_difference": -0.009263775580114255
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0004028655682505e-12,
+        "common_max_gap_m": 9.93304453009035e-06,
+        "common_cdf_max_absolute_difference": 0.0027634598115598985,
+        "common_density_L1_difference": 0.005711890205184405,
+        "fortran_common_mass": 0.8802690523399361,
+        "python_common_mass": 0.8812173548274012,
+        "fortran_native_first_moment_m": 5.656463e-07,
+        "fortran_energy_mean_gap_m": 5.496287e-07,
+        "fortran_first_moment_relative_error": 0.02914258298374861,
+        "python_native_first_moment_m": 5.712202096628696e-07,
+        "python_energy_mean_gap_m": 5.495891679582596e-07,
+        "python_first_moment_relative_error": 0.039358566299568874,
+        "common_first_moment_relative_difference": -0.0012509744516681076,
+        "native_first_moment_relative_difference": 0.009854054844643523,
+        "python_common_first_moment_from_cdf_m": 5.649386615527396e-07,
+        "python_first_moment_outside_common_range_m": 6.281548110129984e-09,
+        "common_first_moment_cdf_relative_difference": -0.0012510263874444538,
+        "fortran_native_continuous_mass": 0.8802691,
+        "fortran_standard_relative_contact_area": 0.1115081,
+        "python_resolved_continuous_mass": 0.8884599524907507,
+        "python_unresolved_continuous_mass": 3.2779596121843e-05
+      }
+    },
+    {
+      "name": "E9_p100k_mode2_d01",
+      "young_modulus_pa": 9000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 12000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 2,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p100k_mode2_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p100k_mode2_d01/manifest.json",
+        "manifest_sha256": "eddc42a0e1d8cb1a12a6e7f204db4ef91e221c2f1bd9984fbebfe99cbb9ba88d",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "fabfc310cff74e33bbfe5ea4b4ab33cb7c52c45fca635edd5391ea548ddd4e13",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "5e1c6d571f2bc172043a0582ec880fc0e28a9e7d14502a9d68651cdcb1628391"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "3d565a6e152b3212a647b7874eb514019c51184865efa98c02d0caa66d2fe294"
+          },
+          "RealUnits.1pressure.Pa.2average.interfacial.separation.meter.3A.4Aexact": {
+            "numeric_rows": 108,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "e2869bc26283e7ebfda1d97b62a0337cd9d48683aae55b8816ab9e460cc40135"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.444426352196885e-06,
+        "max_relative": 0.0004581843900369584,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_pressure_curve": {
+        "max_absolute": 2.8165052484117305e-08,
+        "max_relative": 0.004698090489427407,
+        "relative_rows": 108,
+        "absolute_floor": 1e-12
+      },
+      "relative_contact_area_pressure_curve": {
+        "max_absolute": 6.104772610576736e-05,
+        "max_relative": 0.0005422322553565354,
+        "relative_rows": 108,
+        "absolute_floor": 0.0
+      }
+    },
+    {
+      "name": "E9_p100k_mode3_d01",
+      "young_modulus_pa": 9000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 12000000.0,
+      "pressure_pa": 100000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p100k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p100k_mode3_d01/manifest.json",
+        "manifest_sha256": "e5f73137090ec0f971d310e1e483f36adbd8f87893ea2d7ed22e4bdd2928bbe3",
+        "run_status": "validated",
+        "nominal_pressure_pa": 100000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "fabfc310cff74e33bbfe5ea4b4ab33cb7c52c45fca635edd5391ea548ddd4e13",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "3d565a6e152b3212a647b7874eb514019c51184865efa98c02d0caa66d2fe294"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "60d3a6d0f7deb73862d452e3c689c558eb9d7ce13cbc8f67e070c1ee091b1a00"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "3f2c53fef5ed0c7bf2ff67e758c299730905aa5ac178a86fc48c889531967539"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "9c11920d2de6e08007a67bae17248a2306ff45bba454211e8d3dac0a25a9a9d8"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.444426352196885e-06,
+        "max_relative": 0.0004581843900369584,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.004046690569224909,
+        "max_relative": 0.006071620262539377,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 1.1664970168103233e-09,
+        "max_relative": 0.028146660678840345,
+        "relative_rows": 125,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4199,
+        "fortran_nearest_magnification": 6836.0,
+        "fortran_uc_m": 7.037e-07,
+        "python": {
+          "pressure_pa": 100000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 6853.895838650089,
+          "wavevector_per_m": 68538.95838650089,
+          "relative_contact_area": 0.42083164199287376,
+          "area_deviation": 0.0008316419928737773,
+          "mean_gap_at_scale_m": 3.0236011529085286e-07,
+          "u1_m": 7.030006081763696e-07,
+          "critical_separation_m": 7.030006081763696e-07,
+          "u1_refinement_relative_difference": 0.00033077892749025213
+        },
+        "native_uc_relative_difference": -0.0009938778224107528
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0004043669737376e-12,
+        "common_max_gap_m": 1.0547607108899375e-05,
+        "common_cdf_max_absolute_difference": 0.002549285973076354,
+        "common_density_L1_difference": 0.005395424024119416,
+        "fortran_common_mass": 0.9196451225771557,
+        "python_common_mass": 0.9207328810002441,
+        "fortran_native_first_moment_m": 7.586264e-07,
+        "fortran_energy_mean_gap_m": 7.411038e-07,
+        "fortran_first_moment_relative_error": 0.02364392140480187,
+        "python_native_first_moment_m": 7.638960288376218e-07,
+        "python_energy_mean_gap_m": 7.417027229824871e-07,
+        "python_first_moment_relative_error": 0.029922103785587243,
+        "common_first_moment_relative_difference": 0.0009428221344021104,
+        "native_first_moment_relative_difference": 0.006946276635801052,
+        "python_common_first_moment_from_cdf_m": 7.593416545088925e-07,
+        "python_first_moment_outside_common_range_m": 4.554374328729261e-09,
+        "common_first_moment_cdf_relative_difference": 0.0009428283920682734,
+        "fortran_native_continuous_mass": 0.91964516,
+        "fortran_standard_relative_contact_area": 0.07447395,
+        "python_resolved_continuous_mass": 0.9255046635172067,
+        "python_unresolved_continuous_mass": 2.1972763911248805e-05
+      }
+    },
+    {
+      "name": "E9_p10k_mode3_d01",
+      "young_modulus_pa": 9000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 12000000.0,
+      "pressure_pa": 10000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p10k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p10k_mode3_d01/manifest.json",
+        "manifest_sha256": "33c0a81bcb111bcf6b462309c434332addb8734c9bee0ca25be82a4d332c8291",
+        "run_status": "validated",
+        "nominal_pressure_pa": 10000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "5a56b97694bbd6d9e3d0b85f1b7fd10c9e102b52f35fdea2217ffc97bc32d8f6",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "8a0a32244664b597597d1743f68a112fcb51d92a28edcc40663137828f9636a0"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "9aefc7d2b8929c454cd48d0fde5bd642fc1652dfd8307a79f6c167977c7b96db"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "18452b8222b556624dde356519617a419f6fc8084cc904a47aeaed33684a8254"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "95aba1eaba303cec9c015e1313db5d4c5c12dafde4bce7d1d8ffb86c03ef1193"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.460664543677565e-07,
+        "max_relative": 0.00044998521704626315,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.004787931885151031,
+        "max_relative": 0.009540255247294184,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 7.63851329748431e-09,
+        "max_relative": 0.028272555217737742,
+        "relative_rows": 125,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4187,
+        "fortran_nearest_magnification": 934.5,
+        "fortran_uc_m": 2.202e-06,
+        "python": {
+          "pressure_pa": 10000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 930.5720409297,
+          "wavevector_per_m": 9305.720409297,
+          "relative_contact_area": 0.4221795271739393,
+          "area_deviation": 0.002179527173939322,
+          "mean_gap_at_scale_m": 1.5316678855545427e-06,
+          "u1_m": 2.181121119310291e-06,
+          "critical_separation_m": 2.181121119310291e-06,
+          "u1_refinement_relative_difference": 0.0003273326473992866
+        },
+        "native_uc_relative_difference": -0.00948178051303769
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0004169271420247e-12,
+        "common_max_gap_m": 1.7428373241068626e-05,
+        "common_cdf_max_absolute_difference": 0.0010320408067083786,
+        "common_density_L1_difference": 0.0013968176485447239,
+        "fortran_common_mass": 0.991008878439867,
+        "python_common_mass": 0.9920409192465753,
+        "fortran_native_first_moment_m": 2.163125e-06,
+        "fortran_energy_mean_gap_m": 2.159759e-06,
+        "fortran_first_moment_relative_error": 0.0015585072223336383,
+        "python_native_first_moment_m": 2.1736362937526257e-06,
+        "python_energy_mean_gap_m": 2.1663766459652317e-06,
+        "python_first_moment_relative_error": 0.003351055228976313,
+        "common_first_moment_relative_difference": 0.0025227217360974663,
+        "native_first_moment_relative_difference": 0.004859309449350091,
+        "python_common_first_moment_from_cdf_m": 2.1685821880075996e-06,
+        "python_first_moment_outside_common_range_m": 5.054105745026064e-09,
+        "common_first_moment_cdf_relative_difference": 0.0025228260075582654,
+        "fortran_native_continuous_mass": 0.991008856,
+        "fortran_standard_relative_contact_area": 0.007458133,
+        "python_resolved_continuous_mass": 0.992539718704444,
+        "python_unresolved_continuous_mass": 2.2068031273331234e-06
+      }
+    },
+    {
+      "name": "E9_p50k_mode3_d01",
+      "young_modulus_pa": 9000000.0,
+      "poisson_ratio": 0.5,
+      "effective_modulus_pa": 12000000.0,
+      "pressure_pa": 50000.0,
+      "mode": 3,
+      "delzeta": 0.01,
+      "provenance": {
+        "directory": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p50k_mode3_d01",
+        "manifest": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/E9_p50k_mode3_d01/manifest.json",
+        "manifest_sha256": "5d0cc4e613265bbd862b7db33a0a2fcc0ba3a0ab317858e901404f8be3def003",
+        "run_status": "validated",
+        "nominal_pressure_pa": 50000.0,
+        "source": {
+          "file": "build/AI.ContactMechanics.14.09.2026.f90",
+          "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+          "modified": true,
+          "variant": "real-erf+dense-pdf-output",
+          "optimization": {
+            "name": "real-erf",
+            "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+            "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+            "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+            "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+          },
+          "compiled_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd",
+          "output_instrumentation": "Write every internal PDF point; remove duplicate first-point write; no arithmetic changes.",
+          "output_patch_counts": {
+            "first_point_site": 2,
+            "thinning_site": 2
+          },
+          "sha256_after_run": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "code_variant": "real-erf+dense-pdf-output",
+        "delzeta": 0.01,
+        "source_wavevector_nodes": 1842,
+        "source_actual_max_q_per_m": 999319487.701232,
+        "input_sha256": {
+          "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+          "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "d9a93edac3683bf03d156a9018c30298969cbf4e7699ef35d680009e860e610e",
+          "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+          "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d"
+        },
+        "compiler": {
+          "compiled_here": false,
+          "binary_origin": "/workspace/ECL_BD/results/benchmark_matrix/accelerated_v2/contact_mechanics_batch",
+          "corresponding_compiled_source_sha256": "da822fdb3de7da2ee729265060961abf3a549702a8991d952ec4d327f3162fdd"
+        },
+        "compile_flags": [
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3"
+        ],
+        "binary": {
+          "path": "build/contact_mechanics",
+          "sha256": "04d4840fe3c4681b89296b02183e82f651e697f9ea652bde035c510c2ff95de0"
+        },
+        "validated_outputs": {
+          "out_No.Adhesion.1pressure.2A.3Aexact": {
+            "numeric_rows": 1000,
+            "required_minimum": 1000,
+            "passed": true,
+            "failures": [],
+            "sha256": "51dff1c4b39d292ac3d1c8be014a943fa4ce47e6757047f77241366039ddf838"
+          },
+          "out.1u.2ProbabilityInterfacialSeparation": {
+            "numeric_rows": 40000,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "347c3f886b73219699047ae70391e1a45162ba09d9a11e386b13065ded88d321"
+          },
+          "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+            "numeric_rows": 1,
+            "required_minimum": 1,
+            "passed": true,
+            "failures": [],
+            "sha256": "55b392a117062662bfcbe1a96f2e41f6c3631bb4b0d0019091271cae2994143a"
+          },
+          "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+            "numeric_rows": 1842,
+            "required_minimum": 10,
+            "passed": true,
+            "failures": [],
+            "sha256": "839b48bb95d77f50cd73a19fb24e88dbe478b9f91b5a58a1183b9515cbee7aa7"
+          }
+        }
+      },
+      "area_pressure_curve": {
+        "max_absolute": 5.266713507472154e-06,
+        "max_relative": 0.00046043199373183626,
+        "relative_rows": 1000,
+        "absolute_floor": 0.0
+      },
+      "relative_contact_area_scale_curve": {
+        "max_absolute": 0.0034857529240119867,
+        "max_relative": 0.00765110128037258,
+        "relative_rows": 1842,
+        "absolute_floor": 0.0
+      },
+      "mean_gap_scale_curve": {
+        "max_absolute": 3.208964653003892e-09,
+        "max_relative": 0.027437704873983546,
+        "relative_rows": 125,
+        "absolute_floor": 1e-12
+      },
+      "critical": {
+        "fortran_nearest_relative_contact_area": 0.4191,
+        "fortran_nearest_magnification": 3944.0,
+        "fortran_uc_m": 1.126e-06,
+        "python": {
+          "pressure_pa": 50000.0,
+          "target_relative_contact_area": 0.42,
+          "status": "found",
+          "magnification": 3959.6449889187925,
+          "wavevector_per_m": 39596.44988918793,
+          "relative_contact_area": 0.4197393211879979,
+          "area_deviation": -0.00026067881200209087,
+          "mean_gap_at_scale_m": 6.095731840789906e-07,
+          "u1_m": 1.106591260425542e-06,
+          "critical_separation_m": 1.106591260425542e-06,
+          "u1_refinement_relative_difference": 0.0003940911445590058
+        },
+        "native_uc_relative_difference": -0.01723689127394155
+      },
+      "pdf": {
+        "rows": 40000,
+        "common_min_gap_m": 1.0004076450524595e-12,
+        "common_max_gap_m": 1.2024773181517145e-05,
+        "common_cdf_max_absolute_difference": 0.001958727092311152,
+        "common_density_L1_difference": 0.003950518016926416,
+        "fortran_common_mass": 0.959308936067679,
+        "python_common_mass": 0.9602913696744803,
+        "fortran_native_first_moment_m": 1.128664e-06,
+        "fortran_energy_mean_gap_m": 1.112176e-06,
+        "fortran_first_moment_relative_error": 0.014824991727927728,
+        "python_native_first_moment_m": 1.1336578311244557e-06,
+        "python_energy_mean_gap_m": 1.1141446582406135e-06,
+        "python_first_moment_relative_error": 0.017514038899271944,
+        "common_first_moment_relative_difference": 0.0004488512924414323,
+        "native_first_moment_relative_difference": 0.004424550729407173,
+        "python_common_first_moment_from_cdf_m": 1.1291701507079752e-06,
+        "python_first_moment_outside_common_range_m": 4.487680416480499e-09,
+        "common_first_moment_cdf_relative_difference": 0.00044845118474157175,
+        "fortran_native_continuous_mass": 0.95930894,
+        "fortran_standard_relative_contact_area": 0.03727764,
+        "python_resolved_continuous_mass": 0.9627116337867513,
+        "python_unresolved_continuous_mass": 1.1022449146906588e-05
+      }
+    }
+  ],
+  "excluded_runs": [
+    {
+      "name": "E3_p100k_mode3_d0025",
+      "status": "cancelled_optional_refinement",
+      "reason": "Two-step convergence (.01,.005) already measured; native PDF discrepancy traced to truncation/tails, which extra scale resolution cannot remove. This optional cubic-cost run is excluded, never counted as passed."
+    }
+  ],
+  "scope": "Supplied isotropic 2D PSD; nonadhesive elastic cases only; no leakage or mixed-friction validation.",
+  "comparison_policy": "No fitted/rescaled curves. Native truncation and common-range metrics reported separately.",
+  "scalar_relative_error_floor_m": 1e-12,
+  "batch_source_variant": "real-erf+dense-pdf-output; original contact equations unchanged",
+  "original_anchor_status": "validated",
+  "original_anchor_summary": [
+    [
+      100000.0,
+      2.813034e-07,
+      2.743734e-07,
+      0.2362319,
+      0.220849
+    ]
+  ],
+  "original_anchor_source": {
+    "file": "build/AI.ContactMechanics.14.09.2026.f90",
+    "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+    "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+    "modified": false,
+    "variant": "original",
+    "compiled_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+    "sha256_after_run": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854"
+  },
+  "original_anchor_runtime_seconds": 684.9916430619996,
+  "anchor_vs_accelerated_summary_max_absolute_difference": 0.0,
+  "anchor_output_differences": {
+    "out_No.Adhesion.1pressure.2A.3Aexact": 0.0,
+    "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": 0.0,
+    "out.1zeta.2du.over.dmu.3Area.4dA.over.dmu.5dlogA.over.dmu.6separation.7separation1": 0.0
+  },
+  "anchor_pdf_relative_density_difference": {
+    "max_absolute": 1.7642974853515625e-05,
+    "max_relative": 6.442763001676319e-12,
+    "relative_rows": 401,
+    "absolute_floor": 0.0
+  },
+  "anchor_pdf_grid_relative_difference": {
+    "max_absolute": 1.0028870095490916e-18,
+    "max_relative": 1.137977167436152e-13,
+    "relative_rows": 401,
+    "absolute_floor": 0.0
+  },
+  "python_model_git_revision": "2164cb1ec9103dbd7fe2dfee8276dcb7607045bf",
+  "python_core_sha256": "949b78d58b8fec8e08d9c0ea7f624246cdac170a8b8370481f7c2d43e95f6662",
+  "original_anchor_provenance": {
+    "compiler": {
+      "compiled_here": true,
+      "executable": "/workspace/fortran_reference/toolchain/bin/gfortran",
+      "version": "GNU Fortran (Debian 14.2.0-19) 14.2.0"
+    },
+    "compile_flags": [
+      "-mcmodel=large",
+      "-ffree-line-length-none",
+      "-std=legacy",
+      "-fallow-argument-mismatch",
+      "-O3"
+    ],
+    "binary": {
+      "path": "build/contact_mechanics",
+      "sha256": "37f1225a473b3ef145daf30f86ecd786b4245cb340cab7be105de4b5bd4bcc52"
+    },
+    "source": {
+      "file": "build/AI.ContactMechanics.14.09.2026.f90",
+      "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+      "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+      "modified": false,
+      "variant": "original",
+      "compiled_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+      "sha256_after_run": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854"
+    },
+    "run": {
+      "command": [
+        "/workspace/ECL_BD/results/benchmark_matrix/original_anchor_E3_p100k/build/contact_mechanics"
+      ],
+      "cwd": "/workspace/ECL_BD/results/benchmark_matrix/original_anchor_E3_p100k",
+      "log": "/workspace/ECL_BD/results/benchmark_matrix/original_anchor_E3_p100k/run.log",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 684.9916430619996
+    },
+    "validation": {
+      "passed": true,
+      "outputs": {
+        "out_No.Adhesion.1pressure.2A.3Aexact": {
+          "numeric_rows": 1000,
+          "required_minimum": 1000,
+          "passed": true,
+          "failures": [],
+          "sha256": "9d232a14308688d8772fa0b450478df84e54c25656cd247c5291d291b12ff0d5"
+        },
+        "out.1u.2ProbabilityInterfacialSeparation": {
+          "numeric_rows": 401,
+          "required_minimum": 10,
+          "passed": true,
+          "failures": [],
+          "sha256": "26ee59a9dc1377960306fb98c1f861e8012e9db746bc76e1372e0cb576a41b39"
+        },
+        "out.1pressure.2baruFromP.3baruFromEnergy.4AreaFromP.5AreaFromEnergy": {
+          "numeric_rows": 1,
+          "required_minimum": 1,
+          "passed": true,
+          "failures": [],
+          "sha256": "d59ae8d72aafa44f72dd8a50b4e0425361d1bef6f2cb61b21df43787f245353b"
+        },
+        "out.1pressure.2zeta.3logzeta.4relArea.5separation.6hrms.zeta": {
+          "numeric_rows": 1842,
+          "required_minimum": 10,
+          "passed": true,
+          "failures": [],
+          "sha256": "0878e43be998e817f50a093121841ea04417156b3ba82a646beb758f02bcf4c3"
+        }
+      },
+      "error_files": {},
+      "warning_files": {},
+      "failures": []
+    },
+    "used_input_hashes": {
+      "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+      "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+      "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+      "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+      "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+      "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+      "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+      "IN.FLOWFACTORS": "6c3897665b82baf58d342f1f9cee876989e3845b22e30685152a74962362f1eb",
+      "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93",
+      "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+      "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+      "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+      "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+      "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+      "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+      "IN.SEALING": "5a7fcab81e4b45a05338a6864e591d9fa036dc95503d7208baa7b81014f0c15a",
+      "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+      "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+      "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+      "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+      "IN.flagparameters": "cc5a0a7f28e4d24864766462c412104ec0c63c0ea4d09eb99580d222b6b0f32d",
+      "IN.mathematical": "01318d785ac8ed893e1a5c2c2fd6dd5ea100112bf2f2216c5fca358424c4bd08",
+      "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+      "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+      "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "dd4a2a202b662e9eb1d798b36e0b645091505552399da381d22558d9a968150b",
+      "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+      "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+      "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+      "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+      "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+      "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9"
+    }
+  }
+}

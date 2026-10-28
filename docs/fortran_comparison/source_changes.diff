@@ -1,0 +1,37 @@
+--- original.f90
++++ batch_real_erf_dense_output.f90
+@@ -12604,8 +12604,8 @@
+       ss=ss+Prob*Palpha*uu
+       sav=sav+Prob*Palpha*uu*uu
+ 
+-      if (j.eq.1) write(7037,*) uu, Prob
+-      if (j.eq.100*(j/100)) write(7037,*) uu, Prob
++!     First point is included in the dense diagnostic output below.
++      write(7037,*) uu, Prob
+   33  continue
+       ss=ss
+       AreaContact=1.0-ss
+@@ -12862,8 +12862,8 @@
+       ss=ss+Prob*Palpha*uu
+       sav=sav+Prob*Palpha*uu*uu
+ 
+-      if (j.eq.1) write(7037,*) uu, Prob
+-      if (j.eq.100*(j/100)) write(7037,*) uu, Prob
++!     First point is included in the dense diagnostic output below.
++      write(7037,*) uu, Prob
+   33  continue
+       ss=ss
+       AreaContact=1.0-ss
+@@ -32739,11 +32739,7 @@
+ 
+      real*8 function DERF1(x)
+      real*8 x
+-     complex*16 zg,zgg 
+-!      y=DERF(x)
+-      zg=x
+-      call cerror(zg,zgg)
+-      DERF1=zgg
++      DERF1=ERF(x)
+      return
+      end
+ 
