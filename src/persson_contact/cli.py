@@ -28,24 +28,17 @@ def _jsonable(value):
     return value
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('config', type=Path, help='JSON case file; SI units')
-    parser.add_argument('--output', type=Path, default=Path('results/dry_contact'))
-    parser.add_argument('--plot', action='store_true', help='Save a PNG; requires matplotlib')
-    args = parser.parse_args(argv)
-    problem, options = load_problem(args.config)
-    config_bytes = args.config.read_bytes()
-    config_raw = json.loads(config_bytes.decode('utf-8-sig'))
-    psd_path = Path(config_raw['psd']['path'])
-    if not psd_path.is_absolute():
-        psd_path = args.config.parent / psd_path
+def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, provenance=None):
+    """Shared contact calculation/output entry for Python and JSON workflows."""
+    output = Path(output)
     model = PerssonModel(problem.psd, problem.effective_modulus_pa,
                          gamma=options.gamma, n_q=options.n_q,
                          pdf_afact=options.pdf_afact)
     table = build_contact_table(model, problem.pressures_pa)
-    args.output.mkdir(parents=True, exist_ok=True)
-    np.savetxt(args.output / 'contact_table.csv',
+    output.mkdir(parents=True, exist_ok=True)
+    if any(output.iterdir()):
+        raise FileExistsError(f'输出目录非空，请使用新的 output_directory: {output}')
+    np.savetxt(output / 'contact_table.csv',
                np.column_stack((table.pressures_pa, table.mean_gaps_m, table.contact_fractions)),
                delimiter=',', header='nominal_contact_pressure_Pa,mean_gap_m,contact_area_fraction', comments='')
     hrms = float(problem.psd.hrms)
@@ -53,7 +46,7 @@ def main(argv=None):
     smin = max(hrms * 1e-7, np.finfo(float).tiny)
     gaps = np.r_[0.0, np.geomspace(smin, smax, options.n_gap - 1)]
     pdf_diagnostics = []
-    for index, pressure in enumerate(table.pressures_pa):
+    for index, pressure in enumerate(table.pressures_pa if compute_gap_pdf else []):
         if table.contact_fractions[index] == 1.0:
             pdf_diagnostics.append({'pressure_pa': float(pressure), 'status': 'full_contact_to_floating_point_precision; conditional positive-gap density undefined'})
             continue
@@ -62,13 +55,13 @@ def main(argv=None):
         # The Dirac atom is separate, and arbitrarily narrow positive-gap
         # components make density(0) unsuitable as a tabulated point sample.
         positive = gaps > 0
-        np.savetxt(args.output / filename,
+        np.savetxt(output / filename,
                    np.column_stack((gaps[positive], distribution.continuous_density_per_m[positive],
                                     distribution.positive_density_per_m[positive],
                                     distribution.continuous_cdf[positive], distribution.positive_cdf[positive])),
                    delimiter=',', header='microgap_m,nominal_area_density_per_m,conditional_positive_density_per_m,resolved_nominal_area_cdf,resolved_conditional_positive_cdf', comments='')
         bin_filename = f'gap_bins_{index:03d}.csv'
-        np.savetxt(args.output / bin_filename,
+        np.savetxt(output / bin_filename,
                    np.column_stack((gaps[:-1], gaps[1:], np.diff(distribution.continuous_cdf),
                                     np.diff(distribution.positive_cdf),
                                     np.diff(distribution.continuous_cdf) / np.diff(gaps),
@@ -78,25 +71,24 @@ def main(argv=None):
                                 'file': filename, 'bin_file': bin_filename,
                                 'diagnostics': _jsonable(distribution.diagnostics)})
     summary = {
-        'config': str(args.config.resolve()),
         'description': problem.description,
-        'config_sha256': hashlib.sha256(config_bytes).hexdigest(),
-        'psd_sha256': hashlib.sha256(psd_path.read_bytes()).hexdigest(),
+        **(provenance or {}),
         'package_version': __version__,
         'model': 'standard_Persson_area_gamma_energy_reflected_Gaussian_FV',
         'scope': 'nonadhesive, linearly elastic, isotropic 2D PSD; local half-space response',
-        'validation_limit': 'Original Fortran has not been run; gap PDF is an experimental source-inspired approximation, with explicit mass and first-moment diagnostics.',
+        'validation_limit': 'Full PDF comparison against Fortran is pending; gap PDF is experimental, with explicit mass and first-moment diagnostics.',
         'probability_representation': 'Use CDF-difference gap_bins probabilities for integration. Pointwise density CSV excludes s=0 and can under-resolve narrow peaks; sampled/trapezoid diagnostics are not probability-normalization certificates.',
         'effective_modulus_pa': float(problem.effective_modulus_pa),
         'psd_hrms_m': hrms, 'psd_rms_slope': float(problem.psd.rms_slope),
         'psd_cutoffs_m_inverse': {'q0': problem.psd.q0, 'qr': problem.psd.qr, 'q1': problem.psd.q1},
         'tail_is_extrapolated': problem.psd_tail_is_extrapolated,
         'options': _jsonable(options),
+        'compute_gap_pdf': compute_gap_pdf,
         'valid_mean_gap_range_m': table.valid_gap_range_m,
         'pdf_diagnostics': pdf_diagnostics,
     }
-    (args.output / 'diagnostics.json').write_text(json.dumps(summary, indent=2, allow_nan=False) + '\n', encoding='utf-8')
-    if args.plot:
+    (output / 'diagnostics.json').write_text(json.dumps(summary, indent=2, allow_nan=False) + '\n', encoding='utf-8')
+    if plot:
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
@@ -111,9 +103,30 @@ def main(argv=None):
         axes[2].set(xlabel='Nominal dry pressure (MPa)', ylabel=r'Mean gap ($\mu$m)', title='Mean separation')
         for ax in axes:
             ax.grid(alpha=0.25)
-        fig.savefig(args.output / 'dry_contact.png', dpi=180)
+        fig.savefig(output / 'dry_contact.png', dpi=180)
         plt.close(fig)
-    print(f'Contact table and diagnostics saved to {args.output.resolve()}')
-    print('Material and numerical values in the bundled case are illustrative, not calibrated research parameters.')
-    print('Inspect gap-PDF moment diagnostics; Fortran comparison is pending.')
+    print(f'接触表与诊断已保存到 {output.resolve()}')
+    if compute_gap_pdf:
+        print('间隙分布仍是实验版，请查看概率与第一矩诊断。')
+    return summary
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('config', type=Path, help='JSON case file; SI units')
+    parser.add_argument('--output', type=Path, default=Path('results/dry_contact'))
+    parser.add_argument('--plot', action='store_true', help='Save a PNG; requires matplotlib')
+    parser.add_argument('--no-pdf', action='store_true', help='Skip experimental gap distributions')
+    args = parser.parse_args(argv)
+    problem, options = load_problem(args.config)
+    config_bytes = args.config.read_bytes()
+    config_raw = json.loads(config_bytes.decode('utf-8-sig'))
+    psd_path = Path(config_raw['psd']['path'])
+    if not psd_path.is_absolute():
+        psd_path = args.config.parent / psd_path
+    run_contact(problem, options, args.output, plot=args.plot, compute_gap_pdf=not args.no_pdf,
+                provenance={'config': str(args.config.resolve()),
+                            'config_sha256': hashlib.sha256(config_bytes).hexdigest(),
+                            'psd_sha256': hashlib.sha256(psd_path.read_bytes()).hexdigest(),
+                            'material_input': config_raw['material']})
     return 0

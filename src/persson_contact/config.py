@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from .psd import PowerSpectrum, _positive_finite, read_psd
+from .material import parse_material
 
 
 def _integer(value: int, name: str, minimum: int) -> int:
@@ -86,10 +87,17 @@ def load_problem(path: str | Path) -> tuple[Problem, Options]:
         raw = json.loads(path.read_text(encoding="utf-8-sig"))
     except json.JSONDecodeError as exc:
         raise ValueError(f"Invalid problem JSON: {exc}") from exc
+    return problem_from_mapping(raw, path.parent)
+
+
+def problem_from_mapping(raw, base_directory=Path('.')) -> tuple[Problem, Options]:
+    """Shared validation for Python parameters and the original JSON interface."""
     _keys(raw, {"psd", "material", "pressures_pa", "options", "description"}, "problem")
     for field in ("psd", "material", "pressures_pa", "options"):
         if field not in raw:
             raise ValueError(f"Missing required problem field: {field}")
+    material = parse_material(raw['material'], base_directory)
+    effective_modulus = material.elastic_modulus()
     psd_config = raw["psd"]
     _keys(psd_config, {"path", "scale_c", "tail_is_extrapolated", "q_unit", "c_unit"}, "psd")
     if not isinstance(psd_config.get("path"), str) or not psd_config["path"].strip():
@@ -98,22 +106,8 @@ def load_problem(path: str | Path) -> tuple[Problem, Options]:
         raise ValueError("This PSD format requires q_unit='m^-1' and c_unit='m^4'; convert units explicitly")
     psd_path = Path(psd_config["path"])
     if not psd_path.is_absolute():
-        psd_path = path.parent / psd_path
+        psd_path = Path(base_directory) / psd_path
     psd = read_psd(psd_path, psd_config.get("scale_c", 1.0))
-    material = raw["material"]
-    _keys(material, {"effective_modulus_pa", "young_modulus_pa", "poisson_ratio"}, "material")
-    if "effective_modulus_pa" in material:
-        if set(material) != {"effective_modulus_pa"}:
-            raise ValueError("Provide effective_modulus_pa OR young_modulus_pa and poisson_ratio, not both")
-        effective_modulus = _positive_finite(material["effective_modulus_pa"], "effective_modulus_pa")
-    else:
-        if set(material) != {"young_modulus_pa", "poisson_ratio"}:
-            raise ValueError("material requires effective_modulus_pa OR young_modulus_pa and poisson_ratio")
-        young = _positive_finite(material["young_modulus_pa"], "young_modulus_pa")
-        nu = material["poisson_ratio"]
-        if isinstance(nu, bool) or not math.isfinite(float(nu)) or not -1 < float(nu) <= 0.5:
-            raise ValueError("poisson_ratio must satisfy -1 < nu <= 0.5 (including the incompressible limit)")
-        effective_modulus = young / (1 - float(nu)**2)
     opts = raw["options"]
     _keys(opts, {"gamma", "n_q", "pdf_afact", "n_gap"}, "options")
     for field in ("gamma", "n_q", "pdf_afact"):

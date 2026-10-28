@@ -4,6 +4,42 @@
 
 第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。宏观圆柱形变、流体、摩擦、供油及空化尚未接入。
 
+## 日常使用：只改两个文件
+
+完成下文的依赖和项目安装后：
+
+1. 在 **`main.py`** 中选择功能开关。
+2. 在 **`parameters.py`** 中修改所有工况、材料、PSD 路径与修正参数。
+3. 运行 `python main.py`（Windows 也可使用 `.venv\Scripts\python.exe main.py`，macOS/Linux 使用 `.venv/bin/python main.py`）。结果默认在 `results/contact`。
+
+| main.py 开关 | 当前作用 |
+| --- | --- |
+| `RUN_CONTACT = True` | 计算共用 Persson 弹性接触数据库 |
+| `RUN_LEAKAGE = False` | 预留泄漏入口；求解器尚未实现 |
+| `RUN_MIXED_FRICTION = False` | 预留混合摩擦入口；求解器尚未实现 |
+| `COMPUTE_GAP_PDF = True` | 是否额外计算实验性间隙分布 |
+| `SAVE_PLOTS = True` | 是否生成 PNG 图 |
+
+若启用未实现的应用或黏弹性模型，会在计算、创建结果之前明确报错，不会输出伪造的泄漏率或摩擦系数。两个应用开关同时开启也不代表已经实现耦合求解。三个计算开关全部关闭时不执行任何计算。
+
+`parameters.py` 中提供粗糙度、材料、名义干接触压力序列、积分及修正参数、输出目录。`leakage` 与 `mixed_friction` 分组暂仅预留，`None` 表示尚未给定。路径始终相对于项目中的 `parameters.py`，不随启动终端的目录改变。为避免把新工况和旧结果混在一起，非空输出目录会被拒绝，请修改 `output_directory` 后重新运行。
+
+材料输入互斥：
+
+```python
+# 当前：弹性常数，自动计算 E*=E/(1-nu**2)
+'material': {'model': 'elastic', 'young_modulus_pa': 3e6, 'poisson_ratio': 0.5}
+
+# 或直接指定 E*，不再修正一次泊松比
+'material': {'model': 'elastic', 'effective_modulus_pa': 4e6}
+
+# 未来：主曲线提供模量，不要求也不允许同时给固定 E 或 E*
+'material': {'model': 'viscoelastic', 'poisson_ratio': 0.5,
+             'master_curve_file': 'data/master_curve.txt'}
+```
+
+以上三种形式只选一种。主曲线文件接口目前只保留路径与材料模式；文件格式、读取及黏弹性接触计算尚未实现，也不会退回弹性计算。原有 JSON 配置及命令行入口继续支持，可加 `--no-pdf` 跳过间隙分布。
+
 ## 下载到自己的电脑
 
 [下载最新版 ZIP](https://github.com/RXU930630/ECL_BD/archive/refs/heads/main.zip)，或者在仓库页面选择 **Code → Download ZIP**。私有仓库需要先登录有访问权限的 GitHub 账户。
