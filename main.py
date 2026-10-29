@@ -10,11 +10,12 @@ from parameters import PARAMETERS
 
 # 当前已实现的共用 Persson 弹性接触基础。
 RUN_CONTACT = True
-# 两个应用接口已预留，求解器尚未实现；开启后会明确提示。
+# 泄漏为固定接触状态下的验证算例；混合摩擦仍预留。
 RUN_LEAKAGE = False
 RUN_MIXED_FRICTION = False
 
-COMPUTE_GAP_PDF = True      # 实验性微观间隙分布
+COMPUTE_PRESSURE_FLOW = True # 压力流动系数；泄漏开启时会自动计算
+COMPUTE_GAP_PDF = True      # 是否导出微观间隙分布，不控制流动所需的内部计算
 SAVE_PLOTS = True           # 输出 PNG，需 matplotlib
 
 
@@ -27,7 +28,8 @@ def main():
         run_project(PARAMETERS, base_directory=Path(__file__).resolve().parent,
                     run_contact=RUN_CONTACT, run_leakage=RUN_LEAKAGE,
                     run_mixed_friction=RUN_MIXED_FRICTION,
-                    compute_gap_pdf=COMPUTE_GAP_PDF, save_plots=SAVE_PLOTS)
+                    compute_gap_pdf=COMPUTE_GAP_PDF, save_plots=SAVE_PLOTS,
+                    compute_pressure_flow=COMPUTE_PRESSURE_FLOW)
     except ModuleNotFoundError as exc:
         if exc.name not in {'numpy', 'scipy', 'matplotlib'}:
             raise

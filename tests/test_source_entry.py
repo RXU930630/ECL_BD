@@ -20,7 +20,8 @@ class SourceEntryTests(unittest.TestCase):
         shutil.copytree(source / 'examples', self.project / 'examples')
         path = self.project / 'main.py'
         path.write_text(path.read_text(encoding='utf-8').replace('COMPUTE_GAP_PDF = True', 'COMPUTE_GAP_PDF = False')
-                        .replace('SAVE_PLOTS = True', 'SAVE_PLOTS = False'), encoding='utf-8')
+                        .replace('SAVE_PLOTS = True', 'SAVE_PLOTS = False')
+                        .replace('COMPUTE_PRESSURE_FLOW = True', 'COMPUTE_PRESSURE_FLOW = False'), encoding='utf-8')
 
     def test_downloaded_source_runs_from_another_working_directory(self):
         driver = '''

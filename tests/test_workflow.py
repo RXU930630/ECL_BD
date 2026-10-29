@@ -82,7 +82,7 @@ class WorkflowTests(unittest.TestCase):
             self.assertAlmostEqual(np.sum(bins['nominal_area_probability']), record['exported_bin_mass'], places=12)
 
     def test_reserved_applications_fail_before_contact_calculation(self):
-        for switches in ({'run_leakage': True}, {'run_mixed_friction': True},
+        for switches in ({'run_mixed_friction': True},
                          {'run_leakage': True, 'run_mixed_friction': True}):
             with self.subTest(switches=switches), self.assertRaises(NotImplementedError):
                 run_project(self.parameters, base_directory=self.directory, **switches)

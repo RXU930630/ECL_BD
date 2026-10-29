@@ -1,0 +1,87 @@
+{
+  "psd_sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+  "original_source_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+  "cases": [
+    {
+      "name": "E1p5_p10k_mode3_d01",
+      "effective_modulus_pa": 2000000.0,
+      "pressure_pa": 10000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 5.858938805067751e-19,
+      "reference_mean_gap_m": 1.009591e-06,
+      "reference_pdf_sha256": "9fd041229e8e6ca8bdc8940edb03de6e8fc2c5aa608249f2f8f1de0dce4e124e"
+    },
+    {
+      "name": "E1p5_p50k_mode3_d01",
+      "effective_modulus_pa": 2000000.0,
+      "pressure_pa": 50000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 7.624295238266397e-22,
+      "reference_mean_gap_m": 2.743734e-07,
+      "reference_pdf_sha256": "d96cbdca90003a446bdd30a072a0e005cc2682d421af6575987f8aca13fd3bd5"
+    },
+    {
+      "name": "E3_p100k_mode3_d005",
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 100000.0,
+      "delzeta": 0.005,
+      "reference_geometric_conductivity_m3": 7.458808314415059e-22,
+      "reference_mean_gap_m": 2.741364e-07,
+      "reference_pdf_sha256": "b2461bc74f70d19b7097175c847517abf1401e4834ab77f1eb4c8646686b2adb"
+    },
+    {
+      "name": "E3_p100k_mode3_d01",
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 100000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 7.624295238266397e-22,
+      "reference_mean_gap_m": 2.743734e-07,
+      "reference_pdf_sha256": "f447b45a092b576591f2a9f2260ce79a776a292f6924c380fa9c29f716a23049"
+    },
+    {
+      "name": "E3_p10k_mode3_d01",
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 10000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 1.9352574685488683e-18,
+      "reference_mean_gap_m": 1.416052e-06,
+      "reference_pdf_sha256": "0736dc7313c23b6826ce00586209363616c3a2636fdf74411cb483ae52a83a8b"
+    },
+    {
+      "name": "E3_p50k_mode3_d01",
+      "effective_modulus_pa": 4000000.0,
+      "pressure_pa": 50000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 4.8823821417344867e-20,
+      "reference_mean_gap_m": 5.496287e-07,
+      "reference_pdf_sha256": "530dcd93df9d435ad89fd1c48dde3f18ad126748646de99698d034bb3a58cb28"
+    },
+    {
+      "name": "E9_p100k_mode3_d01",
+      "effective_modulus_pa": 12000000.0,
+      "pressure_pa": 100000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 1.788607083445225e-19,
+      "reference_mean_gap_m": 7.411038e-07,
+      "reference_pdf_sha256": "60d3a6d0f7deb73862d452e3c689c558eb9d7ce13cbc8f67e070c1ee091b1a00"
+    },
+    {
+      "name": "E9_p10k_mode3_d01",
+      "effective_modulus_pa": 12000000.0,
+      "pressure_pa": 10000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 7.77981584616638e-18,
+      "reference_mean_gap_m": 2.159759e-06,
+      "reference_pdf_sha256": "9aefc7d2b8929c454cd48d0fde5bd642fc1652dfd8307a79f6c167977c7b96db"
+    },
+    {
+      "name": "E9_p50k_mode3_d01",
+      "effective_modulus_pa": 12000000.0,
+      "pressure_pa": 50000.0,
+      "delzeta": 0.01,
+      "reference_geometric_conductivity_m3": 8.31814662311646e-19,
+      "reference_mean_gap_m": 1.112176e-06,
+      "reference_pdf_sha256": "347c3f886b73219699047ae70391e1a45162ba09d9a11e386b13065ded88d321"
+    }
+  ]
+}

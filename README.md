@@ -1,10 +1,16 @@
 # Persson 干接触计算
 
-项目先实现十模块方案中的模块 1（输入与配置）和模块 2（Persson 干接触），为后续圆柱—平面、一维稳态混合润滑计算提供接触数据库。使用 Python；不需要 MATLAB 许可证。
+项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度无滑移界面规律，以及模块4的各向同性压力流动部分。可运行固定接触状态下的泄漏算例。使用 Python；不需要 MATLAB 许可证。
 
-第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。宏观圆柱形变、流体、摩擦、供油及空化尚未接入。
+第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。宏观圆柱形变、剪切流动因子、混合摩擦、流体承载耦合、供油及空化尚未接入。
 
-## 与 Fortran 的对照结果
+## 新增：界面规律、压力流动与固定接触泄漏
+
+详见 [模块说明、算例与 Fortran 对照](docs/pressure_flow/report.md)。主程序默认同时生成压力流动表；将 `RUN_LEAKAGE=True` 可额外生成固定接触泄漏表。黏度统一放在 `parameters.py` 的 `interface` 分组，流动积分选项放在 `pressure_flow`，密封尺寸与压差放在 `leakage`。
+
+对原 `Sealing3` 的真实 Fortran 迭代循环进行了9组对照：同PDF求解器相对差小于3e-13，包含Python接触PDF的导流系数最大相对差0.0075%；各自用平均间隙归一化后的压力流动因子最大差约0.92%。这是各向同性直接PDF分支的验证，尚未复现完整iflag008的所有分支。已完成110压力点整流程和49项测试。
+
+## 与 Fortran 的干接触对照结果
 
 [完整报告、曲线及CSV数据](docs/fortran_comparison/report.md)。已完成三个E、多个压力的14次批量参考计算，以及1次完全未改源码的独立基准。面积—压力曲线最大相对差约0.065%，平均分离量—压力曲线约0.603%，有效临界间隙查询约1.724%。
 
@@ -21,14 +27,15 @@
 | main.py 开关 | 当前作用 |
 | --- | --- |
 | `RUN_CONTACT = True` | 计算共用 Persson 弹性接触数据库 |
-| `RUN_LEAKAGE = False` | 预留泄漏入口；求解器尚未实现 |
+| `RUN_LEAKAGE = False` | 开启后计算均匀、固定接触状态下的泄漏，自动依赖接触和压力流动 |
 | `RUN_MIXED_FRICTION = False` | 预留混合摩擦入口；求解器尚未实现 |
-| `COMPUTE_GAP_PDF = True` | 是否计算 Fortran method 1 间隙分布 |
+| `COMPUTE_PRESSURE_FLOW = True` | 接触计算后计算压力流动系数；泄漏开启时自动计算 |
+| `COMPUTE_GAP_PDF = True` | 是否导出 Fortran method 1 间隙分布，不关闭流动所需的内部分布计算 |
 | `SAVE_PLOTS = True` | 是否生成 PNG 图 |
 
-若启用未实现的应用或黏弹性模型，会在计算、创建结果之前明确报错，不会输出伪造的泄漏率或摩擦系数。两个应用开关同时开启也不代表已经实现耦合求解。三个计算开关全部关闭时不执行任何计算。
+混合摩擦、黏弹性、复杂流变和壁面滑移尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。三个 RUN 开关全关时不执行计算。要只运行原干接触部分，保持 RUN_CONTACT=True，并关闭 COMPUTE_PRESSURE_FLOW 和两个应用开关。
 
-`parameters.py` 中提供粗糙度、材料、名义干接触压力序列、积分及修正参数、输出目录。`leakage` 与 `mixed_friction` 分组暂仅预留，`None` 表示尚未给定。路径始终相对于项目中的 `parameters.py`，不随启动终端的目录改变。为避免把新工况和旧结果混在一起，非空输出目录会被拒绝，请修改 `output_directory` 后重新运行。
+`parameters.py` 中提供粗糙度、材料、名义干接触压力序列、积分及修正参数、输出目录。`interface` 的黏度取原Fortran输入0.1 Pa·s；`leakage` 提供示例尺寸和压差，均不代表实验标定；`mixed_friction` 仍预留。路径始终相对于项目中的 `parameters.py`，不随启动终端的目录改变。为避免把新工况和旧结果混在一起，非空输出目录会被拒绝，请修改 `output_directory` 后重新运行。
 
 压力扫描现在只需设置参考压力：
 
@@ -131,6 +138,10 @@ Windows 下将 `.venv/bin/python` 换为 `.venv\Scripts\python.exe`。使用现�
 - `gap_bins_*.csv`：由高斯 CDF 差直接得到各间隙区间的概率，以及概率除以区间宽度得到的平均密度；优先用这些区间概率做积分。
 - `diagnostics.json`：材料及数值选项、有效查询范围、分布概率质量和第一矩检查。
 - `dry_contact.png`：PSD、relative contact area、平均间隙和 uc 四幅图。
+- `pressure_flow_table.csv`：几何导流系数K、液压导流系数、压力流动因子、PDF遗漏概率、上界和计算状态。
+- `flow_diagnostics.json`：界面模型、有效介质选项、积分收敛和泄漏参数记录。
+- `pressure_flow.png`：压力流动系数、正导流系数和泄漏（未开启泄漏时显示遗漏概率）。
+- `leakage_table.csv`：RUN_LEAKAGE开启时输出有符号的流量及遗漏PDF概率造成的流量范围。
 
 结果文件夹可重复生成，已从 Git 跟踪中排除。
 
@@ -161,7 +172,17 @@ PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的�
 
 接触表至少需要三个递增的正压力点。查询在平均间隙有效区间内对 log(p) 做保形单调插值，面积用同一压力回代物理模型，避免面积与分布采用不同压力。查询分布时还返回 `interpolation_mean_gap_error_m`，表示反查压力回代模型后的平均间隙与查询值之差。超出表范围会报错，需显式扩充数据库。
 
-## 概率与验证限制
+## 流动模块的范围与缺口处理
+
+界面局部规律为 `sigma_local=s^3/(12 eta)`，以及局部Poiseuille+Couette通量。均质化只实现压力驱动部分；局部Couette规律不等于已实现剪切流动因子。
+
+压力流动沿用原Sealing3的各向同性Bruggeman闭合，渗流相对面积共用 `options.critical_relative_contact_area`。`pressure_flow.gap_points` 为内部分布积分网格，独立于 `options.n_gap` 的导出网格；采用CDF分箱和加密比较，未收敛时明确报错。
+
+默认结果将遗漏PDF概率作为零导流相，并输出该概率无限导流时的上界；两者均保留原接触面积、不归一化PDF。上界不是统计置信区间。状态 `conducting` 为默认闭合可导通，`blocked` 为上下界均阻断，`unresolved_connectivity` 为默认值零但上界非零。极端情况下上界无穷，CSV上界留空并置 `upper_bound_unbounded=True`。
+
+泄漏为 `Q=(seal_width_m/seal_length_m)*sigma_eff*(p_in-p_out)`，输入压力不反馈到接触数据库。压差反向则Q反向，零压差则Q=0。尚未实现大间隙渐近切换、各向异性、边界膜、剪切流动因子、圆柱力学、空化及流体承载耦合，不能把此演示视为完整混合润滑求解器。
+
+## 概率与干接触验证限制
 
 完整间隙分布包含接触概率质量 a 位于零间隙处，以及正间隙的连续部分。此处 P₊ 是已知 s>0 的条件密度，积分为 1；按总名义面积加权的连续密度积分为 1−a。两者不是同一条曲线。
 

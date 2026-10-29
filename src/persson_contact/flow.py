@@ -1,0 +1,186 @@
+"""Module 4: isotropic pressure-flow homogenization, no macroscopic geometry.
+
+Geometric conductivity K has units m^3 (the Fortran flowsigmaeff1).
+Hydraulic conductivity is K/(12 eta); phi_p=K/h^3. Shear flow is reserved.
+The missing-PDF policy matches Fortran Sealing3 but is explicitly labelled:
+zero hydraulic conductivity is not an additional assertion of real contact.
+"""
+from dataclasses import asdict, dataclass
+import math
+
+import numpy as np
+from scipy.optimize import brentq
+from scipy.special import expit
+
+from .interface import positive
+
+
+@dataclass(frozen=True)
+class FlowOptions:
+    closure: str = 'fortran_isotropic_bruggeman'
+    gap_points: int = 2049
+    quadrature_relative_tolerance: float = .002
+    max_gap_refinements: int = 2
+    unresolved_flow_policy: str = 'zero_conductance_with_upper_bound'
+
+    def __post_init__(self):
+        if self.closure != 'fortran_isotropic_bruggeman':
+            raise NotImplementedError('Only fortran_isotropic_bruggeman pressure flow is implemented')
+        if self.unresolved_flow_policy != 'zero_conductance_with_upper_bound':
+            raise ValueError('Use explicit unresolved_flow_policy=zero_conductance_with_upper_bound')
+        for name, minimum in (('gap_points',129), ('max_gap_refinements',0)):
+            value = getattr(self,name)
+            if type(value) is not int or value < minimum:
+                raise ValueError(f'{name} must be an integer >= {minimum}')
+        if self.gap_points > 65537 or self.max_gap_refinements > 4:
+            raise ValueError('Flow resolution exceeds supported limits')
+        if not 0 < positive(self.quadrature_relative_tolerance,'quadrature_relative_tolerance') < 1:
+            raise ValueError('quadrature_relative_tolerance must lie in (0,1)')
+
+
+def effective_dimension(relative_contact_area, percolation_relative_contact_area):
+    """Sealing3 xnDrun: interpolate from 2 to 1/(1-percolation) with area."""
+    a, pc = float(relative_contact_area), float(percolation_relative_contact_area)
+    if not math.isfinite(a) or not 0 <= a <= 1 or not math.isfinite(pc) or not 0 < pc < 1:
+        raise ValueError('Invalid relative contact area or percolation threshold')
+    return 2 + (1/(1-pc)-2)*min(a/pc,1.)
+
+
+def bruggeman_conductivity(conductivities, probabilities, zero_probability, dimension,
+                          infinite_probability=0.):
+    """Solve scalar effective-medium closure with explicit zero/infinite phases.
+
+    E[(k-K)/(k+(dimension-1)K)]=0. The infinite phase is used ONLY to
+    bound unknown PDF probability, never as the default physical fluid law.
+    Return (K, dimensionless closure residual, root iterations). No floors.
+    """
+    k, w = np.asarray(conductivities,dtype=float), np.asarray(probabilities,dtype=float)
+    if (k.ndim != 1 or k.shape != w.shape or np.any(~np.isfinite(k))
+            or np.any(k <= 0) or np.any(~np.isfinite(w)) or np.any(w < 0)):
+        raise ValueError('Require positive finite conductivities and nonnegative probabilities')
+    z, inf, d = float(zero_probability), float(infinite_probability), float(dimension)
+    if not all(math.isfinite(v) for v in (z,inf,d)) or min(z,inf) < 0 or d <= 1:
+        raise ValueError('Invalid zero/infinite probability or effective dimension')
+    if not math.isclose(float(sum(w))+z+inf,1.,rel_tol=0,abs_tol=2e-12):
+        raise ValueError('Effective-medium phase probabilities must sum to one; no renormalization')
+    lam = d-1
+    if z >= lam/d or math.isclose(z,lam/d,rel_tol=0,abs_tol=8*np.finfo(float).eps):
+        return 0., 0., 0
+    if inf >= 1/d or math.isclose(inf,1/d,rel_tol=0,abs_tol=8*np.finfo(float).eps):
+        return math.inf, 0., 0
+    if not np.any(w > 0):
+        raise ValueError('No finite conducting phase resolves the effective medium')
+    active=w>0; logk=np.log(k[active]); w=w[active]
+    loglam=math.log(lam)
+
+    def residual(log_value):
+        return z*d/lam + d/lam*float(w @ expit(loglam+log_value-logk))-1
+
+    # A log-conductivity root remains well conditioned over many gap decades.
+    left, right = float(min(logk)-80), float(max(logk)+80)
+    root, result = brentq(residual,left,right,xtol=1e-12,full_output=True)
+    value = math.exp(root)
+    if not result.converged:
+        raise ValueError('Bruggeman pressure-flow solve did not converge')
+    return value,float(residual(root)),result.iterations
+
+
+@dataclass(frozen=True)
+class PressureFlowResult:
+    pressure_pa: float
+    mean_gap_m: float
+    relative_contact_area: float
+    effective_dimension: float
+    geometric_conductivity_m3: float
+    hydraulic_conductivity_m3_pa_s: float
+    pressure_flow_factor: float
+    upper_geometric_conductivity_m3: float | None
+    upper_pressure_flow_factor: float | None
+    upper_bound_unbounded: bool
+    retained_pdf_probability: float
+    unrepresented_noncontact_probability: float
+    zero_conductance_probability: float
+    closure_residual: float
+    root_iterations: int
+    gap_points: int
+    quadrature_relative_difference: float
+    status: str
+    percolation_relative_contact_area: float
+    unresolved_flow_policy: str
+
+    def as_dict(self):
+        return asdict(self)
+
+
+def homogenize_bins(gap_edges_m, cdf, relative_contact_area, mean_gap_m, interface,
+                    percolation_relative_contact_area=.42):
+    """Conservative CDF bins, log-midpoint local mobility, explicit missing mass.
+
+    Lower/default: assign unrepresented noncontact mass to zero conductance.
+    Upper: same mass assigned infinite conductance, true contact stays zero.
+    Neither case changes the contact model or renormalizes the resolved PDF.
+    """
+    edges, cdf = np.asarray(gap_edges_m,dtype=float),np.asarray(cdf,dtype=float)
+    if (edges.ndim!=1 or edges.size<3 or edges.shape!=cdf.shape or edges[0]!=0
+            or np.any(~np.isfinite(edges)) or np.any(np.diff(edges)<=0)
+            or np.any(~np.isfinite(cdf)) or cdf[0]!=0 or np.any(np.diff(cdf)<0)):
+        raise ValueError('Require increasing gap edges starting at zero and monotone CDF starting at zero')
+    a=float(relative_contact_area);d=effective_dimension(a,percolation_relative_contact_area)
+    h=positive(mean_gap_m,'mean_gap_m')
+    probabilities=np.diff(cdf);mass=float(sum(probabilities))
+    missing=1-a-mass
+    if missing < -2e-12:
+        raise ValueError('Resolved PDF exceeds noncontact probability; refine contact quadrature')
+    if missing < 0:
+        raise ValueError('Resolved PDF mass exceeds standard noncontact area; decrease pdf_log_step')
+    centers=np.empty(len(edges)-1);centers[0]=edges[1]/2
+    centers[1:]=np.sqrt(edges[1:-1]*edges[2:])
+    # Use the local wall law normalized by its smooth-gap value; solve K/h^3.
+    conductivity=interface.pressure_mobility(centers)/interface.pressure_mobility(h)
+    zero=1-mass
+    value,residual,iterations=bruggeman_conductivity(conductivity,probabilities,zero,d)
+    upper,_,_=bruggeman_conductivity(conductivity,probabilities,a,d,missing)
+    return {'geometric':value*h**3, 'upper':upper*h**3,
+            'factor':value, 'mass':mass,'missing':missing,'zero':zero,
+            'dimension':d,'residual':residual,'iterations':iterations}
+
+
+def pressure_flow(model, pressure_pa, interface, options=None, *, percolation_relative_contact_area=.42):
+    """Build PDF independently of export n_gap; refine its CDF-bin flow integral."""
+    options = options or FlowOptions()
+    p=float(model._pressures(pressure_pa));a=model.area(p);h=model.mean_gap(p)
+    if a<1. and h<=0:
+        raise ValueError('Mean-gap underflow cannot be interpreted as a blocked flow state')
+    if a==1.:
+        return PressureFlowResult(p,h,a,effective_dimension(a,percolation_relative_contact_area),
+            0.,0.,0.,0.,0.,False,0.,1-a,1.,0.,0,0,0.,'blocked',
+            percolation_relative_contact_area,options.unresolved_flow_policy)
+    start=max(model.pdf_min_u1_m*.01,np.finfo(float).tiny)
+    stop=max(40*model.psd.hrms,10*h,start*1e6)
+    count=options.gap_points
+    for refinement in range(options.max_gap_refinements+1):
+        if count>65537:
+            raise ValueError('Flow quadrature exceeded 65537 gap points')
+        edges=np.r_[0.,np.geomspace(start,stop,count-1)]
+        distribution=model.gap_distribution(p,edges)
+        fine=homogenize_bins(edges,distribution.continuous_cdf,a,h,interface,
+                            percolation_relative_contact_area)
+        take=np.unique(np.r_[np.arange(0,count,2),count-1])
+        coarse=homogenize_bins(edges[take],distribution.continuous_cdf[take],a,h,interface,
+                              percolation_relative_contact_area)
+        difference=abs(fine['geometric']-coarse['geometric'])/fine['geometric'] if fine['geometric'] else 0.
+        if math.isfinite(fine['upper']) and fine['upper']>0:
+            difference=max(difference,abs(fine['upper']-coarse['upper'])/fine['upper'])
+        if difference<=options.quadrature_relative_tolerance:
+            break
+        count=2*count-1
+    else:
+        raise ValueError('Pressure-flow quadrature not converged; increase pressure_flow.gap_points')
+    upper=fine['upper'];unbounded=not math.isfinite(upper)
+    return PressureFlowResult(p,h,a,fine['dimension'],fine['geometric'],
+        fine['geometric']/(12*interface.viscosity_pa_s),fine['factor'],
+        None if unbounded else upper,None if unbounded else upper/h**3,unbounded,
+        fine['mass'],fine['missing'],fine['zero'],fine['residual'],fine['iterations'],
+        count,difference,('blocked' if upper==0 else 'unresolved_connectivity')
+        if fine['geometric']==0 else 'conducting',
+        percolation_relative_contact_area,options.unresolved_flow_policy)
