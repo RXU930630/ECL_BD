@@ -3,7 +3,7 @@
 
 This reads reference outputs; it never starts or modifies a Fortran run.
 Material/numerical values identify archived parameters, not a calibrated
-experiment. The Python gap PDF remains an experimental approximation.
+experiment. The Python gap PDF uses the Fortran method-1 scale convention with an accurate energy kernel.
 """
 
 import argparse
@@ -300,6 +300,8 @@ def parser():
     result.add_argument("--gamma", type=float, default=.4)
     result.add_argument("--n-q", type=int, default=256)
     result.add_argument("--pdf-afact", type=float, default=1.)
+    result.add_argument("--pdf-log-step", type=float, default=None,
+                        help="PDF ln(zeta) step; default: read from the mode-3 reference")
     result.add_argument("--scale-c", type=float, default=1.)
     result.add_argument("--plot", action="store_true")
     result.add_argument("--self-test", action="store_true", help="Run parser/completeness tests only; no physics workload")
@@ -355,8 +357,11 @@ def main(argv=None):
         arg_parser.error("--output must be a new directory")
     try:
         spectrum = read_psd(args.psd, scale_c=args.scale_c)
+        if args.pdf_log_step is None:
+            args.pdf_log_step = (first_tokens(args.mode3_dir / "IN.mathematical")[0]
+                                 if args.mode3_dir else .01)
         model = PerssonModel(spectrum, args.effective_modulus_pa, args.gamma,
-                             n_q=args.n_q, pdf_afact=args.pdf_afact)
+                             n_q=args.n_q, pdf_afact=args.pdf_afact, pdf_log_step=args.pdf_log_step)
         # Check every run before creating output or doing expensive PDF work.
         for directory in (args.area_dir, args.mode2_dir, args.mode3_dir):
             if directory:
@@ -364,9 +369,9 @@ def main(argv=None):
         args.output.mkdir(parents=True, exist_ok=False)
         summary = {
             "label": "Archived parameters; not a calibrated experiment",
-            "scope": "Standard elastic dry area, energy mean separation, experimental source-inspired gap PDF",
+            "scope": "Standard elastic dry area, energy mean separation, Fortran method-1 gap PDF with accurate energy kernel",
             "parameters": {key: getattr(args, key) for key in
-                           ("effective_modulus_pa", "gamma", "n_q", "pdf_afact", "scale_c")},
+                           ("effective_modulus_pa", "gamma", "n_q", "pdf_afact", "pdf_log_step", "scale_c")},
             "psd": {"path": str(args.psd.resolve()), "sha256": sha256(args.psd)},
             "caveats": ["Fortran E11.4 output rounding limits pointwise comparison precision.",
                 "Source right-rectangle log-wavevector integration differs from Python exact PSD moments and segmented quadrature.",

@@ -30,8 +30,12 @@ PARAMETERS = {
     },
     'options': {
         'gamma': 0.4,       # 弹性能量修正，不是摩擦系数
-        'n_q': 256,         # 波数/尺度分辨率，整数 >= 32
+        'n_q': 256,         # 平均间隙/临界间隙积分分辨率，整数 >= 32
         'pdf_afact': 1.0,   # 分布展宽修正
+        'pdf_log_step': 0.01,  # PDF 的 ln(zeta) 步长；与 Fortran 对照时须相同
+        'pdf_max_relative_contact_area': 0.999,  # 原程序上截断，排除 A≈1 的不适定 u1
+        'pdf_min_relative_contact_area': 0.0001, # 原程序下截断
+        'pdf_min_u1_m': 1e-12,  # 原程序 u1min；不等于强行裁去输出曲线的尾部
         'n_gap': 600,       # 微观间隙输出网格，整数 >= 32
         'critical_relative_contact_area': 0.42,
         'critical_area_tolerance': 0.005,  # A/A0 的绝对容差，非相对百分数

@@ -8,7 +8,7 @@
 
 [完整报告、曲线及CSV数据](docs/fortran_comparison/report.md)。已完成三个E、多个压力的14次批量参考计算，以及1次完全未改源码的独立基准。面积—压力曲线最大相对差约0.065%，平均分离量—压力曲线约0.603%，有效临界间隙查询约1.724%。
 
-**完整间隙分布尚不能视为一致或已验收。** 共同间隙范围内CDF最大绝对差约0.002764；由于截断和尾部约定不同，原生完整第一矩差异最高约9.521%。面积和平均间隙接近，不等于所有分布积分都可直接用于泄漏或混合摩擦。报告保留原始差异，没有拟合或强制归一化。
+**PDF 尾部已修复，最新结果见 [尾部修复报告](docs/gap_tail_correction/report.md)。** 统一 Fortran method 1 的尺度截断、导数和积分网格后，10组参考分布的第一矩最大差约0.0024%，共同区间CDF最大绝对差约9.70e-6。完整40000点密度的最大相对差约4.36%，出现在约1e-12 m的小间隙端；大间隙尾部最大相对差约1.96%；图中异常长尾和小峰已消失。前一份报告保留修复前9.521%的差异，供追溯。模型本身的高斯展宽及尺度截断仍会使 PDF 第一矩不同于能量平均间隙，不能据此宣称完整润滑模型已经验证。
 
 ## 日常使用：只改两个文件
 
@@ -23,7 +23,7 @@
 | `RUN_CONTACT = True` | 计算共用 Persson 弹性接触数据库 |
 | `RUN_LEAKAGE = False` | 预留泄漏入口；求解器尚未实现 |
 | `RUN_MIXED_FRICTION = False` | 预留混合摩擦入口；求解器尚未实现 |
-| `COMPUTE_GAP_PDF = True` | 是否额外计算实验性间隙分布 |
+| `COMPUTE_GAP_PDF = True` | 是否计算 Fortran method 1 间隙分布 |
 | `SAVE_PLOTS = True` | 是否生成 PNG 图 |
 
 若启用未实现的应用或黏弹性模型，会在计算、创建结果之前明确报错，不会输出伪造的泄漏率或摩擦系数。两个应用开关同时开启也不代表已经实现耦合求解。三个计算开关全部关闭时不执行任何计算。
@@ -46,7 +46,7 @@
 
 临界分离量定义为 `uc=u1`（修正系数 alpha=1）。`options.critical_relative_contact_area=0.42`，`critical_area_tolerance=0.005` 表示 A/A0 的绝对容差，接受接近 0.42 而非严格相等的尺度。先检查 PSD 的倍率范围确实跨过阈值，再定位近似临界尺度；没有跨过时不以最接近的端点代替交点。
 
-`critical_separation.csv` 对每个压力输出临界倍率、实际 relative contact area、偏差、该尺度下的平均间隙、u1 和 uc，长度单位均为 m。u1 使用 A*ubar 对 A 的局部有限体积导数，自动缩小步长进行比较，并输出 `u1_refinement_relative_difference`。只有 `status=found` 时才提供 uc；未跨过阈值、面积分辨率不足、u1 未解析或导数未收敛时保留状态与空值，不填造数值。此表是实验性接触模型输出，尚非泄漏率结果，也未完成 Fortran 对照。
+`critical_separation.csv` 对每个压力输出临界倍率、实际 relative contact area、偏差、该尺度下的平均间隙、u1 和 uc，长度单位均为 m。u1 使用 A*ubar 对 A 的局部有限体积导数，自动缩小步长进行比较，并输出 `u1_refinement_relative_difference`。只有 `status=found` 时才提供 uc；未跨过阈值、面积分辨率不足、u1 未解析或导数未收敛时保留状态与空值，不填造数值。此表是实验性接触模型输出，尚非泄漏率结果，已做上述有限工况下的 Fortran 对照。
 
 `dry_contact.png` 现有四幅图：PSD、relative contact area—压力、平均间隙—压力、uc—压力。后面三幅图包含整组压力点，并以竖线标记参考压力；不是单一压力下的分布图。诊断 JSON 同时保存完整压力节点和参考压力的临界结果。
 
@@ -144,7 +144,11 @@ from persson_contact.table import build_contact_table, evaluate_contact
 problem, options = load_problem("examples/dry_contact.json")
 model = PerssonModel(problem.psd, problem.effective_modulus_pa,
                      gamma=options.gamma, n_q=options.n_q,
-                     pdf_afact=options.pdf_afact)
+                     pdf_afact=options.pdf_afact,
+                     pdf_log_step=options.pdf_log_step,
+                     pdf_max_relative_contact_area=options.pdf_max_relative_contact_area,
+                     pdf_min_relative_contact_area=options.pdf_min_relative_contact_area,
+                     pdf_min_u1_m=options.pdf_min_u1_m)
 table = build_contact_table(model, problem.pressures_pa)
 lower, upper = table.valid_gap_range_m
 response = evaluate_contact(table, (lower + upper) / 2)
@@ -161,12 +165,20 @@ PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的�
 
 完整间隙分布包含接触概率质量 a 位于零间隙处，以及正间隙的连续部分。此处 P₊ 是已知 s>0 的条件密度，积分为 1；按总名义面积加权的连续密度积分为 1−a。两者不是同一条曲线。
 
-实际离散计算另报告 `unresolved_continuous_mass`（未解析的非接触概率），不把它当成接触，也不把它强行分给已有曲线。返回的密度/CDF 仅包含已解析部分：接触概率 + 已解析概率 + 未解析概率 = 1；存在未解析量时，返回的条件密度积分小于 1。最小间隙附近可出现极窄峰，普通梯形积分点值密度可能严重失真；PDF CSV 不输出 s=0 的密度值，区间概率请使用 `gap_bins`，并同时检查未解析量。
+现在采用原 Fortran method 1 的尺度网格和截断：`pdf_log_step=0.01` 是 ln(zeta) 步长，`pdf_max_relative_contact_area=0.999`、`pdf_min_relative_contact_area=0.0001`、`pdf_min_u1_m=1e-12` 是原程序的积分范围。全部集中在 `parameters.py` 的 `options` 中，旧 JSON 省略时采用这些默认值。`n_q` 继续控制能量平均间隙和临界间隙计算，PDF 的尺度分辨率改由 `pdf_log_step` 单独控制。与 Fortran 对照时必须使用相同的尺度步长和截断参数。
 
-间隙分布采用原 Fortran 启发的倍率混合、反射高斯近似，并使用有限体积方式离散面积变化。**分布目前属于实验性实现：已进行原程序对照，但截断及尾部仍存在差异。** 高斯展宽、数值积分和有限取样范围可能导致第一矩与独立平均间隙计算不同；程序保留并报告偏差，不强制重标定分布来消除它。用于后续流动或摩擦积分前，必须检查这些诊断并明确所需积分域及截断约定。
+PDF 使用解析 A' 和中心差分 ubar' 计算 u1，按照中心差分面积变化加权，避免旧有限体积公式在 A≈1 时产生巨大 u1。能量核函数仍使用独立准确积分，没有为贴合原程序的近似查表而降低精度。原程序的尺度截断作用于混合分布的组成；程序不会直接剪掉输出间隙轴上的曲线。
 
-在随附演示参数下，分布解析第一矩偏差最大约 6.35%，未解析非接触概率最大约为名义面积的 2.94×10⁻⁴；这不是研究工况的已验证精度。面积与平均间隙的独立数值检查不代表分布已经通过同等验证。
+`unresolved_continuous_mass` 记录积分范围之外的非接触概率，另分解为 `excluded_high_area_mass`、`excluded_low_area_mass`、`excluded_small_u1_mass` 和 `boundary_unresolved_mass`。不把缺口当成接触，也不强行归一化。PDF 采用右矩形尺度积分，接触面积仍采用独立准确的 PSD 积分，因此需另计有符号的 `quadrature_mass_error`：
+
+```
+已解析概率 + 未解析概率 = 1 - relative_contact_area + quadrature_mass_error
+```
+
+返回的条件密度仍除以完整非接触概率 1-a，其保留部分的积分不必等于1。最小间隙附近可出现极窄峰，PDF CSV 不输出 s=0 的密度值；区间概率优先使用解析 CDF 差得到的 `gap_bins`，并检查概率缺口、尺度积分误差和第一矩诊断。若诊断提示初始尺度面积小于0.99，需要减小 `pdf_log_step` 或补充低波数 roll-off；不能将欠分辨率的分布作为已验证结果使用。
+
+10组实际 Fortran 输出覆盖 E=1.5/3/9 MPa、p=0.01/0.05/0.1 MPa，以及额外的0.005尺度步长。最新 [曲线和逐工况数据](docs/gap_tail_correction/report.md) 包含极低密度尾部及第一矩比较，回归测试保留原始参考采样和来源哈希。用于流动或摩擦积分时，仍须明确积分域和截断约定，并检查相应高阶矩；与 Fortran 的复现一致不代表近似分布严格满足能量平均间隙等式。
 
 已用GNU Fortran完成原参数gamma=0.4、E=3 MPa、p=0.1 MPa的完全未改源码运行。批量副本仅加速实数误差函数并增加PDF输出密度，源代码差异和与原版锚点的核对保存在上述报告中。详细公式、例程位置和最初输入分析见 [源码分析与模块计划](docs/fortran_review_and_module_plan.md)。超时、失败及主动停止的试算不计为成功。
 
-参考脚本需要另行提供原始Fortran ZIP和编译器；GitHub中不包含完整Fortran包和编译器。`--real-erf`为可选构建副本优化。`scripts/benchmark_fortran_matrix.py`、`scripts/analyze_fortran_matrix.py`用于复现多E/压力比较，命令见报告。
+参考脚本需要另行提供原始Fortran ZIP和编译器；GitHub中不包含完整Fortran包和编译器。`--real-erf`为可选构建副本优化。`scripts/benchmark_fortran_matrix.py`、`scripts/analyze_fortran_matrix.py`用于多E/压力比较；`scripts/verify_gap_tail.py`复核修复后的PDF尾部，命令见相应报告。

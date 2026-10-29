@@ -108,14 +108,16 @@ class TestCore(unittest.TestCase):
         self.assertTrue(np.all(np.diff(result.continuous_cdf) >= -1e-15))
         self.assertEqual(result.continuous_cdf[0], 0)
         self.assertAlmostEqual(result.contact_fraction + diag.resolved_continuous_mass
-                               + diag.unresolved_continuous_mass, 1., places=14)
+                               + diag.unresolved_continuous_mass, 1.+diag.quadrature_mass_error, places=14)
         self.assertAlmostEqual(result.continuous_cdf[-1], diag.resolved_continuous_mass, places=12)
-        self.assertAlmostEqual(result.positive_cdf[-1], 1., places=12)
+        self.assertAlmostEqual(result.positive_cdf[-1], diag.resolved_continuous_mass/(1-result.contact_fraction), places=12)
         np.testing.assert_allclose(result.positive_density_per_m,
                                    result.continuous_density_per_m/(1-result.contact_fraction))
-        self.assertGreaterEqual(diag.analytic_first_moment_m, result.mean_gap_m)
-        self.assertGreater(diag.first_moment_relative_error, 0)
-        self.assertEqual(diag.approximation, "experimental_reflected_gaussian")
+        self.assertAlmostEqual(diag.first_moment_relative_error,
+                               diag.analytic_first_moment_m/result.mean_gap_m-1)
+        self.assertEqual(diag.approximation, "fortran_method1_reflected_gaussian")
+        self.assertGreater(diag.boundary_unresolved_mass, 0)
+        self.assertTrue(any("Initial scale area <0.99" in note for note in diag.notes))
 
     def test_truncated_gap_grid_is_not_renormalized(self):
         model = PerssonModel(InverseFourthSpectrum(), 1e6, .4, n_q=64)
@@ -137,15 +139,18 @@ class TestCore(unittest.TestCase):
         diag = result.diagnostics
         self.assertGreater(diag.unresolved_continuous_mass, 0.)
         self.assertAlmostEqual(result.contact_fraction + diag.resolved_continuous_mass
-                               + diag.unresolved_continuous_mass, 1., places=14)
+                               + diag.unresolved_continuous_mass, 1.+diag.quadrature_mass_error, places=14)
         self.assertLessEqual(result.positive_cdf[-1], 1.)
         self.assertTrue(np.all(np.diff(result.continuous_cdf) >= -1e-15))
         self.assertAlmostEqual(diag.resolved_continuous_mass + diag.unresolved_continuous_mass,
-                               diag.expected_continuous_mass, places=14)
+                               diag.quadrature_continuous_mass, places=14)
 
     def test_invalid_model_inputs(self):
         for kwargs in ({"effective_modulus_pa": 0}, {"gamma": -1}, {"gamma": 1.1},
-                       {"n_q": 2}, {"n_q": 32.5}, {"pdf_afact": -1}):
+                       {"n_q": 2}, {"n_q": 32.5}, {"pdf_afact": -1},
+                       {"pdf_log_step": 0}, {"pdf_log_step": True}, {"pdf_min_u1_m": -1},
+                       {"pdf_max_relative_contact_area": 1},
+                       {"pdf_min_relative_contact_area": .9999}):
             with self.subTest(kwargs=kwargs):
                 arguments = dict(effective_modulus_pa=1e6, gamma=.4, n_q=64)
                 arguments.update(kwargs)

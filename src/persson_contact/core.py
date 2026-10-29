@@ -2,8 +2,8 @@
 
 The PSD convention is a two-dimensional isotropic C(q) [m**4], q [1/m].
 ``gamma`` is the elastic-energy correction, *not* a friction coefficient.
-The PDF is a reflected-Gaussian approximation inspired by the supplied Fortran
-code. Its first moment need not equal the energy-derived mean gap; that error
+The PDF uses the supplied Fortran method-1 reflected-Gaussian mixture, including
+its scale cutoffs and logarithmic finite differences. Its first moment need not equal the energy-derived mean gap; that error
 is reported, never removed by rescaling gaps or renormalizing sampled data.
 """
 
@@ -93,7 +93,14 @@ class GapDiagnostics:
     unresolved_continuous_mass: float
     integrated_continuous_mass_on_grid: float
     unresolved_mean_gap_contribution_m: float
-    approximation: str = "experimental_reflected_gaussian"
+    quadrature_continuous_mass: float
+    quadrature_mass_error: float
+    excluded_high_area_mass: float
+    excluded_low_area_mass: float
+    excluded_small_u1_mass: float
+    boundary_unresolved_mass: float
+    pdf_log_step: float
+    approximation: str = "fortran_method1_reflected_gaussian"
     notes: tuple[str, ...] = ()
 
     def as_dict(self):
@@ -142,7 +149,9 @@ class PerssonModel:
     """
 
     def __init__(self, psd: Spectrum, effective_modulus_pa, gamma, n_q=256,
-                 pdf_afact=1.0):
+                 pdf_afact=1.0, pdf_log_step=0.01,
+                 pdf_max_relative_contact_area=0.999,
+                 pdf_min_relative_contact_area=0.0001, pdf_min_u1_m=1e-12):
         self.psd = psd
         self.effective_modulus_pa = float(effective_modulus_pa)
         self.gamma = float(gamma)
@@ -155,6 +164,16 @@ class PerssonModel:
             raise ValueError("n_q must be an integer >=32")
         if not np.isfinite(self.pdf_afact) or self.pdf_afact < 0:
             raise ValueError("pdf_afact must be finite and nonnegative")
+        for name, value in (
+                ('pdf_log_step', pdf_log_step),
+                ('pdf_max_relative_contact_area', pdf_max_relative_contact_area),
+                ('pdf_min_relative_contact_area', pdf_min_relative_contact_area),
+                ('pdf_min_u1_m', pdf_min_u1_m)):
+            if isinstance(value, (bool, np.bool_)) or not np.isfinite(float(value)) or value <= 0:
+                raise ValueError(f"{name} must be positive and finite")
+            setattr(self, name, float(value))
+        if not 0 < self.pdf_min_relative_contact_area < self.pdf_max_relative_contact_area < 1:
+            raise ValueError("PDF area cutoffs must satisfy 0 < min < max < 1")
         self.n_q = int(n_q)
         self.q0 = float(psd.q0)
         self.q1 = float(psd.q1)
@@ -317,18 +336,16 @@ class PerssonModel:
     def gap_distribution(self, pressure_pa, gaps_m):
         """Approximate microgap distribution, including a separate zero atom.
 
-        ``continuous_density_per_m`` describes the numerically resolved part
-        of noncontact area. Its full-axis mass plus explicitly reported
-        ``unresolved_continuous_mass`` equals 1-A/A0. The positive density is
-        divided by the full noncontact probability, and therefore its mass is
-        1-unresolved_mass/(1-A/A0). Neither curve is renormalized to hide loss.
-        Exact Gaussian CDF differences provide interval probabilities; trapz
-        of point densities can be unreliable for sharp near-zero components.
+        ``continuous_density_per_m`` is the nominal-area density of the
+        retained scale range. Its mass is not forced to 1-A/A0. The difference
+        includes explicit scale cutoffs and a signed scale-quadrature error.
+        ``positive_density_per_m`` divides by the standard 1-A/A0, without
+        renormalizing the retained range. Exact Gaussian CDF differences give
+        bin probabilities. See diagnostics for all omitted mass and moments.
 
-        A finite-volume form of u1=ubar+A*ubar'/A' replaces the Fortran's finite
-        differences. Each magnification interval has mass Delta A, exactly
-        partitioning noncontact area. Reflected-Gaussian broadening follows the
-        source's width model; its first-moment discrepancy is exposed below.
+        The default cutoffs and log-scale step follow the validated Fortran
+        method-1 reference. n_q controls energy/critical-separation quadrature;
+        pdf_log_step controls this separate finite-difference scale grid.
         """
         p_array = self._pressures(pressure_pa)
         if p_array.ndim != 0:
@@ -339,45 +356,71 @@ class PerssonModel:
                 or np.any(gaps < 0) or np.any(np.diff(gaps) <= 0)):
             raise ValueError("gaps_m must be a strictly increasing nonnegative 1D grid")
 
-        # Squared log spacing resolves the initial A~1 boundary layer.
-        t = np.linspace(0.0, np.sqrt(np.log(self.q1 / self.q0)), self.n_q + 1)
-        q = self.q0 * np.exp(t * t)
-        q[0], q[-1] = self.q0, self.q1
-        a = self.area(p, q)
-        contact = float(a[-1])
+        # Match hWithoutAdhesionMagnification1/separationu1, not the old
+        # finite-volume mixture. The latter divided volume differences by
+        # nearly zero Delta A at A~1 and introduced huge, spurious u1 centers.
+        geometry = getattr(self, '_pdf_geometry', None)
+        if geometry is None:
+            node_count = np.log(self.q1 / self.q0) / self.pdf_log_step
+            if not np.isfinite(node_count) or not 4 <= node_count < 10001:
+                raise ModelResolutionError("PDF log step must produce 4..10000 scale nodes")
+            n = int(node_count)
+            q = np.minimum(self.q0 * np.exp(self.pdf_log_step * np.arange(1, n + 1)), self.q1)
+            c = self.psd.evaluate(q)
+            increments = c * q**4 * self.pdf_log_step
+            i3 = np.cumsum(increments)
+            variance = (2 * np.pi * self.pdf_log_step
+                        * np.cumsum((c * q**2)[::-1])[::-1])
+            geometry = q, c, increments, i3, variance
+            self._pdf_geometry = geometry
+        q, c, increments, i3, variance = geometry
+        z = p / (self.effective_modulus_pa * np.sqrt(np.pi * i3))
+        a = erf(z)
+        contact = self.area(p)
         expected_mass = 1.0 - contact
         if expected_mass == 0:
             raise ValueError("area rounds to full contact; conditional positive-gap PDF is undefined")
         h = self.mean_gap(p)
-        ubar = np.asarray([self._mean_gap_above(p / ai, float(qi))
-                           for ai, qi in zip(a, q)])
-        volume = a * ubar
-        weights = a[:-1] - a[1:]
-        selected = weights > 0.0
-        if not np.any(selected):
-            raise ModelResolutionError("no resolved noncontact-area intervals; increase n_q")
-        centers = (volume[:-1][selected] - volume[1:][selected]) / weights[selected]
-        weights = weights[selected]
-        if np.any(~np.isfinite(centers)):
-            raise ModelResolutionError(
-                "nonfinite u1 from magnification-volume differences; inspect inputs"
-            )
-        midpoint_q = np.sqrt(q[:-1][selected] * q[1:][selected])
-        # Near q1, conditional mean gaps can underflow before Delta A does.
-        # Report their noncontact mass separately; never transfer it to contact.
-        # Negative-volume intervals are only tolerated at roundoff-level area.
-        negative = centers < 0
-        if np.sum(weights[negative]) > 1e-10 * expected_mass:
-            raise ModelResolutionError(
-                "nonphysical negative u1 carries resolved area; increase n_q or inspect inputs"
-            )
-        unresolved = centers <= 0
-        unresolved_mass = float(np.sum(weights[unresolved]))
-        centers, weights, midpoint_q = (values[~unresolved]
-                                        for values in (centers, weights, midpoint_q))
-        variance_roughness = 2.0 * np.pi * np.asarray([
-            self.psd.moment(1, lower=float(qi), upper=self.q1) for qi in midpoint_q
-        ])
+        # Independent prefix sums from EACH lower scale retain tiny residual
+        # moments; subtracting two full-band prefix sums loses them near q1.
+        ubar = np.empty_like(q)
+        for k in range(len(q)):
+            local_i3 = np.cumsum(increments[k:])
+            argument = p / (a[k] * self.effective_modulus_pa * np.sqrt(np.pi * local_i3))
+            ubar[k] = np.sum(self.pdf_log_step * c[k:] * q[k:]**3
+                             / np.sqrt(local_i3) * separation_kernel(argument, self.gamma))
+        # Analytic A' enters u1; centered A differences enter PDF weights,
+        # exactly as in the reference. Never divide by rounded Delta A.
+        darea = -z * np.exp(-z*z) * (c*q**4) / (np.sqrt(np.pi) * i3)
+        scale_area = a[1:-1]
+        weights_all = (a[:-2] - a[2:]) / 2
+        centers_all = np.zeros_like(scale_area)
+        high = scale_area > self.pdf_max_relative_contact_area
+        low = scale_area < self.pdf_min_relative_contact_area
+        interior = np.ones(len(scale_area), dtype=bool)
+        interior[-1] = False  # Fortran istop=nnn-2 (one-based).
+        eligible = ~high & ~low & interior & (darea[1:-1] < 0)
+        derivative = (ubar[2:] - ubar[:-2]) / (2 * self.pdf_log_step)
+        centers_all[eligible] = (ubar[1:-1][eligible]
+                                + derivative[eligible] * scale_area[eligible]
+                                / darea[1:-1][eligible])
+        # The source stops at the FIRST u1 below the lower cutoff; do not
+        # accidentally reintroduce later scales if roundoff changes its sign.
+        small = eligible & (centers_all < self.pdf_min_u1_m)
+        if np.any(small):
+            first = np.flatnonzero(small)[0]
+            eligible[first:] = False
+        selected = eligible & (weights_all > 0)
+        if np.any(~np.isfinite(centers_all[selected])):
+            raise ModelResolutionError("nonfinite u1; inspect PDF resolution and cutoffs")
+        centers, weights = centers_all[selected], weights_all[selected]
+        variance_roughness = variance[1:-1][selected]
+        quadrature_mass = float(1 - a[-1])
+        boundary_mass = float(quadrature_mass - np.sum(weights_all[interior]))
+        high_mass = float(np.sum(weights_all[interior & high]))
+        low_mass = float(np.sum(weights_all[interior & ~high & low]))
+        small_mass = float(np.sum(weights_all[interior & ~high & ~low & ~selected]))
+        unresolved_mass = boundary_mass + high_mass + low_mass + small_mass
         if self.pdf_afact == 0:
             widths = np.sqrt(variance_roughness)
         else:
@@ -407,19 +450,27 @@ class PerssonModel:
         sampled_mass = float(trapezoid(density, gaps))
         sampled_first = float(trapezoid(density * gaps, gaps))
         notes = [
-            "Experimental reflected-Gaussian approximation; not validated against a complete Fortran run.",
-            "Contact probability is a separate Dirac atom at u=0, not a finite-density sample.",
-            "Finite-volume magnification discretization differs from the original finite differences.",
-            "Broadening can increase the first moment; no density/gap rescaling is applied.",
-            "Near-zero density components may be much narrower than the grid: "
-            "use analytic CDF differences for bin probabilities, not trapz of density samples.",
+            "Fortran method-1 scale quadrature, analytic A derivative and centered ubar derivative; "
+            "the energy separation kernel is evaluated accurately rather than using the source's lookup approximation.",
+            f"PDF cutoffs: {self.pdf_min_relative_contact_area:g} <= A/A0 <= "
+            f"{self.pdf_max_relative_contact_area:g}, u1 >= {self.pdf_min_u1_m:g} m.",
+            "Contact probability remains the standard Persson A/A0; omitted probability is not contact.",
+            "Quadrature mass error is signed: resolved + unresolved - (1-A/A0). "
+            "No density normalization, tail clipping or gap rescaling is applied.",
+            "Broadening and scale cutoffs can change the first moment relative to the energy mean gap.",
+            "Use analytic CDF differences for bin probabilities; pointwise trapz can miss narrow peaks.",
         ]
+        if not len(weights):
+            notes.append("No scales retained by PDF cutoffs; the entire noncontact mass is unresolved.")
+        if a[1] < 0.99:
+            notes.append("Initial scale area <0.99: unresolved low-magnification boundary; "
+                         "reduce pdf_log_step or extend the low-q roll-off before using this PDF.")
         if unresolved_mass:
             notes.append(
                 f"Unresolved noncontact probability {unresolved_mass:.8g} is reported separately "
-                "(mean-gap underflow or roundoff); it is neither contact nor renormalized away."
+                "(scale cutoffs or boundary resolution); it is neither contact nor renormalized away."
             )
-        if abs(sampled_mass - expected_mass) > 0.01 * expected_mass:
+        if abs(sampled_mass - np.sum(weights)) > 0.01 * max(float(np.sum(weights)), np.finfo(float).tiny):
             notes.append("The supplied gap grid misses mass or under-resolves the density; extend/refine it.")
         if h <= 0:
             raise ModelResolutionError("mean gap underflow prevents PDF moment diagnostics")
@@ -436,6 +487,13 @@ class PerssonModel:
             unresolved_continuous_mass=unresolved_mass,
             integrated_continuous_mass_on_grid=float(cdf[-1] - cdf[0]),
             unresolved_mean_gap_contribution_m=float(h - weights @ centers),
+            quadrature_continuous_mass=quadrature_mass,
+            quadrature_mass_error=quadrature_mass - expected_mass,
+            excluded_high_area_mass=high_mass,
+            excluded_low_area_mass=low_mass,
+            excluded_small_u1_mass=small_mass,
+            boundary_unresolved_mass=boundary_mass,
+            pdf_log_step=self.pdf_log_step,
             notes=tuple(notes),
         )
         return GapDistribution(p, h, contact, gaps.copy(), density, conditional,

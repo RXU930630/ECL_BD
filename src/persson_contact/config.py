@@ -27,9 +27,14 @@ class Options:
     n_gap: int = 256
     critical_relative_contact_area: float = 0.42
     critical_area_tolerance: float = 0.005
+    pdf_log_step: float = 0.01
+    pdf_max_relative_contact_area: float = 0.999
+    pdf_min_relative_contact_area: float = 0.0001
+    pdf_min_u1_m: float = 1e-12
 
     def __post_init__(self) -> None:
-        for name in ("gamma", "pdf_afact"):
+        for name in ("gamma", "pdf_afact", "pdf_log_step", "pdf_max_relative_contact_area",
+                     "pdf_min_relative_contact_area", "pdf_min_u1_m"):
             value = getattr(self, name)
             if isinstance(value, (bool, np.bool_)) or not math.isfinite(float(value)):
                 raise ValueError(f"{name} must be a finite number")
@@ -38,6 +43,10 @@ class Options:
             raise ValueError("gamma must lie in [0, 1]")
         if self.pdf_afact < 0:
             raise ValueError("pdf_afact must be nonnegative")
+        if self.pdf_log_step <= 0 or self.pdf_min_u1_m <= 0:
+            raise ValueError("pdf_log_step and pdf_min_u1_m must be positive")
+        if not 0 < self.pdf_min_relative_contact_area < self.pdf_max_relative_contact_area < 1:
+            raise ValueError("PDF area cutoffs must satisfy 0 < min < max < 1")
         object.__setattr__(self, "n_q", _integer(self.n_q, "n_q", 32))
         object.__setattr__(self, "n_gap", _integer(self.n_gap, "n_gap", 32))
         for name in ('critical_relative_contact_area', 'critical_area_tolerance'):
@@ -154,7 +163,9 @@ def problem_from_mapping(raw, base_directory=Path('.')) -> tuple[Problem, Option
         psd_path = Path(base_directory) / psd_path
     psd = read_psd(psd_path, psd_config.get("scale_c", 1.0))
     opts = raw["options"]
-    _keys(opts, {"gamma", "n_q", "pdf_afact", "n_gap", "critical_relative_contact_area", "critical_area_tolerance"}, "options")
+    _keys(opts, {"gamma", "n_q", "pdf_afact", "n_gap", "critical_relative_contact_area", "critical_area_tolerance",
+                  "pdf_log_step", "pdf_max_relative_contact_area",
+                  "pdf_min_relative_contact_area", "pdf_min_u1_m"}, "options")
     for field in ("gamma", "n_q", "pdf_afact"):
         if field not in opts:
             raise ValueError(f"Missing required options field: {field}")

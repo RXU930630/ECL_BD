@@ -59,11 +59,13 @@ def main():
             raise RuntimeError(f'Case not complete: {manifest_path}')
         case = manifest['case']
         e = case['effective_modulus_pa']
-        if e not in models:
-            models[e] = PerssonModel(psd, e, .4, n_q=256, pdf_afact=1.)
+        model_key = (e, case['delzeta'])
+        if model_key not in models:
+            models[model_key] = PerssonModel(psd, e, .4, n_q=256, pdf_afact=1.,
+                                               pdf_log_step=case['delzeta'])
             # Geometry-only quadrature depends on the PSD, not on E or p.
-            models[e]._quadrature_cache = geometry_cache
-        model = models[e]
+            models[model_key]._quadrature_cache = geometry_cache
+        model = models[model_key]
         directory = manifest_path.parent
         options = argparse.Namespace(effective_modulus_pa=e, gamma=.4, pdf_afact=1., scale_c=1.)
         provenance = compare.completed_reference(directory, model, options)
