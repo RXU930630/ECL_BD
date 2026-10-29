@@ -40,7 +40,7 @@ PARAMETERS = {
         'critical_relative_contact_area': 0.42,
         'critical_area_tolerance': 0.005,  # A/A0 的绝对容差，非相对百分数
     },
-    'output_directory': 'results/contact',  # 非空时拒绝覆盖；新工况请换目录
+    'output_directory': 'results/leakage',  # 非空时拒绝覆盖；新工况请换目录
     # 模块3：目前仅支持恒黏度、无滑移。黏度取原 Fortran 输入，不是实验标定。
     'interface': {
         'rheology': 'newtonian',
@@ -57,12 +57,44 @@ PARAMETERS = {
         # 缺失PDF概率按零导流处理，并给出该概率无限导流时的上界；不更改真实接触面积。
         'unresolved_flow_policy': 'zero_conductance_with_upper_bound',
     },
-    # 泄漏示例尺寸/压差仅为演示。RUN_LEAKAGE=True 后计算固定接触状态下的流量。
+    # 液体泄漏：选择几何、导流模型和局部卸载；尺寸与压差均为演示值。
     'leakage': {
-        'inlet_pressure_pa': 1e4,
+        'mode': 'spatial',
+        'transport': 'liquid',
+        # 只改下面这个字符串即可切换：prescribed_profile / oring_hertz / square_ring。
+        'geometry': 'oring_hertz',
+        'geometry_parameters': {
+            'oring_hertz': {
+                'cross_section_diameter_m': 3e-3, # 截面直径，不是密封环整体直径
+                'peak_pressure_pa': 1e5,
+            },
+            'square_ring': {
+                'length_m': 1e-3, # 沿流向的接触长度
+                'reference_contact_pressure_pa': 1e5,
+            },
+            'prescribed_profile': {
+                'pressure_file': 'examples/data/seal_pressure_profile.csv',
+                'file_format': 'csv', # 原 Fortran 压力文件改为 fortran，自动由MPa转Pa
+                'profile_sampling': 'preserve', # 保留真实坐标，不自动补零
+                'interpolation': 'pchip', # 或 linear
+            },
+            'gaussian': { # 固定压力比较等扩展模式
+                'length_m': 1e-3, 'peak_pressure_pa': 1e5, 'sigma_m': 2e-4,
+            },
+        },
+        # 路径相对于本文件；只读取所选几何的输入。
+        # FEM外侧载荷保持参考工况；界面参考压力未给时为0，不重复加入外侧载荷。
+        'seal_width_m': 1e-2, # 沿周向/垂直流向的总宽度；环形密封可给有效周长
+        'inlet_pressures_pa': [0.0, 1e4, 2e4, 5e4],
         'outlet_pressure_pa': 0.0,
-        'seal_length_m': 1e-3,
-        'seal_width_m': 1e-2,
+        'coupling': 'local_unloading', # fixed_contact 可用于无卸载比较
+        'conductance_model': 'effective_medium', # 或 critical_junction
+        'critical_alpha': 1.0,
+        'percolation_policy': 'legacy_spc_plateau', # 或 physical_zero；不人为保留导流
+        'spc': 0.8, # 原500兼容：在spc×渗流压力以上展平导流系数；会改变泄漏结果
+        'database_interpolation': 'log_pchip', # linear 可对照原程序线性查表
+        'compute_upper_bound': True,
+        'solver': {'nodes':201, 'output_points':1001, 'tolerance':1e-5, 'max_nodes':20001},
     },
     'mixed_friction': {
         'cylinder_radius_m': None,

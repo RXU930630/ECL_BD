@@ -21,7 +21,8 @@ class SourceEntryTests(unittest.TestCase):
         path = self.project / 'main.py'
         path.write_text(path.read_text(encoding='utf-8').replace('COMPUTE_GAP_PDF = True', 'COMPUTE_GAP_PDF = False')
                         .replace('SAVE_PLOTS = True', 'SAVE_PLOTS = False')
-                        .replace('COMPUTE_PRESSURE_FLOW = True', 'COMPUTE_PRESSURE_FLOW = False'), encoding='utf-8')
+                        .replace('COMPUTE_PRESSURE_FLOW = True', 'COMPUTE_PRESSURE_FLOW = False')
+                        .replace('RUN_LEAKAGE = True', 'RUN_LEAKAGE = False'), encoding='utf-8')
 
     def test_downloaded_source_runs_from_another_working_directory(self):
         driver = '''
@@ -38,7 +39,24 @@ except SystemExit as exc:
         result = subprocess.run([sys.executable, '-I', '-c', driver, str(self.project / 'main.py')],
                                 cwd=self.temp.name, capture_output=True, text=True, timeout=60)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.project / 'results' / 'contact' / 'contact_table.csv').is_file())
+        self.assertTrue((self.project / 'results' / 'leakage' / 'contact_table.csv').is_file())
+
+    def test_downloaded_spatial_leakage_entry_and_automatic_dependencies(self):
+        import json
+        entry=self.project/'main.py'
+        entry.write_text(entry.read_text(encoding='utf-8').replace('RUN_LEAKAGE = False','RUN_LEAKAGE = True'),encoding='utf-8')
+        config=self.project/'parameters.py'
+        config.write_text(config.read_text(encoding='utf-8').replace("'number_of_points': 110", "'number_of_points': 3")
+                          .replace("[0.0, 1e4, 2e4, 5e4]", "[0.0, 1e4]"),encoding='utf-8')
+        driver="import runpy,sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(p.parent)); runpy.run_path(str(p),run_name='__main__')"
+        result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
+                              capture_output=True,text=True,timeout=60)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        output=self.project/'results/leakage'
+        self.assertTrue((output/'leakage_cases.csv').is_file())
+        saved=json.loads((output/'diagnostics.json').read_text())
+        self.assertEqual(saved['workflow_status'],'complete')
+        self.assertEqual(saved['leakage']['case_count'],2)
 
     def test_missing_dependency_reports_install_command_without_traceback(self):
         driver = '''

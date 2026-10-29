@@ -50,6 +50,9 @@ class TestCore(unittest.TestCase):
         np.testing.assert_allclose(model.area(pressures), expected, rtol=1e-14)
         self.assertEqual(model.area(100, q=1.0), 1.0)
         self.assertEqual(model.area(0, q=1.0), 0.0)
+        for target in (.01,.42,.9):
+            self.assertAlmostEqual(model.area(model.pressure_for_relative_contact_area(target)),target,places=14)
+        with self.assertRaises(ValueError):model.pressure_for_relative_contact_area(1.)
         other = PerssonModel(spectrum, 2e6, 1.0, n_q=64)
         np.testing.assert_allclose(other.area(2*pressures), model.area(pressures))
 

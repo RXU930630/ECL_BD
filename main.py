@@ -10,8 +10,8 @@ from parameters import PARAMETERS
 
 # 当前已实现的共用 Persson 弹性接触基础。
 RUN_CONTACT = True
-# 泄漏为固定接触状态下的验证算例；混合摩擦仍预留。
-RUN_LEAKAGE = False
+# 泄漏支持压力曲线/Hertz/恒压模式及局部卸载；混合摩擦仍预留。
+RUN_LEAKAGE = True
 RUN_MIXED_FRICTION = False
 
 COMPUTE_PRESSURE_FLOW = True # 压力流动系数；泄漏开启时会自动计算

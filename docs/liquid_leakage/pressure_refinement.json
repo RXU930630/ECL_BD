@@ -1,0 +1,47 @@
+{
+  "scope": "Added logarithmic midpoint pressure nodes below the spc cap; full PSD flow recalculated at each new node.",
+  "cases": [
+    {
+      "geometry": "hertz",
+      "inlet_pressure_pa": 10000,
+      "coarse_pressure_nodes": 122,
+      "fine_pressure_nodes": 229,
+      "relative_rate_difference": -0.002166668995019383
+    },
+    {
+      "geometry": "hertz",
+      "inlet_pressure_pa": 50000,
+      "coarse_pressure_nodes": 122,
+      "fine_pressure_nodes": 229,
+      "relative_rate_difference": 0.00010273476824584904
+    },
+    {
+      "geometry": "square",
+      "inlet_pressure_pa": 10000,
+      "coarse_pressure_nodes": 122,
+      "fine_pressure_nodes": 229,
+      "relative_rate_difference": -0.0028580913640415817
+    },
+    {
+      "geometry": "square",
+      "inlet_pressure_pa": 50000,
+      "coarse_pressure_nodes": 122,
+      "fine_pressure_nodes": 229,
+      "relative_rate_difference": 0.000150998096350774
+    },
+    {
+      "geometry": "profile",
+      "inlet_pressure_pa": 34500,
+      "coarse_pressure_nodes": 122,
+      "fine_pressure_nodes": 229,
+      "relative_rate_difference": 2.5818374905117736e-05
+    },
+    {
+      "geometry": "profile",
+      "inlet_pressure_pa": 69000,
+      "coarse_pressure_nodes": 122,
+      "fine_pressure_nodes": 229,
+      "relative_rate_difference": 2.702111169394783e-05
+    }
+  ]
+}

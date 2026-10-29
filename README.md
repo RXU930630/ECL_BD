@@ -1,14 +1,28 @@
-# Persson 干接触计算
+# Persson 接触与液体泄漏计算
 
-项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度无滑移界面规律，以及模块4的各向同性压力流动部分。可运行固定接触状态下的泄漏算例。使用 Python；不需要 MATLAB 许可证。
+项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度无滑移界面规律，以及模块4的各向同性压力流动部分。已增加模块6参考压力几何、模块7压力边界和模块8—9稳态守恒求解，可计算空间分布及局部卸载后的液体泄漏。使用 Python；不需要 MATLAB 许可证。
 
-第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。宏观圆柱形变、剪切流动因子、混合摩擦、流体承载耦合、供油及空化尚未接入。
+第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。当前液体泄漏考虑局部流体压力卸载；非局部结构柔度、剪切流动因子、混合摩擦、有限供油、空化及ballistic气体尚未实现。
 
-## 新增：界面规律、压力流动与固定接触泄漏
+## 新增：三种几何的空间液体泄漏
 
-详见 [模块说明、算例与 Fortran 对照](docs/pressure_flow/report.md)。主程序默认同时生成压力流动表；将 `RUN_LEAKAGE=True` 可额外生成固定接触泄漏表。黏度统一放在 `parameters.py` 的 `interface` 分组，流动积分选项放在 `pressure_flow`，密封尺寸与压差放在 `leakage`。
+[使用说明、算例及 Fortran 对照](docs/liquid_leakage/report.md)。默认开启泄漏，运行 `python main.py`，结果在 `results/leakage`。只需在 `parameters.py` 中修改 `leakage.geometry` 字符串，参数在 `geometry_parameters` 同名分组：
 
-对原 `Sealing3` 的真实 Fortran 迭代循环进行了9组对照：同PDF求解器相对差小于3e-13，包含Python接触PDF的导流系数最大相对差0.0075%；各自用平均间隙归一化后的压力流动因子最大差约0.92%。这是各向同性直接PDF分支的验证，尚未复现完整iflag008的所有分支。已完成110压力点整流程和49项测试。
+```python
+'geometry': 'oring_hertz',       # O-ring：Hertz分布
+# 'geometry': 'square_ring',     # Square ring：恒压
+# 'geometry': 'prescribed_profile', # 读取单独压力文件
+```
+
+四个几何预设均已放在 parameters.py 中；只读取所选类型。也继续支持直接将 geometry 写成带 type 的字典，用于脚本调用。
+
+CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_pressure_pa` 列。原Fortran文件选择 `file_format='fortran'`：名称、参考外部流体压力MPa、随后两列x[m]与接触压力MPa，自动转换单位。默认保留真实坐标，不重新等距采样或补零。
+
+入口压力扫描、周向宽度、有效介质/临界通道、是否卸载以及spc处理都在同一 `leakage` 分组。当前 `legacy_spc_plateau` 明确保留原程序的有限导流平台；选择 `physical_zero` 则保留真正阻断。两者可能给出不同泄漏结论。FEM外侧载荷保持输入参考工况，程序只更新粗糙界面内压力及局部接触，未计算非局部FEM柔度。
+
+64项测试、默认111个数据库压力节点和4个入口工况完成；另完成6组原Fortran-500空间卸载核心、三级加密共18次实际参考运行。最细参考网格下泄漏率最大差约0.164%，原包FEM曲线两工况约0.003%和0.005%。这是共享参考压力与导流数据库的空间求解对照；整个原程序的所有物理分支没有因此完成验证。压力数据库加密另使示例泄漏率变化最高约0.286%。
+
+此前接触/流动核心的对照保存在 [压力流动报告](docs/pressure_flow/report.md)，与新泄漏求解共享同一基础。
 
 ## 与 Fortran 的干接触对照结果
 
@@ -22,12 +36,12 @@
 
 1. 在 **`main.py`** 中选择功能开关。
 2. 在 **`parameters.py`** 中修改所有工况、材料、PSD 路径与修正参数。
-3. 运行 `python main.py`（Windows 也可使用 `.venv\Scripts\python.exe main.py`，macOS/Linux 使用 `.venv/bin/python main.py`）。结果默认在 `results/contact`。
+3. 运行 `python main.py`（Windows 也可使用 `.venv\Scripts\python.exe main.py`，macOS/Linux 使用 `.venv/bin/python main.py`）。结果默认在 `results/leakage`。
 
 | main.py 开关 | 当前作用 |
 | --- | --- |
 | `RUN_CONTACT = True` | 计算共用 Persson 弹性接触数据库 |
-| `RUN_LEAKAGE = False` | 开启后计算均匀、固定接触状态下的泄漏，自动依赖接触和压力流动 |
+| `RUN_LEAKAGE = True` | 计算所选几何的空间泄漏与局部卸载，自动调用接触和流动基础 |
 | `RUN_MIXED_FRICTION = False` | 预留混合摩擦入口；求解器尚未实现 |
 | `COMPUTE_PRESSURE_FLOW = True` | 接触计算后计算压力流动系数；泄漏开启时自动计算 |
 | `COMPUTE_GAP_PDF = True` | 是否导出 Fortran method 1 间隙分布，不关闭流动所需的内部分布计算 |
@@ -47,7 +61,7 @@
 }
 ```
 
-本例自动生成 10 Pa 到 200000 Pa 的 110 个正压力点。下限固定为参考压力的 1e-4 倍；上限为参考压力乘以上限倍率。点近似对数分布，替换一个邻近节点以准确保留参考压力和总点数。`upper_factor` 至少为 1。仍可使用旧的 `pressures_pa` 列表，但不能与 `contact_pressure` 同时提供。110 点是默认分辨率，不代表对所有工况都已保证插值精度。
+本例基础配置生成 10 Pa 到 200000 Pa 的 110 个正压力点。泄漏开启时会插入必要的spc节点，并在参考压力曲线超出范围时自动扩充上限；实际范围与新增点数写入diagnostics.json。默认Hertz算例因此为111点。下限固定为参考压力的 1e-4 倍；上限为参考压力乘以上限倍率。点近似对数分布，替换一个邻近节点以准确保留参考压力和总点数。`upper_factor` 至少为 1。仍可使用旧的 `pressures_pa` 列表，但不能与 `contact_pressure` 同时提供。110 点是默认分辨率，不代表对所有工况都已保证插值精度。
 
 术语统一：**A 为 real contact area；A/A0 为 relative contact area**。没有输入名义面积 A0 时，不输出带面积单位的 A。`contact_table.csv` 第三列现命名为 `relative_contact_area`。
 
@@ -95,7 +109,7 @@ python3 -m venv .venv
 .venv/bin/python main.py
 ```
 
-计算后查看 `results/contact` 中的表格、诊断 JSON 和 PNG 图。示例参数及概率分布的限制见下文。
+计算后查看 `results/leakage` 中的表格、诊断 JSON 和 PNG 图。示例参数及概率分布的限制见下文。
 
 如果直接使用终端中的 `python`，应使用同一个解释器安装依赖：
 
@@ -141,7 +155,11 @@ Windows 下将 `.venv/bin/python` 换为 `.venv\Scripts\python.exe`。使用现�
 - `pressure_flow_table.csv`：几何导流系数K、液压导流系数、压力流动因子、PDF遗漏概率、上界和计算状态。
 - `flow_diagnostics.json`：界面模型、有效介质选项、积分收敛和泄漏参数记录。
 - `pressure_flow.png`：压力流动系数、正导流系数和泄漏（未开启泄漏时显示遗漏概率）。
-- `leakage_table.csv`：RUN_LEAKAGE开启时输出有符号的流量及遗漏PDF概率造成的流量范围。
+- `leakage_cases.csv`：每个入口压力工况的泄漏率、上下界、状态及收敛检查。
+- `leakage_profile_*.csv`：对应入口工况的坐标、流体压力、接触压力、平均间隙和relative contact area。
+- `leakage_transport_table.csv`：原始/实际使用的导流系数，显式显示spc平台处理。
+- `leakage_diagnostics.json`、`leakage.png`：泄漏模型/输入记录和图像；图中压力与间隙显示列表最后一个入口工况，并标注其入口压力。
+- `leakage_table.csv`：仅使用旧四参数固定接触接口时生成，继续兼容。
 
 结果文件夹可重复生成，已从 Git 跟踪中排除。
 
@@ -180,7 +198,7 @@ PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的�
 
 默认结果将遗漏PDF概率作为零导流相，并输出该概率无限导流时的上界；两者均保留原接触面积、不归一化PDF。上界不是统计置信区间。状态 `conducting` 为默认闭合可导通，`blocked` 为上下界均阻断，`unresolved_connectivity` 为默认值零但上界非零。极端情况下上界无穷，CSV上界留空并置 `upper_bound_unbounded=True`。
 
-泄漏为 `Q=(seal_width_m/seal_length_m)*sigma_eff*(p_in-p_out)`，输入压力不反馈到接触数据库。压差反向则Q反向，零压差则Q=0。尚未实现大间隙渐近切换、各向异性、边界膜、剪切流动因子、圆柱力学、空化及流体承载耦合，不能把此演示视为完整混合润滑求解器。
+新空间泄漏联立恒定通量与局部接触卸载；旧固定状态接口仍使用 `Q=(W/L)*sigma_eff*DeltaP`。压差反向则流动反向，零压差给Q=0。导流表仍是已验证的各向同性直接PDF分支；大间隙渐近切换、各向异性、边界膜、剪切流动因子和完整混合摩擦尚未实现。
 
 ## 概率与干接触验证限制
 

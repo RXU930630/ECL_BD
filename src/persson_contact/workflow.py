@@ -1,6 +1,7 @@
 """Dispatch contact, interface laws, pressure flow and fixed-state leakage."""
 import hashlib
 import json
+from dataclasses import replace
 from pathlib import Path
 
 from .applications import LeakageParameters
@@ -10,6 +11,7 @@ from .core import PerssonModel
 from .flow import FlowOptions
 from .flow_output import run_pressure_flow
 from .interface import make_interface
+from .leakage import prepare_leakage, required_pressures, make_transport, run_spatial_leakage
 
 
 def run_project(parameters, *, base_directory, run_contact=True, run_leakage=False,
@@ -42,7 +44,8 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
         if unknown:
             raise ValueError(f'Unknown pressure_flow parameters: {sorted(unknown)}')
         flow_options=FlowOptions(**raw_flow)
-    if run_leakage:
+    spatial=run_leakage and parameters.get('leakage',{}).get('mode')=='spatial'
+    if run_leakage and not spatial:
         raw=dict(parameters.get('leakage',{}))
         legacy=raw.pop('fluid_viscosity_pa_s',None)
         if legacy is not None:
@@ -52,6 +55,20 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
         leakage=LeakageParameters(**raw)
     problem, options = problem_from_mapping({key: value for key, value in parameters.items()
                                            if key in problem_keys}, base)
+    model=None;plan=None;database_extension=None
+    if flow_enabled:
+        model=PerssonModel(problem.psd,problem.effective_modulus_pa,options.gamma,
+            n_q=options.n_q,pdf_afact=options.pdf_afact,pdf_log_step=options.pdf_log_step,
+            pdf_max_relative_contact_area=options.pdf_max_relative_contact_area,
+            pdf_min_relative_contact_area=options.pdf_min_relative_contact_area,
+            pdf_min_u1_m=options.pdf_min_u1_m)
+    if spatial:
+        plan=prepare_leakage(parameters['leakage'],base,problem.effective_modulus_pa)
+        requested=problem.pressures_pa
+        expanded,plateau,percolation_pressure=required_pressures(plan,model,requested,options.critical_relative_contact_area)
+        database_extension={'requested_maximum_pa':float(max(requested)), 'actual_maximum_pa':float(max(expanded)),
+            'added_nodes':len(expanded)-len(requested),'percolation_pressure_pa':percolation_pressure,'plateau_pressure_pa':plateau}
+        problem=replace(problem,pressures_pa=expanded)
     name = parameters.get('output_directory')
     if not isinstance(name, str) or not name.strip():
         raise ValueError('请在 parameters.py 中给出 output_directory。')
@@ -71,26 +88,31 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
             'functions': {'contact': True,'pressure_flow':flow_enabled,
                           'leakage':run_leakage,'mixed_friction':False},
             'requested_contact_output':run_contact,
+            'leakage_database_extension':database_extension,
             'workflow_status':'contact_complete_flow_pending' if flow_enabled else 'complete',
         })
     if flow_enabled:
-        model=PerssonModel(problem.psd,problem.effective_modulus_pa,options.gamma,
-            n_q=options.n_q,pdf_afact=options.pdf_afact,pdf_log_step=options.pdf_log_step,
-            pdf_max_relative_contact_area=options.pdf_max_relative_contact_area,
-            pdf_min_relative_contact_area=options.pdf_min_relative_contact_area,
-            pdf_min_u1_m=options.pdf_min_u1_m)
         print('计算压力流动系数；PDF 导出开关不影响内部所需的分布计算。')
+        phase='flow'
         try:
             flow=run_pressure_flow(model,problem.pressures_pa,interface,flow_options,output,
                 percolation=options.critical_relative_contact_area,leakage=leakage,plot=save_plots)
+            if spatial:
+                phase='leakage'
+                summary['workflow_status']='flow_complete_leakage_pending'
+                (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+                table=make_transport(plan,model,interface,flow['results'],options.critical_relative_contact_area,options.critical_area_tolerance)
+                leakage_result=run_spatial_leakage(plan,table,output,plot=save_plots)
+                summary['leakage']={'file':'leakage_cases.csv','diagnostics_file':'leakage_diagnostics.json',
+                    'case_count':len(leakage_result['cases']),'scope':leakage_result['scope']}
         except Exception as exc:
-            summary['workflow_status']='flow_failed'
-            summary['flow_error']=str(exc)
+            summary['workflow_status']=phase+'_failed'
+            summary[phase+'_error']=str(exc)
             (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
             raise
         summary['workflow_status']='complete'
         summary['pressure_flow']={'file':'pressure_flow_table.csv','diagnostics_file':'flow_diagnostics.json',
-            'status_counts':flow['status_counts'],'leakage_file':'leakage_table.csv' if run_leakage else None}
+            'status_counts':flow['status_counts'],'leakage_file':('leakage_cases.csv' if spatial else 'leakage_table.csv') if run_leakage else None}
         (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
         print(f'压力流动结果已保存到 {output.resolve()}')
     return summary

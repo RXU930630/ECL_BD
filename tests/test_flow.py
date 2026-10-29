@@ -145,6 +145,7 @@ class RealSurfaceFlowTests(unittest.TestCase):
             params['psd']['path']=str(self.root/'examples/data/roughness_psd.dat')
             params.pop('contact_pressure');params['pressures_pa']=[1e4,1e5,2e5]
             params['output_directory']='flow'
+            params['leakage']={'seal_length_m':1e-3,'seal_width_m':1e-2,'inlet_pressure_pa':1e4,'outlet_pressure_pa':0.}
             summary=run_project(params,base_directory=directory,run_contact=False,run_leakage=True,
                                 compute_gap_pdf=False,compute_pressure_flow=False,save_plots=False)
             out=Path(directory)/'flow'

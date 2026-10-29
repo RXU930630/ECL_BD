@@ -1,0 +1,164 @@
+{
+  "scope": "Incompressible Newtonian liquid; one-dimensional local reference-traction unloading. No nonlocal FEM compliance, cavitation or ballistic gas.",
+  "geometry": {
+    "path": "/workspace/fortran_reference/original/AI.QQQ.ContactMechanics.11.09.2026.GNU/IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa",
+    "sha256": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+    "format": "fortran",
+    "sampling": "preserve",
+    "reference_external_fluid_pressure_pa": 69000.0,
+    "name": "Path_max_Pf_0.069MPa_v3",
+    "type": "prescribed_profile"
+  },
+  "reference_external_load_policy": "Held fixed for all interface-pressure cases; reference interface pressure is included only when explicitly supplied. Exterior FEM load is not added again.",
+  "transport_database": {
+    "pressure_min_pa": 10.0,
+    "pressure_max_pa": 540226.9210962337,
+    "interpolation": "log_pchip",
+    "percolation_policy": "legacy_spc_plateau",
+    "plateau_pressure_pa": 157871.20195131344,
+    "low_pressure_rule": "Matched logarithmic mean-gap and cubic-conductance continuation below database minimum.",
+    "open_region_rule": "pc<=0: zero resistance reservoir limit, gap undefined; no finite aperture or global deformation calculated."
+  },
+  "transport_file": "leakage_transport_table.csv",
+  "solver": {
+    "nodes": 201,
+    "output_points": 1001,
+    "tolerance": 1e-05,
+    "max_nodes": 20001
+  },
+  "parameters": {
+    "mode": "spatial",
+    "transport": "liquid",
+    "geometry": {
+      "type": "prescribed_profile",
+      "pressure_file": "/workspace/fortran_reference/original/AI.QQQ.ContactMechanics.11.09.2026.GNU/IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa",
+      "file_format": "fortran"
+    },
+    "geometry_parameters": {
+      "oring_hertz": {
+        "cross_section_diameter_m": 0.003,
+        "peak_pressure_pa": 100000.0
+      },
+      "square_ring": {
+        "length_m": 0.001,
+        "reference_contact_pressure_pa": 100000.0
+      },
+      "prescribed_profile": {
+        "pressure_file": "examples/data/seal_pressure_profile.csv",
+        "file_format": "csv",
+        "profile_sampling": "preserve",
+        "interpolation": "pchip"
+      },
+      "gaussian": {
+        "length_m": 0.001,
+        "peak_pressure_pa": 100000.0,
+        "sigma_m": 0.0002
+      }
+    },
+    "seal_width_m": 0.01,
+    "inlet_pressures_pa": [
+      0,
+      34500,
+      69000
+    ],
+    "outlet_pressure_pa": 0.0,
+    "coupling": "local_unloading",
+    "conductance_model": "effective_medium",
+    "critical_alpha": 1.0,
+    "percolation_policy": "legacy_spc_plateau",
+    "spc": 0.8,
+    "database_interpolation": "log_pchip",
+    "compute_upper_bound": true,
+    "solver": {
+      "nodes": 201,
+      "output_points": 1001,
+      "tolerance": 1e-05,
+      "max_nodes": 20001
+    }
+  },
+  "open_region_policy": "Reservoir (zero-resistance) limit for pc<=0; no finite gap reported. A full open-gap deformation model is required for physical aperture and fully open seals.",
+  "pdf_bounds_scope": "Same local approximation with missing-PDF conductivity bounds; not statistical confidence intervals.",
+  "cases": [
+    {
+      "case_index": 0,
+      "inlet_pressure_pa": 0.0,
+      "outlet_pressure_pa": 0.0,
+      "flow_rate_m3_s": 0.0,
+      "pdf_bound_min_flow_m3_s": 0.0,
+      "pdf_bound_max_flow_m3_s": 0.0,
+      "status": "zero_pressure_drop",
+      "geometry": "prescribed_profile",
+      "coupling": "local_unloading",
+      "conductance_model": "effective_medium",
+      "percolation_policy": "legacy_spc_plateau",
+      "seal_length_m": 0.001093432,
+      "seal_width_m": 0.01,
+      "solver_nodes": 201,
+      "maximum_equation_residual": 0.0,
+      "pressure_drop_relative_error": 0.0,
+      "face_flux_relative_spread": 0.0,
+      "flux_check_pressure_fraction": 1.0,
+      "grid_relative_flux_difference": 0.0,
+      "maximum_open_excess_pressure_pa": 0.0,
+      "open_limit_points": 0,
+      "low_pressure_continuation_points": 0,
+      "profile_file": "leakage_profile_000.csv",
+      "upper_bound_status": "zero_pressure_drop",
+      "upper_bound_error": null
+    },
+    {
+      "case_index": 1,
+      "inlet_pressure_pa": 34500.0,
+      "outlet_pressure_pa": 0.0,
+      "flow_rate_m3_s": 1.544745778961031e-20,
+      "pdf_bound_min_flow_m3_s": 1.544745778961031e-20,
+      "pdf_bound_max_flow_m3_s": 1.172637013994997e-19,
+      "status": "converged",
+      "geometry": "prescribed_profile",
+      "coupling": "local_unloading",
+      "conductance_model": "effective_medium",
+      "percolation_policy": "legacy_spc_plateau",
+      "seal_length_m": 0.001093432,
+      "seal_width_m": 0.01,
+      "solver_nodes": 1873,
+      "maximum_equation_residual": 1.0882128734907535e-16,
+      "pressure_drop_relative_error": 1.84297022087776e-14,
+      "face_flux_relative_spread": 6.306288824475814e-11,
+      "flux_check_pressure_fraction": 0.9999856832976401,
+      "grid_relative_flux_difference": 2.77108949855114e-05,
+      "maximum_open_excess_pressure_pa": 0.0,
+      "open_limit_points": 0,
+      "low_pressure_continuation_points": 0,
+      "profile_file": "leakage_profile_001.csv",
+      "upper_bound_status": "converged",
+      "upper_bound_error": null
+    },
+    {
+      "case_index": 2,
+      "inlet_pressure_pa": 69000.0,
+      "outlet_pressure_pa": 0.0,
+      "flow_rate_m3_s": 3.202897200536505e-20,
+      "pdf_bound_min_flow_m3_s": 3.202897200536505e-20,
+      "pdf_bound_max_flow_m3_s": 2.4314735892720005e-19,
+      "status": "converged",
+      "geometry": "prescribed_profile",
+      "coupling": "local_unloading",
+      "conductance_model": "effective_medium",
+      "percolation_policy": "legacy_spc_plateau",
+      "seal_length_m": 0.001093432,
+      "seal_width_m": 0.01,
+      "solver_nodes": 1873,
+      "maximum_equation_residual": 1.0233106685936728e-16,
+      "pressure_drop_relative_error": 1.7985612998927536e-14,
+      "face_flux_relative_spread": 9.125900035655832e-11,
+      "flux_check_pressure_fraction": 0.9999854438730094,
+      "grid_relative_flux_difference": 2.5436529284691896e-05,
+      "maximum_open_excess_pressure_pa": 0.0,
+      "open_limit_points": 0,
+      "low_pressure_continuation_points": 0,
+      "profile_file": "leakage_profile_002.csv",
+      "upper_bound_status": "converged",
+      "upper_bound_error": null
+    }
+  ]
+}

@@ -15,7 +15,7 @@ import numpy as np
 from numpy.polynomial.legendre import leggauss
 from scipy.integrate import cumulative_simpson, trapezoid
 from scipy.interpolate import PchipInterpolator
-from scipy.special import erf, exp1, ndtr
+from scipy.special import erf, erfinv, exp1, ndtr
 
 
 class Spectrum(Protocol):
@@ -217,6 +217,13 @@ class PerssonModel:
                   out=ratio, where=integral > 0)
         result = np.where(integral > 0, erf(ratio), np.where(p > 0, 1.0, 0.0))
         return float(result) if result.ndim == 0 else result
+
+    def pressure_for_relative_contact_area(self,relative_contact_area):
+        """Nominal pressure for a full-resolution standard elastic area ratio."""
+        target=float(relative_contact_area)
+        if not np.isfinite(target) or not 0<target<1:
+            raise ValueError('relative_contact_area must lie strictly between zero and one')
+        return float(erfinv(target)*self.effective_modulus_pa*np.sqrt(np.pi*self._total_i3))
 
     def _quadrature(self, lower):
         """Integrate in t=sqrt(log(q/lower)); cancels lower-end singularity."""

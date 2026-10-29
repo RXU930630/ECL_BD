@@ -1,0 +1,297 @@
+{
+  "original_source_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+  "kernel_fragments": {
+    "resistance_update_sha256": "f244b74c414f05239446ca21cded5b8377bcc03968fba888bd4fdfafb9aad00a",
+    "unloading_update_sha256": "f6f9620b5ccfe8c108e53a82a4c1997deee0f2886888928fd1c1dd38d3c4c9f6"
+  },
+  "harness_sha256": "7035f0511a1e2e2d3c4875039d86b885322afd331037ffb660f27f940361df07",
+  "binary_sha256": "221991ac28276ee8dc37a2cf1590e8ec21e895dd95d09249696971e208ace2ed",
+  "flow_data_sha256": "9a09d008b2c78d7278865ef867cc2640f1e74f7bcccba317df60e4ffa2c3a8c0",
+  "scope": "Original 500 resistance and unloading arithmetic; shared pressure/conductance data. No whole original-program or gas validation. Fortran continuation and endpoint discretization retained.",
+  "cases": [
+    {
+      "geometry": "square",
+      "inlet_pressure_pa": 10000.0,
+      "python_flow_rate_m3_s": 1.1726994009920734e-16,
+      "refinements": [
+        {
+          "nodes": 501,
+          "pressure_steps": 20000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.1735865361481142e-16,
+          "relative_rate_difference": -0.0007559179734223376,
+          "maximum_pressure_difference_pa": 36.627354908758726,
+          "run_seconds": 0.07551371699082665,
+          "input_sha256": "96918b53157d59cf9fed6ca19676fdb790bb2b25020316b56a3df1ef77c6d7a7",
+          "output_sha256": "3fca6254b06558b56ab9cc98b6d24c40644433831e0609e5be4f051b9c7ec8c3"
+        },
+        {
+          "nodes": 1001,
+          "pressure_steps": 40000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.1731442519492323e-16,
+          "relative_rate_difference": -0.0003791954454193114,
+          "maximum_pressure_difference_pa": 18.350231700792087,
+          "run_seconds": 0.23091939000005368,
+          "input_sha256": "0151373c1d9230412859069db1f0d97f7ec937b053edb0c217c619d224e195a6",
+          "output_sha256": "73b47ca9e45b359227b723f06dea0bfae1097f00fc90a3ac848c4da7e307bb83"
+        },
+        {
+          "nodes": 2001,
+          "pressure_steps": 80000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.1729221480374955e-16,
+          "relative_rate_difference": -0.0001899077835598728,
+          "maximum_pressure_difference_pa": 9.184281800298253,
+          "run_seconds": 0.9280628389969934,
+          "input_sha256": "0e710967ebb28526661cec725144afaebff35abe19b35fc1fd25e78995b9a41b",
+          "output_sha256": "07e29f8f528879d35b7380dc23a882174b8fbb175f4c00af0491131dccf23f57"
+        }
+      ],
+      "geometry_parameters": {
+        "type": "square_ring",
+        "length_m": 0.001,
+        "reference_contact_pressure_pa": 100000.0
+      },
+      "python_pressure_drop_error": 1.9573453968746435e-11,
+      "python_flux_spread": 2.198990989299432e-10
+    },
+    {
+      "geometry": "square",
+      "inlet_pressure_pa": 50000.0,
+      "python_flow_rate_m3_s": 5.216978369769944e-15,
+      "refinements": [
+        {
+          "nodes": 501,
+          "pressure_steps": 20000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 5.196014416609209e-15,
+          "relative_rate_difference": 0.004034621823550522,
+          "maximum_pressure_difference_pa": 1444.797063555447,
+          "run_seconds": 0.061618435007403605,
+          "input_sha256": "d29a9a8b2d72116207fa575fc42cb4ae52b2bc6102eaccc092e6c1ef405a87f0",
+          "output_sha256": "e79ddc3a97181d8081d1c0d4f9fbb1091ffaddf6a52f5c0f0c5cf98a6418c9ac"
+        },
+        {
+          "nodes": 1001,
+          "pressure_steps": 40000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 5.206593136390577e-15,
+          "relative_rate_difference": 0.001994631250669787,
+          "maximum_pressure_difference_pa": 758.5591679208068,
+          "run_seconds": 0.2342175529920496,
+          "input_sha256": "d6c5a33a5530de10584156a24c7176ec98b81166b81d22c8f534009ca4b331dd",
+          "output_sha256": "4b980e5b885994dffd4b052c3602791733d34a4159fa494c41b3ca2c0cc7f87a"
+        },
+        {
+          "nodes": 2001,
+          "pressure_steps": 80000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 5.211813779847209e-15,
+          "relative_rate_difference": 0.0009909390743592095,
+          "maximum_pressure_difference_pa": 379.6584846437513,
+          "run_seconds": 0.9237146930099698,
+          "input_sha256": "bb393d827c8e8c8338b5e231f3e47d080f54ab020498ded03fc0947cdce277d6",
+          "output_sha256": "2e4cf7e7c267f15b4c06406e146949a4ad8746a19466789c6f2e4abcca28b5cb"
+        }
+      ],
+      "geometry_parameters": {
+        "type": "square_ring",
+        "length_m": 0.001,
+        "reference_contact_pressure_pa": 100000.0
+      },
+      "python_pressure_drop_error": 1.397548743398147e-12,
+      "python_flux_spread": 1.3183454328213884e-11
+    },
+    {
+      "geometry": "hertz",
+      "inlet_pressure_pa": 10000.0,
+      "python_flow_rate_m3_s": 1.9061321008122353e-15,
+      "refinements": [
+        {
+          "nodes": 501,
+          "pressure_steps": 20000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.9030430219128107e-15,
+          "relative_rate_difference": 0.0016232312479829147,
+          "maximum_pressure_difference_pa": 26.26549346775846,
+          "run_seconds": 0.06253903699689545,
+          "input_sha256": "cd251ef1b6569b9ab6c0632c2dcea5965fb1305b2dd1254a5757515c8288e5c1",
+          "output_sha256": "36a28cb9afdfddc37b0508f9f3931a520be648f2af5cb347a8d8f754d3e129ff"
+        },
+        {
+          "nodes": 1001,
+          "pressure_steps": 40000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.9045850249938317e-15,
+          "relative_rate_difference": 0.0008122902354588124,
+          "maximum_pressure_difference_pa": 13.152778826278336,
+          "run_seconds": 0.24427329999161884,
+          "input_sha256": "630bd6e71ab3936ae002547e15c736bbe9721509bc75a1abe6e2d401b81e29ca",
+          "output_sha256": "31e7706791208b63513128ed5ac247cfc347f5f811d764e7f43f0cb28c592975"
+        },
+        {
+          "nodes": 2001,
+          "pressure_steps": 80000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.9053581226302975e-15,
+          "relative_rate_difference": 0.00040621139550878205,
+          "maximum_pressure_difference_pa": 6.5783816786006355,
+          "run_seconds": 0.9517811949917814,
+          "input_sha256": "c8053042d16124ff5d6358a5c55ebf456c98145e3a309d8ac3ca7cb3a58668ef",
+          "output_sha256": "f40ba7a5fff6d45e50f6f2510976f7d2604eea10016375658d997396601b9d72"
+        }
+      ],
+      "geometry_parameters": {
+        "type": "oring_hertz",
+        "cross_section_diameter_m": 0.003,
+        "peak_pressure_pa": 100000.0
+      },
+      "python_pressure_drop_error": 7.653877531765829e-12,
+      "python_flux_spread": 6.809552921538398e-11
+    },
+    {
+      "geometry": "hertz",
+      "inlet_pressure_pa": 50000.0,
+      "python_flow_rate_m3_s": 8.222876228470188e-14,
+      "refinements": [
+        {
+          "nodes": 501,
+          "pressure_steps": 20000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 8.169576392333923e-14,
+          "relative_rate_difference": 0.006524186025885115,
+          "maximum_pressure_difference_pa": 126.90903012257877,
+          "run_seconds": 0.0630156349943718,
+          "input_sha256": "723758ce7d43f9312aa3ce84d9de8aedd1d8b08a3fa32438aceb08cf1c486807",
+          "output_sha256": "bcc6562d8f5c066bb02cbf4fafef2d0eb10f05f180283c4d1881708a37f56a1c"
+        },
+        {
+          "nodes": 1001,
+          "pressure_steps": 40000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 8.196110431054126e-14,
+          "relative_rate_difference": 0.003265670666740883,
+          "maximum_pressure_difference_pa": 63.50066876178607,
+          "run_seconds": 0.24501567900006194,
+          "input_sha256": "ee53067646e90f05b863b8bec1f7a66492985a9d7ce8ab059a5d8c380400ee6e",
+          "output_sha256": "9976b7e9b8bd2450f813031763f3376bf0eb6412b627b7d1ee82305b47d3aa3d"
+        },
+        {
+          "nodes": 2001,
+          "pressure_steps": 80000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 8.209427318340583e-14,
+          "relative_rate_difference": 0.0016382275654671652,
+          "maximum_pressure_difference_pa": 31.786571496477336,
+          "run_seconds": 0.9479491240053903,
+          "input_sha256": "304f87ccf08219ebbaf93926f20c73b5da5b5c8a402acb5dc162e3fbcec6b054",
+          "output_sha256": "6cb2f2cf9bf2defcd617e7c41018adb568484c68617388b18b75426639df08dd"
+        }
+      ],
+      "geometry_parameters": {
+        "type": "oring_hertz",
+        "cross_section_diameter_m": 0.003,
+        "peak_pressure_pa": 100000.0
+      },
+      "python_pressure_drop_error": 6.190425949625933e-11,
+      "python_flux_spread": 7.937152046721963e-10
+    },
+    {
+      "geometry": "profile",
+      "inlet_pressure_pa": 34500.0,
+      "python_flow_rate_m3_s": 1.5476993160182377e-20,
+      "refinements": [
+        {
+          "nodes": 501,
+          "pressure_steps": 20000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.5479636532572466e-20,
+          "relative_rate_difference": -0.00017076449983355335,
+          "maximum_pressure_difference_pa": 55.185069730330724,
+          "run_seconds": 0.06426473199098837,
+          "input_sha256": "827edc78878ed91b43503c87550e71607850bda390103512d2530a7fd84a48cf",
+          "output_sha256": "3c4f473340a118d150fbe852336b3a3bf4e4fe35fca1b49bef85a42ecf960cb3"
+        },
+        {
+          "nodes": 1001,
+          "pressure_steps": 40000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.5475134765083013e-20,
+          "relative_rate_difference": 0.00012008910601268852,
+          "maximum_pressure_difference_pa": 27.62040312827594,
+          "run_seconds": 0.24907871399773285,
+          "input_sha256": "372bbfeb18f335a87d5d7aae09ef305e8087fa057903ea2ed0b8f76d80554645",
+          "output_sha256": "f04b03ea1040aed418b1f561909d34b1181a0cd053ff1bc034178b1f05dd9d26"
+        },
+        {
+          "nodes": 2001,
+          "pressure_steps": 80000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 1.5476527411510327e-20,
+          "relative_rate_difference": 3.0093874398673393e-05,
+          "maximum_pressure_difference_pa": 14.025478632989689,
+          "run_seconds": 0.9276772110024467,
+          "input_sha256": "1fe68aefb58a5062f6c3e511c16226b56aa1478a27199fb93bae63ca2de91932",
+          "output_sha256": "06c43d3a123edbb1d83592b774f412f3a1ecfc84a2bb467443033b250b929def"
+        }
+      ],
+      "geometry_parameters": {
+        "type": "prescribed_profile",
+        "pressure_file": "/workspace/fortran_reference/original/AI.QQQ.ContactMechanics.11.09.2026.GNU/IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa",
+        "file_format": "fortran",
+        "interpolation": "linear"
+      },
+      "python_pressure_drop_error": 1.7985612998927536e-14,
+      "python_flux_spread": 6.705280775065603e-11
+    },
+    {
+      "geometry": "profile",
+      "inlet_pressure_pa": 69000.0,
+      "python_flow_rate_m3_s": 3.2092295496759567e-20,
+      "refinements": [
+        {
+          "nodes": 501,
+          "pressure_steps": 20000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 3.209621591302752e-20,
+          "relative_rate_difference": -0.00012214574698077296,
+          "maximum_pressure_difference_pa": 117.68010025884723,
+          "run_seconds": 0.06749180900806095,
+          "input_sha256": "788b5d6307657e6debc98b4a6d3c71768e9f7bd82c761c09e9994e270a2ab86e",
+          "output_sha256": "3050058338f6dcd56fb9567a642d54af1d0aa3ef8d9e4bfef0a18fcce5f2edfa"
+        },
+        {
+          "nodes": 1001,
+          "pressure_steps": 40000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 3.208713145487274e-20,
+          "relative_rate_difference": 0.00016093809738304543,
+          "maximum_pressure_difference_pa": 60.442418215141515,
+          "run_seconds": 0.2487788879952859,
+          "input_sha256": "327160c80481f7d90f16a72b0129649d13e0a274415f2267ca8f37f2bf8a87ee",
+          "output_sha256": "37a99d70b09d576547f3d18a61bda42b292495a3bae09ecd4abc1f48b0449655"
+        },
+        {
+          "nodes": 2001,
+          "pressure_steps": 80000,
+          "feedback": 0.9,
+          "fortran_flow_rate_m3_s": 3.2090708761852117e-20,
+          "relative_rate_difference": 4.9445305780659865e-05,
+          "maximum_pressure_difference_pa": 30.92920224867703,
+          "run_seconds": 0.9616603960021166,
+          "input_sha256": "bb79f9ea51369cdd3ab9f7bf51d954f0e15495d5e6f96c91b2174bc716e4b2ea",
+          "output_sha256": "e50a589df7e182c69902aa62228f79ee8767ee275cb1daa0a9096e9821cc8e63"
+        }
+      ],
+      "geometry_parameters": {
+        "type": "prescribed_profile",
+        "pressure_file": "/workspace/fortran_reference/original/AI.QQQ.ContactMechanics.11.09.2026.GNU/IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa",
+        "file_format": "fortran",
+        "interpolation": "linear"
+      },
+      "python_pressure_drop_error": 1.425526363618701e-13,
+      "python_flux_spread": 1.0315193144094792e-10
+    }
+  ]
+}
