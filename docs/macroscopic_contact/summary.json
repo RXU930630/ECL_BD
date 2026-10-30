@@ -1,0 +1,143 @@
+{
+  "base_commit": "2c46b739e7dc9894830f4144d1c17b1604526a03",
+  "source_hashes": {
+    "src/persson_contact/__init__.py": "c90a64cd08a337adab676afb90d6f4fa7c506984cc6123eb2d0634f7694f4c95",
+    "src/persson_contact/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/persson_contact/applications.py": "3ee081c27cad4338cc4737004ade8c5d328248f2a7bdae452e7b221177f9efb0",
+    "src/persson_contact/ballistic.py": "90e4fef18e0a0ccfa4119d3a3d707601f243e518bdfd2c844122c6328d03f930",
+    "src/persson_contact/boundaries.py": "69fc54618845cb3bffc762c69cf4f359a28b909a0a5d17d1e8c514ebb2d609fc",
+    "src/persson_contact/cli.py": "33c59d6d818bf8952a1d07c2a3a5a1d04c797a8659636b9b5d8701c125e3b1bb",
+    "src/persson_contact/config.py": "d24b6b1c4a0fba1cbe5cd0fb3b4652d741a85d7b9958cfe7f4dd86dfe5b22728",
+    "src/persson_contact/core.py": "232d6a7374441d3027e876ceda811ab587719677b7f35fd90aa10b3a5438826a",
+    "src/persson_contact/dry_contact.py": "eaeafffde4f7e9aab95438628a74d427a3865ffe18d60b99337d3b68676f010c",
+    "src/persson_contact/flow.py": "b86561d41b4adf47ffa2199fc5e6422162c1853871555c0dbcccab4d0adea16a",
+    "src/persson_contact/flow_output.py": "2399d9eeccba511a1b7a1078968b2b1bb4fc86ba819e86d8b8886d81aa21b8a2",
+    "src/persson_contact/gas.py": "58f4da4f4fc3ea38e493f9ebec938bad1d3ecf773bbf9510f72f3a308541bbdd",
+    "src/persson_contact/interface.py": "4170558f5f404305adacf18652aca9cc58b9a3f03b7af6f7d915dd28d9f320e3",
+    "src/persson_contact/leakage.py": "02d98b32347f59dc3176f451755cb38177a76c64c4501675d4c9cab0db1a881b",
+    "src/persson_contact/macro_output.py": "2621f7cff57acae8fb87485b42c0223c566774d321567002fb2f9243dd0d1ce4",
+    "src/persson_contact/macroscopic.py": "1d832e1b24cf2d5c53f033d580e703c031b5d19415e55bb29e7b70b7786cc450",
+    "src/persson_contact/material.py": "cce4cc1ca348ae8de1d7370a3657f7cfeeaf403b6c0c62028568ad32e1931403",
+    "src/persson_contact/mechanics.py": "65e737518b9726a1fd1a13bc3860cb642b3860766fd9c64ace93c595b014ca73",
+    "src/persson_contact/moving_flow.py": "aa66bb5598eb3ab473bc9e51a36f6d820eecb98e413b6a073b93ead657b0e6aa",
+    "src/persson_contact/profiles.py": "2c4ef0d4a7208f5ee0a2e2336fd8da1904512926924d9b7c94fad5c23e623071",
+    "src/persson_contact/psd.py": "2074d0001af7deddb4cbcbb09a9f45429702ee933604016aa69b3295c0a7e366",
+    "src/persson_contact/shear.py": "c2be7c8df218a1550ffc50f1e4a87054be5c6d0d91eccab5c68ad0ad355c1e21",
+    "src/persson_contact/shear_output.py": "c4025269b513f7537fa6729288ed8c9b47559a58fe7fb8dd85ad1537b0cf76de",
+    "src/persson_contact/steady.py": "e802062c4377961ceab24a981fe331edf32ce82762a04ba058aea28095edf8c2",
+    "src/persson_contact/table.py": "aea65c6a4cc291c1cef273e3c0a0ef4fe9b3a93a4903633256727e6bf06396ef",
+    "src/persson_contact/transport_table.py": "ecf404412f52ea5be53ab2809b692b6f4a05d121432e9c264baa5d3d291493d9",
+    "src/persson_contact/workflow.py": "8850da5a91bee4584efe20898eb646c51541c37a719ec09d4c9245c5b4326b25"
+  },
+  "psd_sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+  "checks": [
+    {
+      "name": "log_kernel_against_independent_adaptive_integral",
+      "value": 4.218847493575595e-15,
+      "limit": 1e-10,
+      "passed": true
+    },
+    {
+      "name": "smooth_finest_pressure_L1",
+      "value": 0.00019430624167341183,
+      "limit": 0.001,
+      "passed": true
+    },
+    {
+      "name": "smooth_finest_gap_profile",
+      "value": 5.746871434450572e-05,
+      "limit": 0.002,
+      "passed": true
+    },
+    {
+      "name": "smooth_load_and_complementarity",
+      "value": 5.534947567640651e-15,
+      "limit": 1e-08,
+      "passed": true
+    },
+    {
+      "name": "rough_load_and_geometry",
+      "value": 1.7209429283387318e-12,
+      "limit": 1e-08,
+      "passed": true
+    },
+    {
+      "name": "rough_default_peak_vs_finest",
+      "value": 1.2600973218646061e-05,
+      "limit": 0.001,
+      "passed": true
+    },
+    {
+      "name": "rough_default_min_gap_vs_finest",
+      "value": 2.1821898108620452e-05,
+      "limit": 0.001,
+      "passed": true
+    },
+    {
+      "name": "rough_energy_law_vs_tabulation",
+      "value": 9.346382481616008e-06,
+      "limit": 0.0001,
+      "passed": true
+    },
+    {
+      "name": "domain_min_gap_variation",
+      "value": 1.3691695843753848e-07,
+      "limit": 0.001,
+      "passed": true
+    },
+    {
+      "name": "default_table_peak_vs_finer",
+      "value": 9.443806847642122e-10,
+      "limit": 0.0001,
+      "passed": true
+    },
+    {
+      "name": "reference_length_pressure_invariance",
+      "value": 2.4097206195757336e-12,
+      "limit": 1e-08,
+      "passed": true
+    },
+    {
+      "name": "reference_length_gap_invariance",
+      "value": 3.005855910467537e-12,
+      "limit": 1e-08,
+      "passed": true
+    },
+    {
+      "name": "load_modulus_scaling_pressure",
+      "value": 2.489904775206952e-14,
+      "limit": 1e-08,
+      "passed": true
+    },
+    {
+      "name": "load_modulus_scaling_gap",
+      "value": 9.612250644311208e-15,
+      "limit": 1e-08,
+      "passed": true
+    },
+    {
+      "name": "roughness_reduction_monotonically_approaches_smooth",
+      "value": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "roughness_tenth_amplitude_pressure_difference",
+      "value": 0.003197888108265823,
+      "limit": 0.005,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "gauge_check": {
+    "reference_ratio": 2.0,
+    "maximum_pressure_change_over_peak": 2.4097206195757336e-12,
+    "maximum_gap_change_over_hrms": 3.005855910467537e-12,
+    "offset_change_m": -1.103178000763129e-05,
+    "analytic_offset_change_m": -1.1031780007632579e-05
+  },
+  "hertz_half_width_m": 0.0003989422804014327,
+  "hertz_peak_pressure_pa": 159576.91216057306,
+  "elapsed_seconds": 3.226844541000901,
+  "scope": "Independent dry macro elasticity and module-2+6 validation only. No fluid pressure, friction, finite-thickness or whole-ring structural model."
+}

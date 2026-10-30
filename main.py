@@ -10,6 +10,8 @@ from parameters import PARAMETERS
 
 # 当前已实现的共用 Persson 弹性接触基础。
 RUN_CONTACT = True
+# 模块6及2+6：独立宏观干接触；开启时关闭泄漏、压力/剪切流动和混合摩擦开关
+RUN_MACRO_CONTACT = False
 # 在参数文件中用fluid='liquid'/'gas'选择液体或ballistic气体。
 RUN_LEAKAGE = True
 RUN_MIXED_FRICTION = False
@@ -31,7 +33,8 @@ def main():
                     run_mixed_friction=RUN_MIXED_FRICTION,
                     compute_gap_pdf=COMPUTE_GAP_PDF, save_plots=SAVE_PLOTS,
                     compute_pressure_flow=COMPUTE_PRESSURE_FLOW,
-                    compute_shear_flow=COMPUTE_SHEAR_FLOW)
+                    compute_shear_flow=COMPUTE_SHEAR_FLOW,
+                    run_macro_contact=RUN_MACRO_CONTACT)
     except ModuleNotFoundError as exc:
         if exc.name not in {'numpy', 'scipy', 'matplotlib'}:
             raise

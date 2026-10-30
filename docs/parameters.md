@@ -56,3 +56,13 @@ main.py中的COMPUTE_SHEAR_FLOW默认关闭。打开后，在CASE的shear_flow�
 NUMERICS.options中的pdf_scale_method选择尺度积分：conservative使用准确谱积分和面积差权重，当前日常参数推荐这一项；fortran保留历史右矩形积分供复算。旧JSON或直接API省略该字段时仍使用fortran。
 
 pdf_log_step控制PDF尺度步长，n_q控制能量积分，pressure_flow.gap_points控制导流分箱，三者需分别检查收敛。导出的n_gap只控制显示网格。当前导流quadrature_relative_difference仅代表分箱收敛，不能证明PDF尺度或模型误差已消失。新工况可用步长0.01、0.005比较；近渗流还需检查遗漏概率及上下界。详细方法和数据见[独立数值审计](numerical_convergence/README.md)。
+
+## 宏观变形与粗糙干接触
+
+main.py开启RUN_MACRO_CONTACT，关闭RUN_LEAKAGE、RUN_MIXED_FRICTION、COMPUTE_PRESSURE_FLOW和COMPUTE_SHEAR_FLOW。CASE.macro_contact独立于leakage.geometry，不把给定Hertz压力当成新的弹性响应。
+
+当前geometry=cylinder_plane，radius_m是接触截面的曲率半径；elastic_model=half_space_plane_strain是一维线接触半空间。contact_model=smooth求光滑接触，persson求模块2＋6耦合。line_load_n_m使用N/m，domain_half_width_m设置对称计算域；需检查域宽收敛。body_representation=upper_elastic_lower_rigid把材料视为上部弹性体、下部刚性；relative_only只表示合并E*的相对变形，图中上轮廓为等效轮廓。
+
+NUMERICS.macro_contact.solver设置单元数、容差与边界压力检查；contact_table设置独立的Persson查表范围及点数。高压端不足报错，远场超过表域用有显式载荷上界的零尾压近似，不设置正压力地板。reference_length_m只选择二维绝对位移参考，改变它时应保持压力和平均间隙不变。
+
+建议新输出目录为results/macro_contact。结果包括形变后的平均几何、真实比例图、接触区放大图和力学残差。详细说明与验证见[宏观模块报告](macroscopic_contact/README.md)。

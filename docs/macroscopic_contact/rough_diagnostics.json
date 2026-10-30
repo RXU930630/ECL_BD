@@ -1,0 +1,206 @@
+{
+  "workflow_status": "complete",
+  "scope": "Dry 1D plane-strain cylinder/plane mean-interface contact. No fluid/thermal/friction coupling.",
+  "contact_model": "persson",
+  "elastic_model": "half_space_plane_strain",
+  "body_representation": "upper_elastic_lower_rigid",
+  "representation_note": "Upper elastic parabolic cylinder against rigid plane; E* is the one-body plane-strain modulus.",
+  "effective_modulus_pa": 4000000.0,
+  "radius_m": 0.005,
+  "target_line_load_n_m": 100.0,
+  "actual_line_load_n_m": 100.00000000004309,
+  "load_relative_error": 4.3076653355456074e-13,
+  "geometry_relative_residual": 1.437809071994037e-12,
+  "pressure_min_pa": 2.6903397499088248e-45,
+  "pressure_max_pa": 157797.89785089617,
+  "minimum_mean_gap_m": 1.4034813664558458e-07,
+  "rigid_offset_m": -4.71352670706702e-05,
+  "edge_pressure_ratio": 1.7049274968484922e-50,
+  "iterations": 6,
+  "solver": {
+    "cells": 257,
+    "relative_tolerance": 1e-09,
+    "max_iterations": 80,
+    "edge_pressure_ratio_tolerance": 0.0001
+  },
+  "domain_m": [
+    -0.0012,
+    0.0012
+  ],
+  "reference_length_m": 0.0024,
+  "displacement_reference": "u=2/(pi E*) integral p(s) log(Lref/|x-s|) ds. Absolute u and h0 depend on Lref; pressure and mean gap do not.",
+  "geometry_convention": "Unloaded upper z=g=x^2/(2R); rigidly positioned z=h0+g; deformed upper z=h0+g+u=h. Lower z=0. Positive u opens gap.",
+  "microscopic_roughness": "Curves are mean surfaces, not a PSD phase reconstruction. Persson mean gap equals the macro gap; it is not added twice.",
+  "hertz_reference": {
+    "half_width_m": 0.0003989422804014327,
+    "peak_pressure_pa": 159576.91216057306
+  },
+  "hertz_smooth_pressure_L1_relative_error": null,
+  "hertz_smooth_gap_max_error_over_scale": null,
+  "contact_table_range_pa": [
+    1e-100,
+    2000000.0
+  ],
+  "contact_table_points": 1201,
+  "contact_table_max_gap_error_m": 7.997601427377936e-12,
+  "contact_table_max_gap_error_over_hrms": 5.672370074450159e-06,
+  "far_tail_zero_pressure_cells": 0,
+  "far_tail_fixed_gap_load_bound_n_m": 2.3999999999999997e-103,
+  "far_tail_policy": "Beyond the maximum table gap use zero pressure; omitted positive pressure is at most p_min per cell. The reported bound is at fixed gaps, not a global coupled error bound.",
+  "assumptions": [
+    "Linear elastic half-space and parabolic local cylinder geometry; not finite thickness or whole-O-ring FEM.",
+    "PSD describes residual roughness about the prescribed mean profile; spectral/macro scale separation is a model input.",
+    "One-dimensional line load in N/m, not axisymmetric ball contact or total ring load.",
+    "Solver residual, table error, spatial/domain convergence and constitutive-model uncertainty are different checks."
+  ],
+  "psd_sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+  "parameters_snapshot": {
+    "description": "Hertz example.",
+    "material": {
+      "model": "elastic",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5
+    },
+    "psd": {
+      "path": "/workspace/ECL_BD/examples/data/roughness_psd.dat",
+      "scale_c": 1.0,
+      "tail_is_extrapolated": true
+    },
+    "macro_contact": {
+      "geometry": "cylinder_plane",
+      "geometry_parameters": {
+        "cylinder_plane": {
+          "radius_m": 0.005
+        }
+      },
+      "elastic_model": "half_space_plane_strain",
+      "body_representation": "upper_elastic_lower_rigid",
+      "contact_model": "persson",
+      "line_load_n_m": 100.0,
+      "domain_half_width_m": 0.0012,
+      "reference_length_m": null,
+      "solver": {
+        "cells": 257,
+        "relative_tolerance": 1e-09,
+        "max_iterations": 80,
+        "edge_pressure_ratio_tolerance": 0.0001
+      },
+      "contact_table": {
+        "minimum_pressure_pa": 1e-100,
+        "maximum_pressure_pa": 2000000.0,
+        "points": 1201
+      }
+    },
+    "leakage": {
+      "mode": "spatial",
+      "fluid": "liquid",
+      "compute_equivalent_gas": true,
+      "geometry": "oring_hertz",
+      "geometry_parameters": {
+        "oring_hertz": {
+          "cross_section_diameter_m": 0.003,
+          "peak_pressure_pa": 100000.0
+        },
+        "square_ring": {
+          "length_m": 0.001,
+          "reference_contact_pressure_pa": 100000.0
+        },
+        "prescribed_profile": {
+          "pressure_file": "examples/data/seal_pressure_profile.csv",
+          "file_format": "csv",
+          "interpolation": "pchip"
+        },
+        "gaussian": {
+          "length_m": 0.001,
+          "peak_pressure_pa": 100000.0,
+          "sigma_m": 0.0002
+        }
+      },
+      "seal_width_m": 0.01,
+      "inlet_pressures_pa": [
+        0.0,
+        10000.0,
+        20000.0,
+        50000.0
+      ],
+      "outlet_pressure_pa": 0.0,
+      "coupling": "local_unloading",
+      "conductance_model": "effective_medium",
+      "percolation_policy": "legacy_spc_plateau",
+      "spc": 0.8,
+      "gas": {
+        "temperature_c": 25.0,
+        "mean_molecular_speed_m_s": 471.0,
+        "viscosity_pa_s": 1.82e-05,
+        "ambient_pressure_pa": 100000.0,
+        "reference_pressure_pa": 100000.0
+      },
+      "database_interpolation": "log_pchip",
+      "compute_upper_bound": true,
+      "solver": {
+        "nodes": 201,
+        "output_points": 1001,
+        "tolerance": 1e-05,
+        "max_nodes": 20001
+      }
+    },
+    "shear_flow": {
+      "model": "persson_interpolation",
+      "rough_surface": "lower",
+      "lower_wall_velocity_m_s": 0.0,
+      "upper_wall_velocity_m_s": 0.01,
+      "pressure_gradient_pa_m": 0.0,
+      "pressure_floor_pa": 0.0
+    },
+    "interface": {
+      "rheology": "newtonian",
+      "rheology_parameters": {
+        "newtonian": {
+          "viscosity_pa_s": 0.1
+        }
+      },
+      "wall_slip": "no_slip",
+      "slip_parameters": {
+        "no_slip": {},
+        "navier": {
+          "lower_slip_length_m": 1e-08,
+          "upper_slip_length_m": 1e-08
+        }
+      }
+    },
+    "contact_pressure": {
+      "reference_pa": 100000.0,
+      "upper_factor": 2.0,
+      "number_of_points": 110
+    },
+    "options": {
+      "gamma": 0.4,
+      "pdf_afact": 1.0,
+      "critical_relative_contact_area": 0.42,
+      "critical_area_tolerance": 0.005,
+      "n_q": 256,
+      "pdf_scale_method": "conservative",
+      "pdf_log_step": 0.01,
+      "pdf_max_relative_contact_area": 0.999,
+      "pdf_min_relative_contact_area": 0.0001,
+      "pdf_min_u1_m": 1e-12,
+      "n_gap": 600
+    },
+    "pressure_flow": {
+      "closure": "fortran_isotropic_bruggeman",
+      "gap_points": 2049,
+      "quadrature_relative_tolerance": 0.002,
+      "max_gap_refinements": 2,
+      "unresolved_flow_policy": "zero_conductance_with_upper_bound"
+    },
+    "output_directory": "/workspace/work/macro_module/published_validation/persson"
+  },
+  "outputs": [
+    "macro_geometry.csv",
+    "macro_diagnostics.json",
+    "macro_contact_table.csv",
+    "macro_geometry.png",
+    "macro_geometry_true_scale.png",
+    "macro_response.png"
+  ]
+}

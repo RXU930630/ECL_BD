@@ -17,6 +17,23 @@ CASE = {
         'scale_c': 1.0,
         'tail_is_extrapolated': True,
     },
+    # 宏观干接触：main.py开启RUN_MACRO_CONTACT；与当前泄漏任务分开运行
+    'macro_contact': {
+        'geometry': 'cylinder_plane',
+        'geometry_parameters': {
+            'cylinder_plane': {
+                'radius_m': 5e-3,     # 接触截面曲率半径；不是塞子的整体周向半径
+            },
+        },
+        'elastic_model': 'half_space_plane_strain', # 一维线接触、平面应变、线弹性半空间
+        # upper_elastic_lower_rigid：上部弹性圆柱/下部刚性平面，material为上部材料
+        # relative_only：material给合并E*，只确定相对变形；显示的上轮廓为等效轮廓
+        'body_representation': 'upper_elastic_lower_rigid',
+        'contact_model': 'persson',    # persson：模块2+6粗糙干接触；smooth：光滑Hertz检验
+        'line_load_n_m': 100.,         # N/m线载荷；总力需除以横向宽度，不能直接填N
+        'domain_half_width_m': 1.2e-3, # 计算域[-L,L]；检查边界压力和域加宽收敛
+        'reference_length_m': None,   # 2D位移参考长度；None取全域长度，只影响绝对位移与刚体偏移
+    },
     'leakage': {
         'mode': 'spatial',
         # 流体：liquid为液体；gas为独立ballistic气体
@@ -114,6 +131,19 @@ CASE = {
 
 # 二、模型与数值设置：控制接触模型、积分精度与空间求解
 NUMERICS = {
+    'macro_contact': {
+        'solver': {
+            'cells': 257,             # 均匀压力单元数；通常129/257/513检查收敛
+            'relative_tolerance': 1e-9,
+            'max_iterations': 80,
+            'edge_pressure_ratio_tolerance': 1e-4, # 边界压力/峰值过大时报错，需增大计算域
+        },
+        'contact_table': {            # 仅persson读取；远场极小压力保留正值，不加压力地板
+            'minimum_pressure_pa': 1e-100,
+            'maximum_pressure_pa': 2e6, # 必须覆盖局部峰值；范围不足明确报错，不外推
+            'points': 1201,           # 独立于泄漏数据库；远场尾部与工作区分配不同密度
+        },
+    },
     'contact_pressure': {             # 接触数据库，不是流体入口压力
         'reference_pa': 1.0e5,         # 参考接触压力，Pa；扫描包含该点
         'upper_factor': 2.0,           # 扫描上限/参考压力；必要时为泄漏自动扩展
@@ -161,5 +191,6 @@ PARAMETERS = {
     **CASE,
     **NUMERICS,
     'leakage': {**CASE['leakage'], **NUMERICS['leakage']},
+    'macro_contact': {**CASE['macro_contact'], **NUMERICS['macro_contact']},
     'output_directory': OUTPUT_DIRECTORY,
 }

@@ -1,0 +1,11 @@
+{
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python -m unittest discover -s tests -v",
+  "tests": 124,
+  "elapsed_seconds": 108.127,
+  "result": "OK",
+  "log_sha256": "83001f2a38cf7dcb0637c16317f84385487dfea1bf81f5d6a21e4c9ab78d706f",
+  "independent_macro_checks": 16,
+  "downloaded_main_entry_verified": true,
+  "historical_Fortran_fixtures_changed": false,
+  "scope": "Linear elastic plane-strain half-space and dry rough contact, not full mixed lubrication"
+}

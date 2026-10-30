@@ -76,6 +76,25 @@ runpy.run_path(str(entry), run_name='__main__')
         self.assertIn('pip install -r requirements.txt', result.stdout)
         self.assertNotIn('Traceback', result.stderr)
 
+    def test_downloaded_macro_contact_entry(self):
+        import json
+        entry=self.project/'main.py'
+        entry.write_text(entry.read_text().replace('RUN_MACRO_CONTACT = False','RUN_MACRO_CONTACT = True'))
+        config=self.project/'parameters.py'
+        config.write_text(config.read_text().replace("'cells': 257","'cells': 65")
+            .replace("'points': 1201","'points': 601")
+            .replace("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/macro'"))
+        driver="import runpy,sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(p.parent)); runpy.run_path(str(p),run_name='__main__')"
+        result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
+                              capture_output=True,text=True,timeout=60)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        out=self.project/'results/macro'
+        self.assertTrue((out/'macro_geometry.csv').is_file())
+        data=json.loads((out/'macro_diagnostics.json').read_text())
+        self.assertEqual(data['workflow_status'],'complete')
+        self.assertLess(data['load_relative_error'],1e-8)
+        self.assertFalse((out/'leakage_cases.csv').exists())
+
     def test_downloaded_shear_switch_and_parameter_presets(self):
         import json
         entry=self.project/'main.py'
