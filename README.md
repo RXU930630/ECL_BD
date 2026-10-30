@@ -1,20 +1,23 @@
 # Persson 接触与液体泄漏计算
 
-项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度无滑移界面规律，以及模块4的各向同性压力流动部分。已增加模块6参考压力几何、模块7压力边界和模块8—9稳态守恒求解，可计算空间分布及局部卸载后的液体泄漏。使用 Python；不需要 MATLAB 许可证。
+项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度牛顿流体与无滑移/Navier滑移界面规律，以及模块4的各向同性压力流动部分。已增加模块6参考压力几何、模块7压力边界和模块8—9稳态守恒求解，可计算空间分布及局部卸载后的液体泄漏。使用 Python；不需要 MATLAB 许可证。
 
-第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。当前液体泄漏考虑局部流体压力卸载；非局部结构柔度、剪切流动因子、混合摩擦、有限供油、空化及ballistic气体尚未实现。
+第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。液体与ballistic泄漏考虑局部流体压力卸载；非局部结构柔度、剪切流动因子、混合摩擦、有限供油及空化尚未实现。
+
+**流体选择：** `parameters.py` 的 `CASE['leakage']['fluid']='liquid'` 使用液体模型，并用 `compute_equivalent_gas=True/False` 控制附加diffusive/ballistic估算；改为 `'gas'` 则独立计算K2和ballistic气体压力。参数按工况、模型与数值设置、输出目录整理，开发复算配置已移入测试数据。详见[参数说明](docs/parameters.md)、[气体单位与输出](docs/gas_leakage.md)及[气体验证记录](docs/gas_validation/report.md)。
+
+**牛顿流体与滑移：** 在CASE的interface中选择rheology与wall_slip，各自参数列在rheology_parameters和slip_parameters。支持两壁独立Navier滑移长度，已接入压力导流与液体泄漏；非零滑移时关闭附加气体估算。局部流量、壁面剪切应力及未来压温接口见[模块3说明](docs/module3_interface.md)。
 
 ## 新增：三种几何的空间液体泄漏
 
-[使用说明、算例及 Fortran 对照](docs/liquid_leakage/report.md)。默认开启泄漏，运行 `python main.py`，结果在 `results/leakage`。只需在 `parameters.py` 中修改 `leakage.geometry` 字符串，参数在 `geometry_parameters` 同名分组：
+[使用说明、算例及 Fortran 对照](docs/liquid_leakage/report.md)。默认开启泄漏，运行 `python main.py`，结果在 `results/leakage`。在 `CASE['leakage']['geometry']` 中选择几何，所有备选参数均列在geometry_parameters中：
 
 ```python
-'geometry': 'oring_hertz',       # O-ring：Hertz分布
-# 'geometry': 'square_ring',     # Square ring：恒压
-# 'geometry': 'prescribed_profile', # 读取单独压力文件
+'geometry': 'oring_hertz',
+# 可选：oring_hertz / square_ring / prescribed_profile / gaussian
 ```
 
-四个几何预设均已放在 parameters.py 中；只读取所选类型。也继续支持直接将 geometry 写成带 type 的字典，用于脚本调用。
+方环及导入FEM曲线的替换示例见[参数说明](docs/parameters.md)。旧的geometry字符串与geometry_parameters写法继续兼容。
 
 CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_pressure_pa` 列。原Fortran文件选择 `file_format='fortran'`：名称、参考外部流体压力MPa、随后两列x[m]与接触压力MPa，自动转换单位。默认保留真实坐标，不重新等距采样或补零。
 
@@ -35,7 +38,7 @@ CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_press
 安装下文的依赖后即可运行，无需先安装项目本身。请保留完整目录，尤其是 `src/persson_contact`，不要只复制 `main.py`：
 
 1. 在 **`main.py`** 中选择功能开关。
-2. 在 **`parameters.py`** 中修改所有工况、材料、PSD 路径与修正参数。
+2. 在 **`parameters.py`** 的CASE中修改工况；NUMERICS中设置模型修正和数值精度。
 3. 运行 `python main.py`（Windows 也可使用 `.venv\Scripts\python.exe main.py`，macOS/Linux 使用 `.venv/bin/python main.py`）。结果默认在 `results/leakage`。
 
 | main.py 开关 | 当前作用 |
@@ -47,9 +50,9 @@ CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_press
 | `COMPUTE_GAP_PDF = True` | 是否导出 Fortran method 1 间隙分布，不关闭流动所需的内部分布计算 |
 | `SAVE_PLOTS = True` | 是否生成 PNG 图 |
 
-混合摩擦、黏弹性、复杂流变和壁面滑移尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。三个 RUN 开关全关时不执行计算。要只运行原干接触部分，保持 RUN_CONTACT=True，并关闭 COMPUTE_PRESSURE_FLOW 和两个应用开关。
+混合摩擦、黏弹性和非牛顿流变尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。三个 RUN 开关全关时不执行计算。要只运行原干接触部分，保持 RUN_CONTACT=True，并关闭 COMPUTE_PRESSURE_FLOW 和两个应用开关。
 
-`parameters.py` 中提供粗糙度、材料、名义干接触压力序列、积分及修正参数、输出目录。`interface` 的黏度取原Fortran输入0.1 Pa·s；`leakage` 提供示例尺寸和压差，均不代表实验标定；`mixed_friction` 仍预留。路径始终相对于项目中的 `parameters.py`，不随启动终端的目录改变。为避免把新工况和旧结果混在一起，非空输出目录会被拒绝，请修改 `output_directory` 后重新运行。
+默认Hertz示例的液体黏度为0.1 Pa·s，可在CASE的interface.rheology_parameters.newtonian分组修改。未实现模块的占位参数和开发复算配置已移出日常配置。路径始终相对于项目目录，不随启动终端的目录改变。非空输出目录会被拒绝，请修改OUTPUT_DIRECTORY后重新运行。
 
 压力扫描现在只需设置参考压力：
 
@@ -192,7 +195,7 @@ PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的�
 
 ## 流动模块的范围与缺口处理
 
-界面局部规律为 `sigma_local=s^3/(12 eta)`，以及局部Poiseuille+Couette通量。均质化只实现压力驱动部分；局部Couette规律不等于已实现剪切流动因子。
+无滑移时局部规律为 `sigma_local=s^3/(12 eta)`；Navier滑移使用包含两侧滑移长度的完整导流律，并提供局部Poiseuille+Couette通量和壁面剪切应力。均质化只实现压力驱动部分；局部Couette规律不等于已实现剪切流动因子。
 
 压力流动沿用原Sealing3的各向同性Bruggeman闭合，渗流相对面积共用 `options.critical_relative_contact_area`。`pressure_flow.gap_points` 为内部分布积分网格，独立于 `options.n_gap` 的导出网格；采用CDF分箱和加密比较，未收敛时明确报错。
 

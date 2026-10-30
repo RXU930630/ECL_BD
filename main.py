@@ -10,7 +10,7 @@ from parameters import PARAMETERS
 
 # 当前已实现的共用 Persson 弹性接触基础。
 RUN_CONTACT = True
-# 泄漏支持压力曲线/Hertz/恒压模式及局部卸载；混合摩擦仍预留。
+# 在参数文件中用fluid='liquid'/'gas'选择液体或ballistic气体。
 RUN_LEAKAGE = True
 RUN_MIXED_FRICTION = False
 

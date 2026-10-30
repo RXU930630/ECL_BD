@@ -240,7 +240,9 @@ class PerssonModel:
             bounds = np.asarray([0.0, stop])
         else:
             knots = 10.0 ** np.asarray(knots, dtype=float)
-            inside = knots[(knots > lower) & (knots < self.q1)]
+            # A knot only a few ulps above lower creates Gauss nodes that
+            # round back to lower. Merge that negligible piece with the next.
+            inside = knots[(knots > lower*(1+32*np.finfo(float).eps)) & (knots < self.q1)]
             bounds = np.r_[0.0, np.sqrt(np.log(inside / lower)), stop]
         nodes, weights = [], []
         for left, right in zip(bounds[:-1], bounds[1:]):

@@ -4,7 +4,7 @@ Shared conservative pressure/flux equations are in steady.py, reference mechanic
 profile input in profiles.py and local conductance in module 4.
 """
 import csv
-from dataclasses import dataclass
+from dataclasses import asdict,dataclass
 import json
 from pathlib import Path
 import numpy as np
@@ -14,6 +14,7 @@ from .boundaries import read_pressure_boundaries
 from .mechanics import make_mechanics
 from .steady import solve_steady_flow
 from .transport_table import TransportTable
+from .gas import GasProperties,read_gas_properties,equivalent_gas_estimates
 
 
 @dataclass
@@ -31,17 +32,44 @@ class LeakagePlan:
     solver: dict
     compute_upper_bound: bool
     original: dict
+    fortran_mode: int = 500
+    compute_equivalent_gas: bool = False
+    gas: GasProperties | None = None
+
+    @property
+    def fluid(self):
+        return 'liquid' if self.fortran_mode==500 else 'gas'
+
+
+def _fluid_mode(raw):
+    """Read the physical selector while retaining unambiguous legacy inputs."""
+    fluid=raw.get('fluid')
+    if 'fluid' in raw and (not isinstance(fluid,str) or fluid not in ('liquid','gas')):
+        raise ValueError("fluid must be 'liquid' or 'gas' (currently ballistic)")
+    legacy=raw.get('fortran_mode')
+    if 'fortran_mode' in raw and (type(legacy) is not int or legacy not in (500,5000)):
+        raise ValueError('fortran_mode must be 500 (liquid + estimates) or 5000 (ballistic gas)')
+    mode=(500 if fluid=='liquid' else 5000) if fluid is not None else (legacy if legacy is not None else 500)
+    if legacy is not None and legacy!=mode:
+        raise ValueError('fluid conflicts with legacy fortran_mode; use only fluid in new configurations')
+    expected='liquid' if mode==500 else 'ballistic_gas'
+    if raw.get('transport',expected)!=expected:
+        raise ValueError('transport conflicts with fluid/fortran_mode; select transport using fluid')
+    return mode
 
 
 def prepare_leakage(raw,base_directory,effective_modulus_pa):
     if not isinstance(raw,dict):raise ValueError('leakage must be a dictionary')
     allowed={'mode','geometry','geometry_parameters','seal_width_m','inlet_pressure_pa','inlet_pressures_pa','outlet_pressure_pa',
              'coupling','conductance_model','percolation_policy','spc','critical_alpha','database_interpolation',
-             'solver','compute_upper_bound','transport'}
+             'solver','compute_upper_bound','transport','fortran_mode','fluid','compute_equivalent_gas','gas'}
     if set(raw)-allowed:raise ValueError(f'Unknown leakage parameters: {sorted(set(raw)-allowed)}')
     if raw.get('mode')!='spatial':raise ValueError('Spatial leakage requires mode=spatial')
-    if raw.get('transport','liquid')!='liquid':
-        raise NotImplementedError('Gas/ballistic leakage (legacy 5000) requires separate validation; no liquid fallback')
+    mode=_fluid_mode(raw)
+    estimates=raw.get('compute_equivalent_gas',False)
+    if type(estimates) is not bool:
+        raise ValueError('compute_equivalent_gas must be True or False')
+    gas=read_gas_properties(raw.get('gas',{})) if mode==5000 or estimates else None
     geometry=raw.get('geometry',{})
     if isinstance(geometry,str):
         presets=raw.get('geometry_parameters',{})
@@ -51,9 +79,13 @@ def prepare_leakage(raw,base_directory,effective_modulus_pa):
         geometry={'type':geometry,**presets[geometry]}
     mech=make_mechanics(geometry,base_directory,effective_modulus_pa)
     boundary=read_pressure_boundaries(raw);inlet=boundary.inlet_pressures_pa;out=boundary.outlet_pressure_pa
+    if gas is not None:
+        gas.absolute_pressure(np.r_[inlet,out])
     coupling=raw.get('coupling','local_unloading');method=raw.get('conductance_model','effective_medium')
     if coupling not in ('fixed_contact','local_unloading'):raise ValueError('coupling must be fixed_contact or local_unloading')
     if method not in ('effective_medium','critical_junction'):raise ValueError('conductance_model must be effective_medium or critical_junction')
+    if mode==5000 and method!='effective_medium':
+        raise ValueError('Mode 5000 currently requires effective_medium conductance')
     policy=raw.get('percolation_policy','legacy_spc_plateau')
     if policy not in ('physical_zero','legacy_spc_plateau'):raise ValueError('Invalid percolation_policy')
     spc=positive(raw.get('spc',.8),'spc')
@@ -72,7 +104,8 @@ def prepare_leakage(raw,base_directory,effective_modulus_pa):
     upper=raw.get('compute_upper_bound',True)
     if type(upper) is not bool:raise ValueError('compute_upper_bound must be True or False')
     return LeakagePlan(mech,positive(raw.get('seal_width_m'),'seal_width_m'),inlet,out,coupling,method,
-        policy,spc,positive(raw.get('critical_alpha',1.),'critical_alpha'),interpolation,defaults,upper,raw)
+        policy,spc,positive(raw.get('critical_alpha',1.),'critical_alpha'),interpolation,defaults,upper,raw,
+        mode,estimates and mode==500,gas)
 
 
 def required_pressures(plan,model,configured,percolation):
@@ -103,13 +136,15 @@ def make_transport(plan,model,interface,pressure_rows,percolation,area_tolerance
     policy=plan.percolation_policy
     if plateau is not None and plateau>max(p):policy='physical_zero';plateau=None
     if plan.method=='effective_medium':
-        k=np.array([r['geometric_conductivity_m3'] for r in pressure_rows])
-        upper=np.array([np.inf if r['upper_bound_unbounded'] else r['upper_geometric_conductivity_m3'] for r in pressure_rows])
+        unit='m2' if plan.fortran_mode==5000 else 'm3'
+        k=np.array([r[f'geometric_conductivity_{unit}'] for r in pressure_rows])
+        upper=np.array([np.inf if r['upper_bound_unbounded'] else r[f'upper_geometric_conductivity_{unit}'] for r in pressure_rows])
     else:
         values=[model.critical_separation(float(pi),percolation,area_tolerance) for pi in p]
         invalid=[v.status for v in values if v.status not in ('found','threshold_not_reached')]
         if invalid:raise ValueError(f'Critical-junction database has unresolved u1: {invalid[0]}')
-        k=np.array([(plan.critical_alpha*v.critical_separation_m)**3 if v.status=='found' else 0 for v in values]);upper=k.copy()
+        k=np.array([float(interface.geometric_mobility(plan.critical_alpha*v.critical_separation_m))
+                    if v.status=='found' else 0 for v in values]);upper=k.copy()
     return TransportTable(p,h,k,upper,model,interface,interpolation=plan.interpolation,
         percolation_policy=policy,plateau_pressure_pa=plateau)
 
@@ -119,7 +154,9 @@ def _csv(path,rows):
         writer=csv.DictWriter(stream,fieldnames=list(rows[0]),lineterminator='\n');writer.writeheader();writer.writerows(rows)
 
 
-def solve_case(plan,table,inlet,*,upper=False):
+def solve_case(plan,table,inlet,*,upper=False,initial_pressure_profile=None):
+    if table.gap_power!=(2 if plan.fortran_mode==5000 else 3):
+        raise ValueError('Transport conductivity units do not match fortran_mode')
     mech=plan.mechanics;out=plan.outlet_pressure_pa
     def contact(x,pf):
         return mech.contact_pressure(x,pf,plan.coupling)
@@ -140,25 +177,34 @@ def solve_case(plan,table,inlet,*,upper=False):
             raise ValueError('Physical-zero mobility encountered inside coupled region; no uniquely conducting branch resolved. '
                              'Use a structural/opening model or explicitly choose the legacy_spc_plateau approximation.')
         return r
-    solution=solve_steady_flow(checked_resistance,mech.x_m[0],mech.x_m[-1],float(inlet),out,required_points=mech.integration_points,**plan.solver)
+    solution=solve_steady_flow(checked_resistance,mech.x_m[0],mech.x_m[-1],float(inlet),out,
+        required_points=mech.integration_points,initial_pressure_profile=initial_pressure_profile,**plan.solver)
     pc=contact(solution.x_m,solution.fluid_pressure_pa)
-    return {'x':solution.x_m,'fluid':solution.fluid_pressure_pa,'contact':pc,'flux':solution.flux_per_width_m2_s,
+    return {'x':solution.x_m,'fluid':solution.fluid_pressure_pa,'contact':pc,'flux':solution.flux_per_width,
             'status':'zero_pressure_drop' if inlet==out else 'converged',
             'solver_nodes':solution.solver_nodes,'equation_residual':solution.maximum_equation_residual,
             'pressure_drop_error':solution.pressure_drop_relative_error,'flux_spread':solution.face_flux_relative_spread,
             'iterations':solution.iterations,'flux_check_pressure_fraction':solution.flux_check_pressure_fraction,'grid_difference':solution.grid_relative_flux_difference}
 
 
+def validate_liquid_estimates(plan,interface):
+    if plan.compute_equivalent_gas and getattr(interface,'has_slip',False):
+        raise ValueError('Equivalent gas estimates assume no-slip liquid. Set compute_equivalent_gas=False for nonzero Navier slip.')
+
+
 def run_spatial_leakage(plan,table,output,*,plot=False):
+    validate_liquid_estimates(plan,table.interface)
     output=Path(output);rows=[];profiles=[]
+    ballistic=plan.fortran_mode==5000
+    unit='m2' if ballistic else 'm3'
     database=[]
     used=table.geometric_conductivity(table.p);used_upper=table.geometric_conductivity(table.p,True)
     for j,p in enumerate(table.p):
         database.append({'contact_pressure_pa':float(p),'mean_gap_m':float(table.h[j]),
             'relative_contact_area':float(table.model.area(p)),
-            'raw_geometric_conductivity_m3':float(table.k[j]),
-            'used_geometric_conductivity_m3':float(used[j]),
-            'used_upper_geometric_conductivity_m3':float(used_upper[j]) if np.isfinite(used_upper[j]) else None,
+            f'raw_geometric_conductivity_{unit}':float(table.k[j]),
+            f'used_geometric_conductivity_{unit}':float(used[j]),
+            f'used_upper_geometric_conductivity_{unit}':float(used_upper[j]) if np.isfinite(used_upper[j]) else None,
             'conductance_model':plan.method,'percolation_policy':plan.percolation_policy})
     _csv(output/'leakage_transport_table.csv',database)
     for i,inlet in enumerate(plan.inlet_pressures_pa):
@@ -179,10 +225,14 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
             data.append({'x_m':float(x[j]),'reference_contact_pressure_pa':float(c0[j]),
                 'reference_interface_pressure_pa':float(f0[j]),'fluid_pressure_pa':finite(pf[j]),
                 'contact_pressure_pa':finite(pc[j]),'mean_gap_m':finite(gaps[j]),
-                'relative_contact_area':finite(area[j]),'geometric_conductivity_m3':finite(k[j]),
+                'relative_contact_area':finite(area[j]),f'geometric_conductivity_{unit}':finite(k[j]),
                 'open_reservoir_limit':bool(opened[j]),'low_pressure_continuation':bool(low[j])})
         file=f'leakage_profile_{i:03d}.csv';_csv(output/file,data)
         q=result['flux']*plan.width_m;qupper=upper['flux']*plan.width_m if upper is not None else None
+        number=q if ballistic else None
+        if ballistic:
+            q=plan.gas.reference_volume(q)
+            qupper=plan.gas.reference_volume(qupper) if qupper is not None else None
         row={'case_index':i,'inlet_pressure_pa':float(inlet),'outlet_pressure_pa':plan.outlet_pressure_pa,
              'flow_rate_m3_s':q,'pdf_bound_min_flow_m3_s':None if qupper is None else min(q,qupper),
              'pdf_bound_max_flow_m3_s':None if qupper is None else max(q,qupper),
@@ -197,11 +247,33 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
              'open_limit_points':int(sum(opened)),'low_pressure_continuation_points':int(sum(low)),
              'profile_file':file,'upper_bound_status':upper['status'] if upper is not None else None,
              'upper_bound_error':upper_error}
+        row.update(fluid=plan.fluid,fortran_mode=plan.fortran_mode,
+            flow_quantity='gas_volume_at_reference_pressure' if ballistic else 'incompressible_liquid_volume',
+            flow_rate_mm3_h=q*3.6e12,
+            square_unit_flow_m3_s=q*plan.mechanics.length_m/plan.width_m)
+        if ballistic:
+            dp=float(inlet)-plan.outlet_pressure_pa
+            gap=(2*plan.gas.reference_pressure_pa*plan.mechanics.length_m*abs(q)/
+                 (plan.gas.mean_molecular_speed_m_s*plan.width_m*abs(dp)))**.5 if dp!=0 else None
+            mean_free_path=float(plan.gas.mean_free_path(plan.gas.reference_pressure_pa))
+            row.update(molecular_flow_rate_per_s=number,
+                gas_reference_volume_flow_m3_s=q,gas_reference_volume_flow_mm3_h=q*3.6e12,
+                gas_reference_pressure_pa=plan.gas.reference_pressure_pa,gas_temperature_k=plan.gas.temperature_k,
+                inlet_absolute_pressure_pa=float(plan.gas.absolute_pressure(inlet)),
+                outlet_absolute_pressure_pa=float(plan.gas.absolute_pressure(plan.outlet_pressure_pa)),
+                effective_ballistic_gap_m=gap,mean_free_path_at_reference_pressure_m=mean_free_path,
+                knudsen_at_reference_pressure=mean_free_path/gap if gap is not None and gap>0 else None)
+        elif plan.compute_equivalent_gas:
+            row.update(equivalent_gas_estimates(q,float(inlet)-plan.outlet_pressure_pa,
+                plan.mechanics.length_m,plan.width_m,table.interface.viscosity_pa_s,
+                float(inlet),plan.outlet_pressure_pa,plan.gas))
         rows.append(row);profiles.append(data)
         print(f"泄漏工况 {i+1}/{len(plan.inlet_pressures_pa)}: pin={inlet:g} Pa, Q={q:.6g} m^3/s, {row['status']}",flush=True)
     _csv(output/'leakage_cases.csv',rows)
-    summary={'scope':'Incompressible Newtonian liquid; one-dimensional local reference-traction unloading. '
-        'No nonlocal FEM compliance, cavitation or ballistic gas.',
+    summary={'scope':('Independent quadratic ballistic gas; conserved molecular flux; '
+                     'volumes at the stated reference pressure and gas temperature. ' if ballistic else
+                     'Incompressible Newtonian liquid with the selected wall law; optional gas columns are no-slip estimates at the liquid-derived state. ')+
+        'One-dimensional local reference-traction unloading; no nonlocal FEM compliance or cavitation.',
         'geometry':plan.mechanics.metadata,'reference_external_load_policy':'Held fixed for all interface-pressure cases; '
         'reference interface pressure is included only when explicitly supplied. Exterior FEM load is not added again.',
         'transport_database':table.metadata,'transport_file':'leakage_transport_table.csv','solver':plan.solver,'parameters':plan.original,
@@ -209,6 +281,12 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
             'A full open-gap deformation model is required for physical aperture and fully open seals.',
         'pdf_bounds_scope':('No PDF-based bound for critical-junction model; equal bounds do not quantify its model error. ' if plan.method=='critical_junction' else '')+'Same local approximation with missing-PDF conductivity bounds; not statistical confidence intervals.',
         'cases':rows}
+    summary.update(fluid=plan.fluid,fortran_mode=plan.fortran_mode,gas=asdict(plan.gas) if plan.gas is not None else None,
+        liquid_interface=table.interface.metadata if not ballistic else None,
+        flow_quantity='gas_volume_at_reference_pressure' if ballistic else 'incompressible_liquid_volume',
+        equivalent_gas_estimates_enabled=plan.compute_equivalent_gas,
+        gas_estimate_scope='500 auxiliary estimates do not solve compressible or ballistic gas pressure redistribution.' if plan.compute_equivalent_gas else None,
+        ballistic_scope='Free-molecular wall-collision limit; no viscous/Knudsen transition interpolation. Gas pressure is solved independently using K2, not inferred from liquid K3.' if ballistic else None)
     (output/'leakage_diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
     if plot:_plot(output,rows,profiles)
     return summary
@@ -227,7 +305,8 @@ def _plot(output,rows,profiles):
     axes[0].fill_between(pin,lower,upper,alpha=.2,label='Missing-PDF bounds')
     axes[0].legend(fontsize=8)
     axes[0].set_title('Leakage pressure scan')
-    axes[0].set(xlabel='Inlet pressure (MPa)',ylabel='Signed leakage (m^3/s)')
+    label='Gas volume at reference pressure (m^3/s)' if rows[0]['fortran_mode']==5000 else 'Liquid leakage (m^3/s)'
+    axes[0].set(xlabel='Inlet gauge pressure (MPa)',ylabel=label)
     chosen=len(rows)-1;data=profiles[chosen];x=[v['x_m']*1e3 for v in data]
     for key,label in (('reference_contact_pressure_pa','FEM/reference contact'),('contact_pressure_pa','Contact'),('fluid_pressure_pa','Fluid')):
         axes[1].plot(x,[np.nan if v[key] is None else v[key]/1e6 for v in data],label=label)

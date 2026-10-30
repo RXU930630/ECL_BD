@@ -1,4 +1,4 @@
-"""Dispatch contact, interface laws, pressure flow and fixed-state leakage."""
+"""Dispatch contact, liquid flow, equivalent gas estimates and ballistic leakage."""
 import hashlib
 import json
 from dataclasses import replace
@@ -11,7 +11,8 @@ from .core import PerssonModel
 from .flow import FlowOptions
 from .flow_output import run_pressure_flow
 from .interface import make_interface
-from .leakage import prepare_leakage, required_pressures, make_transport, run_spatial_leakage
+from .leakage import prepare_leakage, required_pressures, make_transport, run_spatial_leakage, validate_liquid_estimates
+from .gas import BallisticGas
 
 
 def run_project(parameters, *, base_directory, run_contact=True, run_leakage=False,
@@ -38,7 +39,6 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
     interface=flow_options=leakage=None
     # Check application inputs before PSD work or creation of any output.
     if flow_enabled:
-        interface=make_interface(parameters.get('interface',{}))
         raw_flow=parameters.get('pressure_flow',{})
         unknown=set(raw_flow)-set(FlowOptions.__dataclass_fields__)
         if unknown:
@@ -69,6 +69,10 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
         database_extension={'requested_maximum_pa':float(max(requested)), 'actual_maximum_pa':float(max(expanded)),
             'added_nodes':len(expanded)-len(requested),'percolation_pressure_pa':percolation_pressure,'plateau_pressure_pa':plateau}
         problem=replace(problem,pressures_pa=expanded)
+    if flow_enabled:
+        interface=(BallisticGas(plan.gas) if plan is not None and plan.fortran_mode==5000
+                   else make_interface(parameters.get('interface',{})))
+        if plan is not None:validate_liquid_estimates(plan,interface)
     name = parameters.get('output_directory')
     if not isinstance(name, str) or not name.strip():
         raise ValueError('请在 parameters.py 中给出 output_directory。')
@@ -111,7 +115,7 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
             (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
             raise
         summary['workflow_status']='complete'
-        summary['pressure_flow']={'file':'pressure_flow_table.csv','diagnostics_file':'flow_diagnostics.json',
+        summary['pressure_flow']={'file':flow['table_file'],'diagnostics_file':'flow_diagnostics.json',
             'status_counts':flow['status_counts'],'leakage_file':('leakage_cases.csv' if spatial else 'leakage_table.csv') if run_leakage else None}
         (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
         print(f'压力流动结果已保存到 {output.resolve()}')

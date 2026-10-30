@@ -55,8 +55,10 @@ class PowerSpectrum:
         q0 = _positive_finite(self.q0, "q0 (m^-1)")
         qr = _positive_finite(self.qr, "qr (m^-1)")
         q1 = _positive_finite(self.q1, "q1 (m^-1)")
-        if not q0 <= qr <= q1 or q0 >= q1:
-            raise ValueError("PSD cutoffs must satisfy 0 < q0 <= qr <= q1 and q0 < q1")
+        # Numerical spectra use the sampled curve on q0..q1. A nominal
+        # roll-off below that interval remains valid header metadata.
+        if qr > q1 or q0 >= q1:
+            raise ValueError("PSD cutoffs must satisfy 0 < q0 < q1 and 0 < qr <= q1")
         if x[0] > math.log10(q0) + 1e-12 or x[-1] < math.log10(q1) - 1e-12:
             raise ValueError("PSD samples must cover q0..q1; extrapolation is not automatic")
         scale = _positive_finite(self.scale_c, "scale_c")
@@ -126,6 +128,10 @@ class PowerSpectrum:
         if b == a:
             return 0.0
         la, lb = math.log(a), math.log(b)
+        # Distinct adjacent floats may have the same rounded logarithm.
+        # Such an interval has zero width on the integration grid.
+        if la == lb:
+            return 0.0
         log_q = self.log10_q * math.log(10.0)
         log_c = self.log10_c * math.log(10.0) + math.log(self.scale_c)
         knots = np.concatenate(([la], log_q[(log_q > la) & (log_q < lb)], [lb]))

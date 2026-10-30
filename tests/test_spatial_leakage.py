@@ -59,6 +59,21 @@ class PressureProfileTests(unittest.TestCase):
 
 
 class StationaryEquationTests(unittest.TestCase):
+    def test_feasible_initial_profile_for_a_conducting_branch(self):
+        # Exact solution for r=1+2x is p=1-(x+x^2)/2 and J=1/2.
+        # The linear default guess lies below the conducting domain.
+        def resistance(x,p):
+            threshold=1-.75*x-.25*x*x
+            return np.where(p>=threshold,1+2*x,np.inf)
+        with self.assertRaises(ValueError):
+            solve_steady_flow(resistance,0.,1.,1.,0.)
+        x=np.linspace(0.,1.,1001);pressure=1-(x+x*x)/2
+        result=solve_steady_flow(resistance,0.,1.,1.,0.,
+            initial_pressure_profile=(x,pressure))
+        self.assertAlmostEqual(result.flux_per_width_m2_s,.5,places=10)
+        np.testing.assert_allclose(result.fluid_pressure_pa,
+            1-(result.x_m+result.x_m**2)/2,atol=1e-6,rtol=0)
+
     def test_uniform_mobility_analytic_flux_and_reversal(self):
         sigma=1e-18;length=.003
         r=lambda x,p:np.full_like(np.asarray(x),1/sigma)
@@ -85,6 +100,23 @@ class StationaryEquationTests(unittest.TestCase):
         # Unit background integral plus triangular peak area one.
         self.assertAlmostEqual(result.flux_per_width_m2_s,.5,places=9)
         for point in (center-width,center,center+width):self.assertIn(point,result.x_m)
+
+    def test_open_inlet_unloading_against_independent_shooting(self):
+        from scipy.integrate import solve_ivp
+        from scipy.optimize import brentq
+        x=np.array([0.,.27,.7,1.]);traction=np.array([.189,.414,.872,.235])
+        resistance=lambda position,pressure:np.minimum(np.maximum(
+            (np.interp(position,x,traction)-pressure)/.095,0.),1.)**3
+        def outlet(flux):
+            solution=solve_ivp(lambda position,pressure:-flux*resistance(position,pressure),
+                (0.,1.),[.414],rtol=1e-10,atol=1e-12,max_step=.005)
+            self.assertTrue(solution.success)
+            return solution.y[0,-1]
+        expected=brentq(outlet,0.,2.,xtol=1e-12)
+        result=solve_steady_flow(resistance,0.,1.,.414,0.,tolerance=1e-6,
+            required_points=x,max_nodes=40001)
+        np.testing.assert_allclose(result.flux_per_width_m2_s,expected,rtol=2e-5)
+        self.assertLess(result.face_flux_relative_spread,1e-5)
 
     def test_invalid_or_unresolved_flow_is_not_exported_as_converged(self):
         with self.assertRaises(ValueError):solve_steady_flow(lambda x,p:np.zeros_like(x),0,1,1,0)

@@ -1,0 +1,113 @@
+{
+  "source_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+  "kernel_hashes": {
+    "resistance_loop_sha256": "f244b74c414f05239446ca21cded5b8377bcc03968fba888bd4fdfafb9aad00a",
+    "unloading_loop_sha256": "f6f9620b5ccfe8c108e53a82a4c1997deee0f2886888928fd1c1dd38d3c4c9f6"
+  },
+  "scope": "Original 5000 resistance, pressure unloading and gas leakage arithmetic; shared K2 data and reference traction. Gas constants supplied identically to isolate arithmetic; not a complete original-program gas run.",
+  "cases": [
+    {
+      "inlet_pressure_pa": 138000.0,
+      "python_reference_volume_m3_s": 1.5376102074402948e-13,
+      "refinements": [
+        {
+          "Nx": 501,
+          "Npa": 20000,
+          "fortran_reference_volume_m3_s": 1.5364796692495295e-13,
+          "fortran_molecular_flow_per_s": 3732576536263.3267,
+          "relative_volume_difference": 0.0007357976896091856,
+          "maximum_fluid_pressure_error_pa": 573.8843013553706,
+          "run_seconds": 0.11159760299779009,
+          "input_sha256": "6f749075ae53609649247f0bd0da59a0592314d274366afdea038a6737850d41",
+          "output_sha256": "49f401ef6969fc3baf90277257d2a90a01442502955827cdc8980aee3167401c"
+        },
+        {
+          "Nx": 1001,
+          "Npa": 40000,
+          "fortran_reference_volume_m3_s": 1.5370833385589676e-13,
+          "fortran_molecular_flow_per_s": 3734043032661.0127,
+          "relative_volume_difference": 0.0003427718381368017,
+          "maximum_fluid_pressure_error_pa": 287.0623816063453,
+          "run_seconds": 0.3746883700005128,
+          "input_sha256": "56e3b604b2b60b4bd4bbf2d8f4c8c804e2d6acba901d075d449194292a1bae88",
+          "output_sha256": "856fef1cb55e8dc69af65ffa3d64ee05d1c1084e345fbe6b7e1a19f54a3ddf47"
+        },
+        {
+          "Nx": 2001,
+          "Npa": 80000,
+          "fortran_reference_volume_m3_s": 1.5373267382996736e-13,
+          "fortran_molecular_flow_per_s": 3734634324676.959,
+          "relative_volume_difference": 0.0001843909518770559,
+          "maximum_fluid_pressure_error_pa": 144.63028459029738,
+          "run_seconds": 1.5339220449968707,
+          "input_sha256": "4ecbf6041c55fc643b08e54a501d18be6dd3948425fde76711f842bd65d690e1",
+          "output_sha256": "effa43162f0042895b46e9888cc6f308b2ec59f596e5b3a746bdc66ccbe65625"
+        }
+      ]
+    },
+    {
+      "inlet_pressure_pa": 414370.0,
+      "python_reference_volume_m3_s": 9.080636562568612e-12,
+      "refinements": [
+        {
+          "Nx": 501,
+          "Npa": 20000,
+          "fortran_reference_volume_m3_s": 8.832032723676317e-12,
+          "fortran_molecular_flow_per_s": 214556943197341.3,
+          "relative_volume_difference": 0.028147975292919236,
+          "maximum_fluid_pressure_error_pa": 1778.6029017315595,
+          "run_seconds": 0.0958570540024084,
+          "input_sha256": "acadcf961615896d7915bd444fd76d458bfd950f21a4c3cd21fbacae4ca6bf39",
+          "output_sha256": "e97ba302ddfcb859613f960e7b478f69ce94de67b70b29949ab3dde94766b77d"
+        },
+        {
+          "Nx": 1001,
+          "Npa": 40000,
+          "fortran_reference_volume_m3_s": 8.955284874666968e-12,
+          "fortran_molecular_flow_per_s": 217551112896029.2,
+          "relative_volume_difference": 0.013997509811914943,
+          "maximum_fluid_pressure_error_pa": 886.8331636107905,
+          "run_seconds": 0.3753170579984726,
+          "input_sha256": "24d0273cf157f624761b8fc153378a8e238828362749273612e88848dcf9b62e",
+          "output_sha256": "2327d9ad2676519735bdffe976c80110fadedd59ac476b57c8bf3f93495fa882"
+        },
+        {
+          "Nx": 2001,
+          "Npa": 80000,
+          "fortran_reference_volume_m3_s": 9.017643820477591e-12,
+          "fortran_molecular_flow_per_s": 219066001394830.75,
+          "relative_volume_difference": 0.0069854990222584235,
+          "maximum_fluid_pressure_error_pa": 442.8337188336882,
+          "run_seconds": 1.4869842400003108,
+          "input_sha256": "4f8cd94021cef126e0b539df6cb67e7e52b29168ab3954d446ef45bcb2de4429",
+          "output_sha256": "0bed65857766519da306d7d98c85323bb7cb09815a4a742330206dbeb98dba33"
+        },
+        {
+          "Nx": 4001,
+          "Npa": 160000,
+          "fortran_reference_volume_m3_s": 9.049048612352059e-12,
+          "fortran_molecular_flow_per_s": 219828919327445.66,
+          "relative_volume_difference": 0.0034907482067711992,
+          "maximum_fluid_pressure_error_pa": 221.98592094568448,
+          "run_seconds": 5.879697375003161,
+          "input_sha256": "b8680e9c6c0214cb18553a6059f2f01fa1688243efdd5412c8060099bcd37821",
+          "output_sha256": "da15afaea218c9acee680df387b7d4dad3278f2e52b515142d3887f87d50997a"
+        },
+        {
+          "Nx": 8001,
+          "Npa": 320000,
+          "fortran_reference_volume_m3_s": 9.064809542162869e-12,
+          "fortran_molecular_flow_per_s": 220211800259610.88,
+          "relative_volume_difference": 0.0017459848805567724,
+          "maximum_fluid_pressure_error_pa": 111.80453746391868,
+          "run_seconds": 24.460978824998165,
+          "input_sha256": "c4b183ed98e2811db46aa5d16017b050a0a9134f24f1413a614f573b36f2416e",
+          "output_sha256": "734e68a124c45680a50d57be27dc92624d64329b612b58f55ad4efad23260d3e"
+        }
+      ]
+    }
+  ],
+  "compiler": "GNU Fortran (Debian 14.2.0-19) 14.2.0",
+  "driver_sha256": "9f361edc1044fb79041eef0ce7f6f84a94d367c957970557f62c0fc2a49c8d92",
+  "binary_sha256": "15ae31aedacf0025762441f9fef4c84ab459ecc1429358cbc344597da8409d13"
+}

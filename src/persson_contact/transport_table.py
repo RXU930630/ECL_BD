@@ -19,6 +19,7 @@ class TransportTable:
             raise ValueError('percolation_policy must be physical_zero or legacy_spc_plateau')
         for array in (self.p,self.h,self.k,self.ku):array.flags.writeable=False
         self.model,self.interface=model,interface;self.interpolation=interpolation
+        self.gap_power=interface.gap_power
         self.policy=percolation_policy;self.plateau=plateau_pressure_pa
         self._lookup_cache={}
         if self.policy=='legacy_spc_plateau':
@@ -31,7 +32,8 @@ class TransportTable:
         if self.low_slope<=0:raise ValueError('Low-pressure mean-gap continuation requires decreasing h(p)')
         self.metadata={'pressure_min_pa':float(self.p[0]),'pressure_max_pa':float(self.p[-1]),
             'interpolation':interpolation,'percolation_policy':self.policy,'plateau_pressure_pa':self.plateau,
-            'low_pressure_rule':'Matched logarithmic mean-gap and cubic-conductance continuation below database minimum.',
+            'geometric_conductivity_unit':f'm^{self.gap_power}',
+            'low_pressure_rule':'Matched logarithmic mean gap; conductance follows the selected local mobility ratio below database minimum.',
             'open_region_rule':'pc<=0: zero resistance reservoir limit, gap undefined; no finite aperture or global deformation calculated.'}
 
     def _lookup(self,p,values):
@@ -80,11 +82,14 @@ class TransportTable:
         k=self._lookup(query.ravel(),values).reshape(p.shape)
         if upper:k=np.maximum(k,self._lookup(query.ravel(),self.k).reshape(p.shape))
         low=(p>0)&(p<self.p[0])
-        if np.any(low):k=np.where(low,values[0]*(self.mean_gap(p)/self.h[0])**3,k)
+        if np.any(low):
+            continued=self.mean_gap(np.maximum(p,np.finfo(float).tiny))
+            k=np.where(low,values[0]*self.interface.geometric_mobility(continued)/
+                       self.interface.geometric_mobility(self.h[0]),k)
         return np.where(p<=0,np.inf,k)
 
     def resistance(self,pressure,upper=False):
         k=self.geometric_conductivity(pressure,upper)
         r=np.full_like(k,np.inf)
-        np.divide(12*self.interface.viscosity_pa_s,k,out=r,where=k>0)
+        np.divide(self.interface.inverse_mobility_prefactor,k,out=r,where=k>0)
         return r

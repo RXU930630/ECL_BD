@@ -28,7 +28,8 @@ class InterfaceTests(unittest.TestCase):
         for value in (None,0,-1,True,float('nan')):
             with self.assertRaises(ValueError):NewtonianNoSlip(value)
         with self.assertRaises(ValueError):fluid.pressure_mobility(-1)
-        for cfg in ({'viscosity_pa_s':1,'wall_slip':'navier'},
+        with self.assertRaises(ValueError):make_interface({'viscosity_pa_s':1,'wall_slip':'navier'})
+        for cfg in ({'viscosity_pa_s':1,'wall_slip':'unknown'},
                     {'viscosity_pa_s':1,'rheology':'carreau'}):
             with self.assertRaises(NotImplementedError):make_interface(cfg)
 

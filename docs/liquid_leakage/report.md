@@ -1,18 +1,18 @@
 # 空间液体泄漏：参数、模型、验证
 
-已实现给定压力曲线、O-ring Hertz分布、square-ring恒压分布，另提供Gaussian分布及固定接触选项。当前是弹性、非黏附、各向同性、恒黏度、无滑移的稳态液体版本；ballistic气体5000不调用液体公式代替。
+已实现给定压力曲线、O-ring Hertz分布、square-ring恒压分布，另提供Gaussian分布及固定接触选项。本报告保留液体验证记录；新增500气体估算与独立5000功能见[气体说明](../gas_leakage.md)。
 
 ## 最少操作
 
 1. main.py 中 `RUN_LEAKAGE=True`，默认已开启。
-2. parameters.py 中将 `leakage.geometry` 设为 `prescribed_profile`、`oring_hertz` 或 `square_ring`；在 geometry_parameters 的同名分组修改参数，用 inlet_pressures_pa 设置入口压力列表。
+2. 当前parameters.py按工况与数值设置整理：在CASE的leakage.geometry字典中选择type与对应几何参数，用inlet_pressures_pa设置入口压力列表；详见[参数说明](../parameters.md)。旧的geometry字符串与geometry_parameters预设写法继续兼容。
 3. 运行 `python main.py`；结果默认 `results/leakage`。目录非空时请换 output_directory，程序拒绝混合新旧结果。
 
 单个入口压力也可用 `inlet_pressure_pa`，与列表二选一。出口为 `outlet_pressure_pa`。所有压力共用同一参考零点，单位Pa；当前液体模型不作气体绝对压力换算。
 
 ## 三种几何
 
-推荐只修改 `geometry` 字符串即可切换，四个预设的参数分别保存在 `geometry_parameters` 同名分组中；只读取所选几何。也支持把 geometry 直接写成下列字典，适合脚本调用：
+当前配置只展示正在使用的geometry字典，可用下列示例替换。旧的geometry字符串选择器与geometry_parameters同名分组写法仍可使用：
 
 ```python
 # 1. 给定曲线
@@ -89,7 +89,7 @@ x_m,contact_pressure_pa,interface_reference_pressure_pa
 
 黏度集中在 `interface.viscosity_pa_s`，默认0.1 Pa·s取原Fortran输入。接触、PDF和临界面积参数仍在原options；CJ沿用critical_area_tolerance，并用(alpha*uc)³作为几何导流系数。
 
-与旧选项的关系：O-ring+卸载+EM对应5；square-ring+卸载+EM对应50；导入曲线+卸载+EM对应500。将EM换CJ分别对应4/40/400。固定接触Hertz/Gaussian提供6/7相应的参考几何处理。旧四字段的均匀固定接触泄漏接口继续兼容。气体5000需单独校验后实现，当前选择非liquid会明确报错。
+与旧选项的关系：O-ring+卸载+EM对应5；square-ring+卸载+EM对应50；导入曲线+卸载+EM对应500。将EM换CJ分别对应4/40/400。固定接触Hertz/Gaussian提供6/7相应的参考几何处理。旧四字段的均匀固定接触泄漏接口继续兼容。新增 `fortran_mode=5000` 独立求解二次导流和分子通量；参数与验证范围见气体说明。
 
 ## FEM与局部卸载
 
@@ -214,4 +214,4 @@ python main.py
 python scripts/verify_spatial_leakage.py --source /path/to/AI.ContactMechanics.14.09.2026.f90 --flow-data results/leakage/flow_diagnostics.json --profile examples/data/seal_pressure_profile.csv --profile-format csv --output results/new_fortran_spatial_check --compiler gfortran
 ```
 
-参考脚本会拒绝覆盖目录，并校验原源码版本。临界通道、Gaussian、固定接触及旧四参数接口可以通过同一基础选择；非局部柔度、黏弹性、剪切摩擦、空化以及5000气体仍需各自实现和验证。
+参考脚本会拒绝覆盖目录，并校验原源码版本。临界通道、Gaussian、固定接触及旧四参数接口可以通过同一基础选择；非局部柔度、黏弹性、剪切摩擦及空化仍需各自实现和验证。5000气体验证另见气体验证报告。

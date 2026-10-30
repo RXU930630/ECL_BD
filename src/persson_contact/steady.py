@@ -1,6 +1,6 @@
-"""Modules 8/9: conservative steady one-dimensional liquid-flow equations.
+"""Modules 8/9: conservative steady one-dimensional transport equations.
 
-Unknowns are interior pressures and one constant volume flux. Newton solves
+Unknowns are interior pressures and one constant volume or molecular flux. Newton solves
 face pressure-drop = flux * face resistance; a second grid checks flux accuracy.
 Geometry, contact and conductivity are supplied by the resistance callback.
 """
@@ -14,7 +14,7 @@ from scipy.sparse.linalg import spsolve
 class SteadySolution:
     x_m: np.ndarray
     fluid_pressure_pa: np.ndarray
-    flux_per_width_m2_s: float
+    flux_per_width: float
     solver_nodes: int
     maximum_equation_residual: float
     pressure_drop_relative_error: float
@@ -23,15 +23,31 @@ class SteadySolution:
     flux_check_pressure_fraction: float
     grid_relative_flux_difference: float
 
+    @property
+    def flux_per_width_m2_s(self):
+        """Liquid compatibility alias; molecular transport uses flux_per_width."""
+        return self.flux_per_width
+
 
 def solve_steady_flow(resistance,x_start,x_end,inlet_pa,outlet_pa,*,nodes=201,
-                      tolerance=1e-5,max_nodes=20001,output_points=1001,required_points=None):
+                      tolerance=1e-5,max_nodes=20001,output_points=1001,required_points=None,
+                      initial_pressure_profile=None):
+    """Solve conserved flux; optional (x, pressure) arrays provide a feasible initial guess."""
     length=float(x_end-x_start);dp=float(inlet_pa-outlet_pa)
     if not np.all(np.isfinite([x_start,x_end,inlet_pa,outlet_pa,tolerance])) or tolerance<=0 or length<=0 or nodes<5 or output_points<5:raise ValueError('Invalid stationary flow grid')
     required=np.array([]) if required_points is None else np.asarray(required_points,dtype=float)
     if required.ndim!=1 or np.any(~np.isfinite(required)) or np.any(required<x_start) or np.any(required>x_end):
         raise ValueError('Required geometry mesh points must lie inside the domain')
     required=np.unique(np.r_[x_start,required,x_end])
+    initial=None
+    if initial_pressure_profile is not None:
+        initial_x,initial_p=(np.asarray(v,dtype=float) for v in initial_pressure_profile)
+        if (initial_x.ndim!=1 or len(initial_x)<2 or initial_p.shape!=initial_x.shape
+                or np.any(~np.isfinite(initial_x)) or np.any(~np.isfinite(initial_p))
+                or np.any(np.diff(initial_x)<=0) or initial_x[0]>x_start or initial_x[-1]<x_end
+                or np.any(initial_p<min(inlet_pa,outlet_pa)) or np.any(initial_p>max(inlet_pa,outlet_pa))):
+            raise ValueError('Invalid initial pressure profile')
+        initial=(initial_x,initial_p)
     def sampling_grid(number):
         uniform=np.linspace(x_start,x_end,number)
         nearest=np.clip(np.searchsorted(required,uniform),0,len(required)-1)
@@ -47,12 +63,24 @@ def solve_steady_flow(resistance,x_start,x_end,inlet_pa,outlet_pa,*,nodes=201,
     while len(x)<=max_nodes:
         count=len(x);faces=(x[:-1]+x[1:])/2;dx=np.diff(x)/length
         y=1-(x-x_start)/length if previous is None else np.interp(x,previous[0],previous[1])
+        if previous is None and initial is not None:
+            y=(np.interp(x,initial[0],initial[1])-outlet_pa)/dp
+            y[0],y[-1]=1.,0.
         m=count-1
         def raw_r(ymid):
             value=np.broadcast_to(np.asarray(resistance(faces,outlet_pa+dp*np.clip(ymid,0,1)),dtype=float),faces.shape)
             if np.any(~np.isfinite(value)) or np.any(value<0):
                 raise ValueError('No finite resolved resistance: blocked branch requires separate treatment')
             return value
+        if previous is None:
+            # Start Newton near the conservative pressure profile. A linear
+            # guess can stall when inlet unloading creates a flat open region.
+            for _ in range(30):
+                frozen_r=raw_r((y[:-1]+y[1:])/2)*dx
+                total_r=float(sum(frozen_r))
+                if total_r<=0:
+                    raise ValueError('Seal fully open: a structural/open-gap model is required for finite leakage')
+                y=.5*(y+1-np.r_[0.,np.cumsum(frozen_r)]/total_r)
         rscale=float(max(raw_r((y[:-1]+y[1:])/2)))
         if rscale<=0:raise ValueError('Seal fully open: a structural/open-gap model is required for finite leakage')
         def evaluate(yn,flux):

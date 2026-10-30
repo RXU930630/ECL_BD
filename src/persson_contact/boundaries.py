@@ -1,4 +1,4 @@
-"""Module 7: prescribed liquid-pressure boundary cases (common gauge, Pa)."""
+"""Module 7: prescribed liquid/gas pressure cases on a common gauge, Pa."""
 from dataclasses import dataclass
 import numpy as np
 

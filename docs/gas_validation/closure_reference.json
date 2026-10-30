@@ -1,0 +1,63 @@
+{
+  "source_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+  "loop_sha256": "ae696cca8121bbf9410979d55e65ab773f6f3eaf4e7a242de3a73fb0ae0f2057",
+  "scope": "Untouched Sealing3gas P(u) iteration with independent original PDFs. Original u^2-u_end^2 subtraction retained; Python local u^2 remains nonnegative.",
+  "psd_sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+  "cases": [
+    {
+      "pdf_points": 2048,
+      "pressure_pa": 98867.55781052503,
+      "effective_modulus_pa": 2400000.0,
+      "log_step": 0.01,
+      "original_pdf_sha256": "c0fc671805c17e6969969e57cd8797082efc92eac8fcb5313035166285fcf1ba",
+      "fortran_K2_m2": 2.265054634861653e-18,
+      "python_independent_K2_m2": 2.2639992233122216e-18,
+      "independent_relative_difference": -0.0004659541245440879,
+      "refinements": [
+        {
+          "iterations": 12000,
+          "fortran_K2_m2": 2.2650546348749774e-18,
+          "same_pdf_nonnegative_u2_root_relative_difference": 2.881722556802302e-06,
+          "input_sha256": "89b2a12692cde293e53fa1b669bef1b2952acade5a7aa3705c19f9f142c07727",
+          "output_sha256": "02195787e37da7889512b817c22b04ab21256644ccf0bbf0716a452ecb50958f"
+        },
+        {
+          "iterations": 24000,
+          "fortran_K2_m2": 2.265054634861653e-18,
+          "same_pdf_nonnegative_u2_root_relative_difference": 2.8817284394300202e-06,
+          "input_sha256": "25908ba6abf4c0b6bdc86be535986b4c918c3ee7de639c2963f5bf5fa9c8dc36",
+          "output_sha256": "2907654928460dcbcb149ec36f9d2792fc45e13201c750d9be6e888762fe40e2"
+        }
+      ]
+    },
+    {
+      "pdf_points": 4096,
+      "pressure_pa": 98867.55781052503,
+      "effective_modulus_pa": 2400000.0,
+      "log_step": 0.01,
+      "original_pdf_sha256": "08ddb770177f7cca3e52a2de0b027d0badc50a38476c1417da09eca2245ce2dc",
+      "fortran_K2_m2": 2.265054634817349e-18,
+      "python_independent_K2_m2": 2.2639992233122216e-18,
+      "independent_relative_difference": -0.0004659541049932825,
+      "refinements": [
+        {
+          "iterations": 12000,
+          "fortran_K2_m2": 2.265054634830698e-18,
+          "same_pdf_nonnegative_u2_root_relative_difference": 2.8819020210235635e-06,
+          "input_sha256": "a385a8184a003f3f8ce7a218e05b220628af554b1b5027c731b6f08875206b45",
+          "output_sha256": "e1c25af0c90fcfa58932d4c148fbe5356b77a3ceba6f2755498fc2002ef16588"
+        },
+        {
+          "iterations": 24000,
+          "fortran_K2_m2": 2.265054634817349e-18,
+          "same_pdf_nonnegative_u2_root_relative_difference": 2.8819079145314674e-06,
+          "input_sha256": "a3c100a55de7d4936466a535ed0797f4324b1b5aee61b69a03fff517f47a197c",
+          "output_sha256": "e11e39d9cfd25f8250a65642957a8a9b4d0c76cd623be3f68cfcff5f7c21ca7f"
+        }
+      ]
+    }
+  ],
+  "compiler": "GNU Fortran (Debian 14.2.0-19) 14.2.0",
+  "driver_sha256": "5759ec91a1701d3638faf99534f826f0564e73451f5f4e11a58603450a35f5ab",
+  "binary_sha256": "105e96e2a7c7868451dd7d3506989dd300946b172989ffd03eef69a1b00dd602"
+}

@@ -46,6 +46,18 @@ class SpectrumTests(InputFixture):
         self.assertAlmostEqual(psd.evaluate(10), 0.09)
         self.assertAlmostEqual(psd.hrms / read_psd(self.path).hrms, 3)
 
+    def test_adjacent_bounds_with_identical_rounded_logs(self):
+        psd = read_psd(self.path)
+        lower = 10.0
+        upper = math.nextafter(lower, math.inf)
+        self.assertGreater(upper, lower)
+        self.assertEqual(math.log(lower), math.log(upper))
+        # For C=q^-2, the exact order-3 integral is (upper^2-lower^2)/2.
+        exact = (upper-lower)*(upper+lower)/2
+        result = psd.moment(3, lower, upper)
+        self.assertGreaterEqual(result, 0.0)
+        self.assertLessEqual(abs(result-exact), np.finfo(float).eps*psd.moment(3))
+
     def test_out_of_range_rejected_instead_of_extrapolated(self):
         psd = read_psd(self.path)
         for q in (0, -1, 0.99, 101, float("nan")):
@@ -77,6 +89,16 @@ class SpectrumTests(InputFixture):
         psd = PowerSpectrum([0, 1, 2], [0, 0, -2], 1, 1, 100)
         expected = (10**2 - 1)/2 + 100*math.log(10)
         self.assertAlmostEqual(psd.moment(1), expected, places=10)
+
+    def test_numeric_spectrum_retains_rolloff_below_integration_interval(self):
+        self.path.write_text("historical spectrum\n10\n1\n100\n1\n1\n1 -2\n2 -4\n")
+        original = self.path.read_bytes()
+        psd = read_psd(self.path)
+        self.assertEqual(psd.qr, 1.0)
+        self.assertEqual(psd.q0, 10.0)
+        self.assertAlmostEqual(psd.moment(1), math.log(10), places=12)
+        self.assertAlmostEqual(psd.moment(3), (100**2-10**2)/2, places=9)
+        self.assertEqual(self.path.read_bytes(), original)
 
 
 class ConfigurationTests(InputFixture):

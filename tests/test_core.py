@@ -31,6 +31,14 @@ class InverseFourthSpectrum:
 
 
 class TestCore(unittest.TestCase):
+    def test_quadrature_lower_bound_adjacent_to_psd_knot(self):
+        psd = PowerSpectrum([0, 1, 2], [-4, -8, -12], 1, 1, 100)
+        model = PerssonModel(psd, 1e6, .4, n_q=256)
+        reference = model._mean_gap_above(1000., 10.)
+        for lower in (np.nextafter(10., 0.), np.nextafter(10., np.inf)):
+            value = model._mean_gap_above(1000., lower)
+            np.testing.assert_allclose(value, reference, rtol=1e-12)
+
     def test_kernel_against_independent_adaptive_integral(self):
         for gamma in (0.0, 0.4, 1.0):
             for z in (1e-5, 0.01, 0.1, 1.0, 4.0):

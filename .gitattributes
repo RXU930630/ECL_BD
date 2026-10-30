@@ -1,0 +1,3 @@
+# Preserve independently archived reference bytes, including original whitespace.
+docs/gas_validation/*.f90 -text -whitespace
+tests/data/historical_seal/*.dat -text -whitespace

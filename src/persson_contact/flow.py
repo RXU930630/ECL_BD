@@ -1,6 +1,7 @@
 """Module 4: isotropic pressure-flow homogenization, no macroscopic geometry.
 
-Geometric conductivity K has units m^3 (the Fortran flowsigmaeff1).
+Public liquid pressure_flow returns K3 in m^3 (the Fortran flowsigmaeff1).
+Its conservative PDF integrator is shared with quadratic ballistic transport.
 Hydraulic conductivity is K/(12 eta); phi_p=K/h^3. Shear flow is reserved.
 The missing-PDF policy matches Fortran Sealing3 but is explicitly labelled:
 zero hydraulic conductivity is not an additional assertion of real contact.
@@ -135,26 +136,28 @@ def homogenize_bins(gap_edges_m, cdf, relative_contact_area, mean_gap_m, interfa
         raise ValueError('Resolved PDF mass exceeds standard noncontact area; decrease pdf_log_step')
     centers=np.empty(len(edges)-1);centers[0]=edges[1]/2
     centers[1:]=np.sqrt(edges[1:-1]*edges[2:])
-    # Use the local wall law normalized by its smooth-gap value; solve K/h^3.
-    conductivity=interface.pressure_mobility(centers)/interface.pressure_mobility(h)
+    # Normalize the local law; K3 scales with h^3, ballistic K2 with h^2.
+    power=interface.gap_power
+    reference=interface.geometric_mobility(h)
+    conductivity=interface.geometric_mobility(centers)/reference
     zero=1-mass
     value,residual,iterations=bruggeman_conductivity(conductivity,probabilities,zero,d)
     upper,_,_=bruggeman_conductivity(conductivity,probabilities,a,d,missing)
-    return {'geometric':value*h**3, 'upper':upper*h**3,
-            'factor':value, 'mass':mass,'missing':missing,'zero':zero,
+    return {'geometric':value*reference, 'upper':upper*reference,
+            'factor':value*reference/h**power, 'mass':mass,'missing':missing,'zero':zero,
             'dimension':d,'residual':residual,'iterations':iterations}
 
 
-def pressure_flow(model, pressure_pa, interface, options=None, *, percolation_relative_contact_area=.42):
-    """Build PDF independently of export n_gap; refine its CDF-bin flow integral."""
+def integrate_mobility(model, pressure_pa, interface, options=None, *, percolation_relative_contact_area=.42):
+    """Shared conservative PDF integration for cubic liquid and quadratic gas laws."""
     options = options or FlowOptions()
     p=float(model._pressures(pressure_pa));a=model.area(p);h=model.mean_gap(p)
     if a<1. and h<=0:
         raise ValueError('Mean-gap underflow cannot be interpreted as a blocked flow state')
     if a==1.:
-        return PressureFlowResult(p,h,a,effective_dimension(a,percolation_relative_contact_area),
-            0.,0.,0.,0.,0.,False,0.,1-a,1.,0.,0,0,0.,'blocked',
-            percolation_relative_contact_area,options.unresolved_flow_policy)
+        return p,a,h,{'geometric':0.,'upper':0.,'factor':0.,'mass':0.,'missing':0.,
+            'zero':1.,'dimension':effective_dimension(a,percolation_relative_contact_area),
+            'residual':0.,'iterations':0},0,0.
     start=max(model.pdf_min_u1_m*.01,np.finfo(float).tiny)
     stop=max(40*model.psd.hrms,10*h,start*1e6)
     count=options.gap_points
@@ -176,10 +179,20 @@ def pressure_flow(model, pressure_pa, interface, options=None, *, percolation_re
         count=2*count-1
     else:
         raise ValueError('Pressure-flow quadrature not converged; increase pressure_flow.gap_points')
+    return p,a,h,fine,count,difference
+
+
+def pressure_flow(model, pressure_pa, interface, options=None, *, percolation_relative_contact_area=.42):
+    """Liquid K3 table. Ballistic callers must use ballistic_pressure_flow for K2 units."""
+    if interface.gap_power!=3:
+        raise ValueError('pressure_flow requires cubic liquid mobility; use ballistic_pressure_flow')
+    options=options or FlowOptions()
+    p,a,h,fine,count,difference=integrate_mobility(model,pressure_pa,interface,options,
+        percolation_relative_contact_area=percolation_relative_contact_area)
     upper=fine['upper'];unbounded=not math.isfinite(upper)
     return PressureFlowResult(p,h,a,fine['dimension'],fine['geometric'],
         fine['geometric']/(12*interface.viscosity_pa_s),fine['factor'],
-        None if unbounded else upper,None if unbounded else upper/h**3,unbounded,
+        None if unbounded else upper,None if unbounded else (upper/h**3 if h>0 else 0.),unbounded,
         fine['mass'],fine['missing'],fine['zero'],fine['residual'],fine['iterations'],
         count,difference,('blocked' if upper==0 else 'unresolved_connectivity')
         if fine['geometric']==0 else 'conducting',
