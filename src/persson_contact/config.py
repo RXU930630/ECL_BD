@@ -31,8 +31,11 @@ class Options:
     pdf_max_relative_contact_area: float = 0.999
     pdf_min_relative_contact_area: float = 0.0001
     pdf_min_u1_m: float = 1e-12
+    pdf_scale_method: str = 'fortran'
 
     def __post_init__(self) -> None:
+        if self.pdf_scale_method not in ('fortran', 'conservative'):
+            raise ValueError('pdf_scale_method must be fortran or conservative')
         for name in ("gamma", "pdf_afact", "pdf_log_step", "pdf_max_relative_contact_area",
                      "pdf_min_relative_contact_area", "pdf_min_u1_m"):
             value = getattr(self, name)
@@ -165,7 +168,7 @@ def problem_from_mapping(raw, base_directory=Path('.')) -> tuple[Problem, Option
     opts = raw["options"]
     _keys(opts, {"gamma", "n_q", "pdf_afact", "n_gap", "critical_relative_contact_area", "critical_area_tolerance",
                   "pdf_log_step", "pdf_max_relative_contact_area",
-                  "pdf_min_relative_contact_area", "pdf_min_u1_m"}, "options")
+                  "pdf_min_relative_contact_area", "pdf_min_u1_m", "pdf_scale_method"}, "options")
     for field in ("gamma", "n_q", "pdf_afact"):
         if field not in opts:
             raise ValueError(f"Missing required options field: {field}")

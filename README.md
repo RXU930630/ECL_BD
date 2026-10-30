@@ -212,11 +212,13 @@ PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的�
 
 完整间隙分布包含接触概率质量 a 位于零间隙处，以及正间隙的连续部分。此处 P₊ 是已知 s>0 的条件密度，积分为 1；按总名义面积加权的连续密度积分为 1−a。两者不是同一条曲线。
 
-现在采用原 Fortran method 1 的尺度网格和截断：`pdf_log_step=0.01` 是 ln(zeta) 步长，`pdf_max_relative_contact_area=0.999`、`pdf_min_relative_contact_area=0.0001`、`pdf_min_u1_m=1e-12` 是原程序的积分范围。全部集中在 `parameters.py` 的 `options` 中，旧 JSON 省略时采用这些默认值。`n_q` 继续控制能量平均间隙和临界间隙计算，PDF 的尺度分辨率改由 `pdf_log_step` 单独控制。与 Fortran 对照时必须使用相同的尺度步长和截断参数。
+尺度积分现在有两种选择：日常 `parameters.py` 推荐 `pdf_scale_method='conservative'`，使用准确谱积分、面积差守恒权重和条件能量间隙；`'fortran'` 保留历史尺度规则，供原版复算。旧 JSON 和直接 API 省略该字段时仍使用 fortran。独立收敛矩阵、物理极限检查及剩余限制见[数值审计](docs/numerical_convergence/README.md)。
 
-PDF 使用解析 A' 和中心差分 ubar' 计算 u1，按照中心差分面积变化加权，避免旧有限体积公式在 A≈1 时产生巨大 u1。能量核函数仍使用独立准确积分，没有为贴合原程序的近似查表而降低精度。原程序的尺度截断作用于混合分布的组成；程序不会直接剪掉输出间隙轴上的曲线。
+`pdf_log_step=0.01` 是 ln(zeta) 步长，`pdf_max_relative_contact_area=0.999`、`pdf_min_relative_contact_area=0.0001`、`pdf_min_u1_m=1e-12` 为显式截断参数。`n_q` 控制能量积分，PDF 尺度分辨率由 `pdf_log_step` 控制，导流分箱由 `pressure_flow.gap_points` 控制，三者必须分别检查收敛。与 Fortran 对照时选择 fortran，并使用相同的尺度步长和截断参数。
 
-`unresolved_continuous_mass` 记录积分范围之外的非接触概率，另分解为 `excluded_high_area_mass`、`excluded_low_area_mass`、`excluded_small_u1_mass` 和 `boundary_unresolved_mass`。不把缺口当成接触，也不强行归一化。PDF 采用右矩形尺度积分，接触面积仍采用独立准确的 PSD 积分，因此需另计有符号的 `quadrature_mass_error`：
+两条 PDF 路径均使用解析 A' 计算 u1；历史路径使用中心差分面积权重，新路径使用准确面积差权重。能量核函数使用独立准确积分，没有为贴合原程序的近似查表而降低精度。尺度截断作用于混合分布的组成；程序不会直接剪掉输出间隙轴上的曲线。
+
+`unresolved_continuous_mass` 记录积分范围之外的非接触概率，另分解为 `excluded_high_area_mass`、`excluded_low_area_mass`、`excluded_small_u1_mass` 和 `boundary_unresolved_mass`。不把缺口当成接触，也不强行归一化。历史右矩形尺度积分与准确接触面积之间需另计有符号的 `quadrature_mass_error`；新守恒路径中这一项为零（浮点精度内）：
 
 ```
 已解析概率 + 未解析概率 = 1 - relative_contact_area + quadrature_mass_error

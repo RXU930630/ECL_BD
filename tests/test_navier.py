@@ -149,7 +149,8 @@ class SlipTransportTests(unittest.TestCase):
             cases=json.loads((Path(directory)/'slip/leakage_diagnostics.json').read_text())['cases']
             self.assertEqual(cases[0]['flow_rate_m3_s'],0.)
             law=make_interface(cfg['interface'])
-            model=PerssonModel(read_psd(cfg['psd']['path']),4e6,.4)
+            model=PerssonModel(read_psd(cfg['psd']['path']),4e6,.4,
+                               pdf_scale_method=cfg['options']['pdf_scale_method'])
             k=pressure_flow(model,5e4,law).geometric_conductivity_m3
             expected=.01/.001*k/(12*.1)*1e4
             np.testing.assert_allclose(cases[1]['flow_rate_m3_s'],expected,rtol=1e-9)

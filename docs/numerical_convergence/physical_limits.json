@@ -1,0 +1,284 @@
+{
+  "checks": [
+    {
+      "name": "energy_kernel_vs_adaptive_integral",
+      "error": 1.4621637234313312e-10,
+      "tolerance": 2e-07,
+      "passed": true
+    },
+    {
+      "name": "binary_closed_medium_near_percolation",
+      "error": 4.218847493575595e-14,
+      "tolerance": 2e-11,
+      "passed": true
+    },
+    {
+      "name": "binary_infinite_medium_near_threshold",
+      "error": 1.3322676295501878e-15,
+      "tolerance": 2e-11,
+      "passed": true
+    },
+    {
+      "name": "two_equal_positive_phases_geometric_mean",
+      "error": 1.2878587085651816e-14,
+      "tolerance": 2e-11,
+      "passed": true
+    },
+    {
+      "name": "large_gap_gaussian_second_order_coefficient",
+      "error": 0.002337800992397887,
+      "tolerance": 0.01,
+      "passed": true
+    },
+    {
+      "name": "parallel_plate_poiseuille",
+      "error": 0.0,
+      "tolerance": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "pressure_reversal",
+      "error": 0.0,
+      "tolerance": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "positive_pressure_dissipation",
+      "error": 0.0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "name": "shear_length_between_zero_and_gap",
+      "error": 0.0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "name": "shear_smooth_wall_limit",
+      "error": 0.0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "name": "shear_branch_continuity",
+      "error": 9.999999717180685e-10,
+      "tolerance": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "shear_common_velocity_translation",
+      "error": 4.440892098500626e-16,
+      "tolerance": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "manufactured_nonuniform_motion_flux",
+      "error": 8.536385709412286e-09,
+      "tolerance": 1e-06,
+      "passed": true
+    },
+    {
+      "name": "manufactured_motion_mass_conservation",
+      "error": 2.2656650705627576e-13,
+      "tolerance": 1e-10,
+      "passed": true
+    }
+  ],
+  "kernel": [
+    {
+      "gamma": 0.0,
+      "z": 1e-05,
+      "relative_error": 7.658551570699501e-11
+    },
+    {
+      "gamma": 0.0,
+      "z": 0.01,
+      "relative_error": 1.4621637234313312e-10
+    },
+    {
+      "gamma": 0.0,
+      "z": 0.1,
+      "relative_error": 8.71370753330325e-11
+    },
+    {
+      "gamma": 0.0,
+      "z": 1.0,
+      "relative_error": 1.5987211554602254e-14
+    },
+    {
+      "gamma": 0.0,
+      "z": 4.0,
+      "relative_error": 1.3722356584366935e-12
+    },
+    {
+      "gamma": 0.4,
+      "z": 1e-05,
+      "relative_error": 1.0746625811464128e-11
+    },
+    {
+      "gamma": 0.4,
+      "z": 0.01,
+      "relative_error": 4.356182081721727e-11
+    },
+    {
+      "gamma": 0.4,
+      "z": 0.1,
+      "relative_error": 4.111444518173357e-11
+    },
+    {
+      "gamma": 0.4,
+      "z": 1.0,
+      "relative_error": 1.2434497875801753e-14
+    },
+    {
+      "gamma": 0.4,
+      "z": 4.0,
+      "relative_error": 1.1226575225009583e-12
+    },
+    {
+      "gamma": 1.0,
+      "z": 1e-05,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "gamma": 1.0,
+      "z": 0.01,
+      "relative_error": 0.0
+    },
+    {
+      "gamma": 1.0,
+      "z": 0.1,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "gamma": 1.0,
+      "z": 1.0,
+      "relative_error": 1.3322676295501878e-15
+    },
+    {
+      "gamma": 1.0,
+      "z": 4.0,
+      "relative_error": 9.992007221626409e-16
+    }
+  ],
+  "root": [
+    {
+      "zero_probability": 0.1,
+      "local_k": 1e-200,
+      "relative_error": 7.105427357601002e-15
+    },
+    {
+      "zero_probability": 0.1,
+      "local_k": 1.0,
+      "relative_error": 5.551115123125783e-16
+    },
+    {
+      "zero_probability": 0.1,
+      "local_k": 1e+200,
+      "relative_error": 3.708144902248023e-14
+    },
+    {
+      "zero_probability": 0.49,
+      "local_k": 1e-200,
+      "relative_error": 1.887379141862766e-15
+    },
+    {
+      "zero_probability": 0.49,
+      "local_k": 1.0,
+      "relative_error": 3.3306690738754696e-16
+    },
+    {
+      "zero_probability": 0.49,
+      "local_k": 1e+200,
+      "relative_error": 4.218847493575595e-14
+    },
+    {
+      "zero_probability": 0.499999999,
+      "local_k": 1e-200,
+      "relative_error": 3.219646771412954e-14
+    },
+    {
+      "zero_probability": 0.499999999,
+      "local_k": 1.0,
+      "relative_error": 6.661338147750939e-16
+    },
+    {
+      "zero_probability": 0.499999999,
+      "local_k": 1e+200,
+      "relative_error": 1.199040866595169e-14
+    },
+    {
+      "zero_probability": 0.499999999999,
+      "local_k": 1e-200,
+      "relative_error": 4.1300296516055823e-14
+    },
+    {
+      "zero_probability": 0.499999999999,
+      "local_k": 1.0,
+      "relative_error": 1.4432899320127035e-15
+    },
+    {
+      "zero_probability": 0.499999999999,
+      "local_k": 1e+200,
+      "relative_error": 2.886579864025407e-15
+    },
+    {
+      "zero_probability": 0.49999999999999,
+      "local_k": 1e-200,
+      "relative_error": 1.965094753586527e-14
+    },
+    {
+      "zero_probability": 0.49999999999999,
+      "local_k": 1.0,
+      "relative_error": 1.1102230246251565e-15
+    },
+    {
+      "zero_probability": 0.49999999999999,
+      "local_k": 1e+200,
+      "relative_error": 2.4424906541753444e-14
+    }
+  ],
+  "gaussian_asymptotic": [
+    {
+      "gap_over_rms": 5.0,
+      "phi_p": 0.9481849955855205,
+      "coefficient": 1.2953751103619875
+    },
+    {
+      "gap_over_rms": 10.0,
+      "phi_p": 0.9855508713348634,
+      "coefficient": 1.444912866513659
+    },
+    {
+      "gap_over_rms": 20.0,
+      "phi_p": 0.996284978873051,
+      "coefficient": 1.4860084507795968
+    },
+    {
+      "gap_over_rms": 40.0,
+      "phi_p": 0.9990646916884304,
+      "coefficient": 1.4964932985114032
+    }
+  ],
+  "motion": [
+    {
+      "initial_nodes": 21,
+      "solver_nodes": 641,
+      "relative_flux_error": 8.536385709412286e-09,
+      "face_flux_spread": 2.2656650705627576e-13
+    },
+    {
+      "initial_nodes": 41,
+      "solver_nodes": 641,
+      "relative_flux_error": 8.536385709412286e-09,
+      "face_flux_spread": 2.219019024992348e-13
+    },
+    {
+      "initial_nodes": 81,
+      "solver_nodes": 641,
+      "relative_flux_error": 8.536385487367681e-09,
+      "face_flux_spread": 2.0474282145011978e-13
+    }
+  ]
+}

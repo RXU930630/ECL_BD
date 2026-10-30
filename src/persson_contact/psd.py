@@ -163,6 +163,45 @@ class PowerSpectrum:
             raise ValueError("PSD moment exceeds floating-point range")
         return result
 
+    def moments(self, order, lower, upper):
+        """Broadcast exact interval moments, summing positive segment integrals.
+
+        Unlike subtraction of cumulative full-band moments, this preserves
+        small residual intervals close to q1. Used by scale quadratures.
+        """
+        if isinstance(order, (bool, np.bool_)) or not math.isfinite(float(order)):
+            raise ValueError("moment order must be finite")
+        lo, hi = np.broadcast_arrays(self._check_interval(np.asarray(lower, float)),
+                                     self._check_interval(np.asarray(upper, float)))
+        if np.any(hi < lo):
+            raise ValueError("moment upper bound must be at least the lower bound")
+        result = np.zeros(lo.shape)
+        logq = self.log10_q * math.log(10.)
+        logc = self.log10_c * math.log(10.) + math.log(self.scale_c)
+        loglo, loghi = np.log(lo), np.log(hi)
+        for i in range(len(logq)-1):
+            left, right = np.maximum(loglo, logq[i]), np.minimum(loghi, logq[i+1])
+            active = right > left
+            if not np.any(active):
+                continue
+            width = right[active]-left[active]
+            slope = (logc[i+1]-logc[i])/(logq[i+1]-logq[i])
+            z = (float(order)+1+slope)*width
+            ratio = np.empty_like(z)
+            small = abs(z) < 1e-6
+            ratio[small] = np.log1p(z[small]/2+z[small]**2/6+z[small]**3/24)
+            high, low = z > 50, z < -50
+            ratio[high] = z[high]+np.log1p(-np.exp(-z[high]))-np.log(z[high])
+            ratio[low] = np.log1p(-np.exp(z[low]))-np.log(-z[low])
+            middle = ~(small | high | low)
+            ratio[middle] = np.log(np.expm1(z[middle])/z[middle])
+            with np.errstate(over='ignore'):
+                result[active] += np.exp(logc[i]+slope*(left[active]-logq[i])
+                                         +(float(order)+1)*left[active]+np.log(width)+ratio)
+        if np.any(~np.isfinite(result)):
+            raise ValueError("PSD moment exceeds floating-point range")
+        return float(result) if result.ndim == 0 else result
+
     @property
     def hrms(self) -> float:
         """RMS height in m, computed from C rather than the header h0."""

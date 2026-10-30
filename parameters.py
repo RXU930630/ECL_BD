@@ -125,7 +125,10 @@ NUMERICS = {
         'critical_relative_contact_area': 0.42,
         'critical_area_tolerance': 0.005, # 面积分数的绝对容差
         'n_q': 256,                   # 平均/临界间隙积分分辨率
-        'pdf_log_step': 0.01,         # PDF的ln(zeta)步长
+        # conservative：准确谱积分、面积差守恒的尺度积分（推荐）
+        # fortran：保留原右矩形和中心差分规则，供历史复算
+        'pdf_scale_method': 'conservative',
+        'pdf_log_step': 0.01,         # PDF尺度步长；需独立减半检查，导流分箱收敛不能代替它
         'pdf_max_relative_contact_area': 0.999,
         'pdf_min_relative_contact_area': 0.0001,
         'pdf_min_u1_m': 1e-12,

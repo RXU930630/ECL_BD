@@ -74,8 +74,15 @@ def bruggeman_conductivity(conductivities, probabilities, zero_probability, dime
     active=w>0; logk=np.log(k[active]); w=w[active]
     loglam=math.log(lam)
 
+    # Avoid subtracting 1 from a saturated sigmoid sum near percolation.
+    # The small phase margin, not the O(1) terms, sets a tiny finite root.
+    low_margin=math.fsum([*w,inf,-z/lam])
+    high_margin=math.fsum([z/lam,*(w/lam),-inf])
+
     def residual(log_value):
-        return z*d/lam + d/lam*float(w @ expit(loglam+log_value-logk))-1
+        if low_margin <= high_margin:
+            return low_margin-d/lam*float(w @ expit(loglam+log_value-logk))
+        return -high_margin+d/lam*float(w @ expit(logk-loglam-log_value))
 
     # A log-conductivity root remains well conditioned over many gap decades.
     left, right = float(min(logk)-80), float(max(logk)+80)

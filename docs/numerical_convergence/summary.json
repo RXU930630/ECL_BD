@@ -1,0 +1,532 @@
+{
+  "schema_version": 1,
+  "base_commit": "3bfa5f9519cfd0a39da11f232e4d8eb0ff1ea75e",
+  "source_hashes": {
+    "src/persson_contact/__init__.py": "c90a64cd08a337adab676afb90d6f4fa7c506984cc6123eb2d0634f7694f4c95",
+    "src/persson_contact/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/persson_contact/applications.py": "3ee081c27cad4338cc4737004ade8c5d328248f2a7bdae452e7b221177f9efb0",
+    "src/persson_contact/ballistic.py": "90e4fef18e0a0ccfa4119d3a3d707601f243e518bdfd2c844122c6328d03f930",
+    "src/persson_contact/boundaries.py": "69fc54618845cb3bffc762c69cf4f359a28b909a0a5d17d1e8c514ebb2d609fc",
+    "src/persson_contact/cli.py": "33c59d6d818bf8952a1d07c2a3a5a1d04c797a8659636b9b5d8701c125e3b1bb",
+    "src/persson_contact/config.py": "d24b6b1c4a0fba1cbe5cd0fb3b4652d741a85d7b9958cfe7f4dd86dfe5b22728",
+    "src/persson_contact/core.py": "232d6a7374441d3027e876ceda811ab587719677b7f35fd90aa10b3a5438826a",
+    "src/persson_contact/flow.py": "b86561d41b4adf47ffa2199fc5e6422162c1853871555c0dbcccab4d0adea16a",
+    "src/persson_contact/flow_output.py": "2399d9eeccba511a1b7a1078968b2b1bb4fc86ba819e86d8b8886d81aa21b8a2",
+    "src/persson_contact/gas.py": "58f4da4f4fc3ea38e493f9ebec938bad1d3ecf773bbf9510f72f3a308541bbdd",
+    "src/persson_contact/interface.py": "4170558f5f404305adacf18652aca9cc58b9a3f03b7af6f7d915dd28d9f320e3",
+    "src/persson_contact/leakage.py": "02d98b32347f59dc3176f451755cb38177a76c64c4501675d4c9cab0db1a881b",
+    "src/persson_contact/material.py": "cce4cc1ca348ae8de1d7370a3657f7cfeeaf403b6c0c62028568ad32e1931403",
+    "src/persson_contact/mechanics.py": "65e737518b9726a1fd1a13bc3860cb642b3860766fd9c64ace93c595b014ca73",
+    "src/persson_contact/moving_flow.py": "aa66bb5598eb3ab473bc9e51a36f6d820eecb98e413b6a073b93ead657b0e6aa",
+    "src/persson_contact/profiles.py": "2c4ef0d4a7208f5ee0a2e2336fd8da1904512926924d9b7c94fad5c23e623071",
+    "src/persson_contact/psd.py": "2074d0001af7deddb4cbcbb09a9f45429702ee933604016aa69b3295c0a7e366",
+    "src/persson_contact/shear.py": "c2be7c8df218a1550ffc50f1e4a87054be5c6d0d91eccab5c68ad0ad355c1e21",
+    "src/persson_contact/shear_output.py": "c4025269b513f7537fa6729288ed8c9b47559a58fe7fb8dd85ad1537b0cf76de",
+    "src/persson_contact/steady.py": "e802062c4377961ceab24a981fe331edf32ce82762a04ba058aea28095edf8c2",
+    "src/persson_contact/table.py": "aea65c6a4cc291c1cef273e3c0a0ef4fe9b3a93a4903633256727e6bf06396ef",
+    "src/persson_contact/transport_table.py": "ecf404412f52ea5be53ab2809b692b6f4a05d121432e9c264baa5d3d291493d9",
+    "src/persson_contact/workflow.py": "9f99b854af9c551ee41d6cc93eb6493b9488d9cc36ad4b1da55bfdced386e051"
+  },
+  "psd_sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+  "effective_modulus_pa": 4000000.0,
+  "gamma": 0.4,
+  "viscosity_pa_s": 0.1,
+  "critical_relative_contact_area": 0.42,
+  "percolation_pressure_pa": 197339.0024391418,
+  "percolation_gap_m": 9.177350841473205e-08,
+  "rms_height_m": 1.4099223644453717e-06,
+  "physical_limits_passed": true,
+  "physical_checks": [
+    {
+      "name": "energy_kernel_vs_adaptive_integral",
+      "error": 1.4621637234313312e-10,
+      "tolerance": 2e-07,
+      "passed": true
+    },
+    {
+      "name": "binary_closed_medium_near_percolation",
+      "error": 4.218847493575595e-14,
+      "tolerance": 2e-11,
+      "passed": true
+    },
+    {
+      "name": "binary_infinite_medium_near_threshold",
+      "error": 1.3322676295501878e-15,
+      "tolerance": 2e-11,
+      "passed": true
+    },
+    {
+      "name": "two_equal_positive_phases_geometric_mean",
+      "error": 1.2878587085651816e-14,
+      "tolerance": 2e-11,
+      "passed": true
+    },
+    {
+      "name": "large_gap_gaussian_second_order_coefficient",
+      "error": 0.002337800992397887,
+      "tolerance": 0.01,
+      "passed": true
+    },
+    {
+      "name": "parallel_plate_poiseuille",
+      "error": 0.0,
+      "tolerance": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "pressure_reversal",
+      "error": 0.0,
+      "tolerance": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "positive_pressure_dissipation",
+      "error": 0.0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "name": "shear_length_between_zero_and_gap",
+      "error": 0.0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "name": "shear_smooth_wall_limit",
+      "error": 0.0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "name": "shear_branch_continuity",
+      "error": 9.999999717180685e-10,
+      "tolerance": 2e-09,
+      "passed": true
+    },
+    {
+      "name": "shear_common_velocity_translation",
+      "error": 4.440892098500626e-16,
+      "tolerance": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "manufactured_nonuniform_motion_flux",
+      "error": 8.536385709412286e-09,
+      "tolerance": 1e-06,
+      "passed": true
+    },
+    {
+      "name": "manufactured_motion_mass_conservation",
+      "error": 2.2656650705627576e-13,
+      "tolerance": 1e-10,
+      "passed": true
+    }
+  ],
+  "scale_changes": [
+    {
+      "method": "fortran",
+      "pressure_pa": 1000.0,
+      "step": 0.04,
+      "K_change_to_finest": 0.002457734835473513,
+      "upper_K_change_to_finest": 0.005725635780393423
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 1000.0,
+      "step": 0.02,
+      "K_change_to_finest": 4.529104933959083e-05,
+      "upper_K_change_to_finest": -0.00016667901948685948
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 1000.0,
+      "step": 0.01,
+      "K_change_to_finest": -4.532746452590164e-05,
+      "upper_K_change_to_finest": -0.00033753377661172035
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 1000.0,
+      "step": 0.005,
+      "K_change_to_finest": -0.0003750373278660346,
+      "upper_K_change_to_finest": -4.18375562214468e-05
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 1000.0,
+      "step": 0.0025,
+      "K_change_to_finest": 0.0,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 10000.0,
+      "step": 0.04,
+      "K_change_to_finest": 0.04110878064787471,
+      "upper_K_change_to_finest": 0.040583541208902396
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 10000.0,
+      "step": 0.02,
+      "K_change_to_finest": 0.01771451208801711,
+      "upper_K_change_to_finest": 0.017149894305846347
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 10000.0,
+      "step": 0.01,
+      "K_change_to_finest": 0.007057187976348356,
+      "upper_K_change_to_finest": 0.007151127592723405
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 10000.0,
+      "step": 0.005,
+      "K_change_to_finest": 0.0024854350588898733,
+      "upper_K_change_to_finest": 0.002336897890066192
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 10000.0,
+      "step": 0.0025,
+      "K_change_to_finest": 0.0,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 100000.0,
+      "step": 0.04,
+      "K_change_to_finest": 0.1826164973522142,
+      "upper_K_change_to_finest": 0.16430348107441684
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 100000.0,
+      "step": 0.02,
+      "K_change_to_finest": 0.08519810413551365,
+      "upper_K_change_to_finest": 0.07431254547995625
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 100000.0,
+      "step": 0.01,
+      "K_change_to_finest": 0.03373413039927087,
+      "upper_K_change_to_finest": 0.03127178425364496
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 100000.0,
+      "step": 0.005,
+      "K_change_to_finest": 0.011282755895872798,
+      "upper_K_change_to_finest": 0.010406031123439519
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 100000.0,
+      "step": 0.0025,
+      "K_change_to_finest": 0.0,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.04,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": 0.14011579600929958
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.02,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": -0.001772610913790329
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.01,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": 0.045372396372138635
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.005,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": 0.014552999302768876
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.0025,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.04,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.02,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.01,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.005,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "fortran",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.0025,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 1000.0,
+      "step": 0.04,
+      "K_change_to_finest": -0.0021656839177066622,
+      "upper_K_change_to_finest": -0.002156366804416776
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 1000.0,
+      "step": 0.02,
+      "K_change_to_finest": 0.0005455883102634118,
+      "upper_K_change_to_finest": 0.000540765777221619
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 1000.0,
+      "step": 0.01,
+      "K_change_to_finest": -6.281326243395835e-05,
+      "upper_K_change_to_finest": -6.177775720195289e-05
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 1000.0,
+      "step": 0.005,
+      "K_change_to_finest": -2.5983679881269595e-05,
+      "upper_K_change_to_finest": -2.7746806551598446e-05
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 1000.0,
+      "step": 0.0025,
+      "K_change_to_finest": 0.0,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 10000.0,
+      "step": 0.04,
+      "K_change_to_finest": 0.0010964139352207525,
+      "upper_K_change_to_finest": 0.0011209411510069156
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 10000.0,
+      "step": 0.02,
+      "K_change_to_finest": 0.00028533178794809544,
+      "upper_K_change_to_finest": 0.00021973869739033702
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 10000.0,
+      "step": 0.01,
+      "K_change_to_finest": 0.00011637764771776915,
+      "upper_K_change_to_finest": 0.00012041686194952383
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 10000.0,
+      "step": 0.005,
+      "K_change_to_finest": -1.946201680114168e-05,
+      "upper_K_change_to_finest": -3.692334743077286e-05
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 10000.0,
+      "step": 0.0025,
+      "K_change_to_finest": 0.0,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 100000.0,
+      "step": 0.04,
+      "K_change_to_finest": 0.0012057344175797624,
+      "upper_K_change_to_finest": 0.002597656910933832
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 100000.0,
+      "step": 0.02,
+      "K_change_to_finest": 2.5568980630108484e-05,
+      "upper_K_change_to_finest": -0.0007768486464291291
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 100000.0,
+      "step": 0.01,
+      "K_change_to_finest": 4.713891065066811e-05,
+      "upper_K_change_to_finest": -0.0007606082427963345
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 100000.0,
+      "step": 0.005,
+      "K_change_to_finest": -1.873443201549918e-05,
+      "upper_K_change_to_finest": -0.0002854554686704258
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 100000.0,
+      "step": 0.0025,
+      "K_change_to_finest": 0.0,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.04,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": -0.059943768121150987
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.02,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": 0.03190599517686765
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.01,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": -0.025352097807734952
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.005,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": -0.026450945330764086
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 193392.22239035895,
+      "step": 0.0025,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": 0.0
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.04,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.02,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.01,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.005,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    },
+    {
+      "method": "conservative",
+      "pressure_pa": 199312.3924635332,
+      "step": 0.0025,
+      "K_change_to_finest": null,
+      "upper_K_change_to_finest": null
+    }
+  ],
+  "energy_n256_max_relative_difference": 1.039501817956534e-12,
+  "elapsed_seconds": 139.08722131499962,
+  "limitations": [
+    "Finest-grid differences are empirical convergence evidence, not rigorous error bounds.",
+    "Scale cutoffs, missing-phase bounds, closure physics and reflected-PDF moment mismatch remain model uncertainty.",
+    "Near percolation upper-bound relative changes require separate attention even when default K is zero.",
+    "No Fortran matching, gap rescaling, probability renormalization or large-gap splice is imposed."
+  ],
+  "convergence_checks": [
+    {
+      "name": "energy_n256_vs_adaptive",
+      "relative_difference": 1.039501817956534e-12,
+      "tolerance": 1e-07,
+      "passed": true
+    },
+    {
+      "name": "conservative_scale_K_at_1000_Pa",
+      "relative_difference": 6.281326243395835e-05,
+      "tolerance": 0.002,
+      "passed": true
+    },
+    {
+      "name": "gap_bin_K_at_1000_Pa",
+      "relative_difference": 3.2401623717426276e-06,
+      "tolerance": 0.002,
+      "passed": true
+    },
+    {
+      "name": "conservative_scale_K_at_10000_Pa",
+      "relative_difference": 0.00011637764771776915,
+      "tolerance": 0.002,
+      "passed": true
+    },
+    {
+      "name": "gap_bin_K_at_10000_Pa",
+      "relative_difference": 5.801430350005354e-06,
+      "tolerance": 0.002,
+      "passed": true
+    },
+    {
+      "name": "conservative_scale_K_at_100000_Pa",
+      "relative_difference": 4.713891065066811e-05,
+      "tolerance": 0.002,
+      "passed": true
+    },
+    {
+      "name": "gap_bin_K_at_100000_Pa",
+      "relative_difference": 7.963882095229913e-06,
+      "tolerance": 0.002,
+      "passed": true
+    }
+  ],
+  "well_conditioned_K_convergence_passed": true,
+  "analysis_script_sha256": "3ee1d808c43b83e9da0ecac241e36ccc9bbffa132c3efa45fcbf50dfb0dda4b0",
+  "analysis_note": "Convergence gates computed from the completed audit CSV outputs; physical calculations were not repeated."
+}

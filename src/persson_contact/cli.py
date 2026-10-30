@@ -37,7 +37,7 @@ def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, p
                          pdf_afact=options.pdf_afact, pdf_log_step=options.pdf_log_step,
                          pdf_max_relative_contact_area=options.pdf_max_relative_contact_area,
                          pdf_min_relative_contact_area=options.pdf_min_relative_contact_area,
-                         pdf_min_u1_m=options.pdf_min_u1_m)
+                         pdf_min_u1_m=options.pdf_min_u1_m,pdf_scale_method=options.pdf_scale_method)
     table = build_contact_table(model, problem.pressures_pa)
     output.mkdir(parents=True, exist_ok=True)
     if any(output.iterdir()):
@@ -90,9 +90,9 @@ def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, p
         'description': problem.description,
         **(provenance or {}),
         'package_version': __version__,
-        'model': 'standard_Persson_area_gamma_energy_Fortran_method1_PDF',
+        'model': 'standard_Persson_area_gamma_energy_reflected_gaussian_PDF',
         'scope': 'nonadhesive, linearly elastic, isotropic 2D PSD; local half-space response',
-        'validation_limit': 'Elastic PDF checked against Fortran method 1 on the supplied PSD; scale cutoffs and quadrature error remain explicit. PDF first moment is not constrained to the energy mean gap.',
+        'validation_limit': 'Fortran scale quadrature has historical regressions; conservative scale quadrature has independent numerical convergence checks. Neither is an experimental validation. PDF first moment is not constrained to the energy mean gap.',
         'probability_representation': 'Retained PDF mass + unresolved mass = (1-A/A0) + signed quadrature_mass_error. Use CDF-difference gap_bins probabilities for integration. Pointwise density CSV excludes s=0 and can under-resolve narrow peaks; sampled/trapezoid diagnostics are not probability-normalization certificates.',
         'effective_modulus_pa': float(problem.effective_modulus_pa),
         'psd_hrms_m': hrms, 'psd_rms_slope': float(problem.psd.rms_slope),
@@ -149,7 +149,7 @@ def run_contact(problem, options, output, *, plot=False, compute_gap_pdf=True, p
     print(f'压力范围 {table.pressures_pa[0]:g}–{table.pressures_pa[-1]:g} Pa，'
           f'共 {len(table.pressures_pa)} 点；A/A0 为 relative contact area。')
     if compute_gap_pdf:
-        print('间隙分布采用 Fortran method 1 近似；请查看截断概率与第一矩诊断。')
+        print(f'间隙分布采用反射高斯近似，尺度积分={options.pdf_scale_method}；请查看截断概率与第一矩诊断。')
     return summary
 
 

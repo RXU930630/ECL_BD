@@ -64,7 +64,7 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
             n_q=options.n_q,pdf_afact=options.pdf_afact,pdf_log_step=options.pdf_log_step,
             pdf_max_relative_contact_area=options.pdf_max_relative_contact_area,
             pdf_min_relative_contact_area=options.pdf_min_relative_contact_area,
-            pdf_min_u1_m=options.pdf_min_u1_m)
+            pdf_min_u1_m=options.pdf_min_u1_m,pdf_scale_method=options.pdf_scale_method)
     if spatial:
         plan=prepare_leakage(parameters['leakage'],base,problem.effective_modulus_pa)
         requested=problem.pressures_pa

@@ -34,6 +34,9 @@ def run_pressure_flow(model, pressures, interface, options, output, *, percolati
                      interface.metadata),
         'table_file':filename,
         'options':asdict(options),'percolation_relative_contact_area':percolation,
+        'pdf_scale_method':model.pdf_scale_method,'pdf_log_step':model.pdf_log_step,
+        'convergence_scope':'quadrature_relative_difference checks gap-bin refinement only; '
+          'independently refine pdf_log_step and n_q. Missing-mass bounds and PDF model error are separate.',
         'convention':('K2 [m^2]; molecular mobility=vbar*K2/(2 kBT) [1/(Pa s)]; phi_2=K2/h^2.' if ballistic else
                       'K [m^3]; hydraulic sigma=K/(12 eta) [m^3/(Pa s)]; phi_p=K/h^3.'),
         'missing_pdf_policy':'Unrepresented PDF mass is zero hydraulic conductance in the default/lower result, '

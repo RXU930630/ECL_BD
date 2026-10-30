@@ -50,3 +50,9 @@ interface中用rheology选择流变，用wall_slip选择壁面边界；所有已
 ## 剪切流动与粗糙侧
 
 main.py中的COMPUTE_SHEAR_FLOW默认关闭。打开后，在CASE的shear_flow块选择rough_surface=lower/upper、两侧速度和测试压力梯度，所有字段均有注释。可以关闭RUN_LEAKAGE只生成因子表；非零速度与空间输运一起计算时，当前需fixed_contact、无滑移、有效介质，并关闭附加气体估算。详见[剪切流动模块](shear_flow.md)。
+
+## PDF积分与精度
+
+NUMERICS.options中的pdf_scale_method选择尺度积分：conservative使用准确谱积分和面积差权重，当前日常参数推荐这一项；fortran保留历史右矩形积分供复算。旧JSON或直接API省略该字段时仍使用fortran。
+
+pdf_log_step控制PDF尺度步长，n_q控制能量积分，pressure_flow.gap_points控制导流分箱，三者需分别检查收敛。导出的n_gap只控制显示网格。当前导流quadrature_relative_difference仅代表分箱收敛，不能证明PDF尺度或模型误差已消失。新工况可用步长0.01、0.005比较；近渗流还需检查遗漏概率及上下界。详细方法和数据见[独立数值审计](numerical_convergence/README.md)。

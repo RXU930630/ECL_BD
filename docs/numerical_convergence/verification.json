@@ -1,0 +1,13 @@
+{
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python -m unittest discover -s tests -v",
+  "tests": 111,
+  "elapsed_seconds": 107.746,
+  "result": "OK",
+  "log_sha256": "b89db7ecc038efb6cfc336bc8acd997e83d0eaf5ebf7330cd43c7b59d647ce99",
+  "audit_checks": 14,
+  "convergence_checks": 7,
+  "historical_Fortran_fixtures_changed": false,
+  "parameter_default": "conservative",
+  "legacy_API_default": "fortran",
+  "scope": "Independent analytic limits, numerical convergence, workflow and historical regression tests; no experimental validation"
+}
