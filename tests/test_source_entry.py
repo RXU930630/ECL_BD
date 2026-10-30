@@ -95,6 +95,27 @@ runpy.run_path(str(entry), run_name='__main__')
         self.assertLess(data['load_relative_error'],1e-8)
         self.assertFalse((out/'leakage_cases.csv').exists())
 
+    def test_downloaded_contact_friction_entry_and_constant_parameter(self):
+        import json
+        entry=self.project/'main.py'
+        entry.write_text(entry.read_text().replace('RUN_CONTACT_FRICTION = False','RUN_CONTACT_FRICTION = True'))
+        config=self.project/'parameters.py'
+        config.write_text(config.read_text().replace("'cells': 257","'cells': 65")
+            .replace("'points': 1201","'points': 601")
+            .replace("'shear_strength_pa': None","'shear_strength_pa': 1e5",1)
+            .replace("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/contact_friction'"))
+        driver="import runpy,sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(p.parent)); runpy.run_path(str(p),run_name='__main__')"
+        result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
+                              capture_output=True,text=True,timeout=60)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        out=self.project/'results/contact_friction'
+        self.assertTrue((out/'macro_geometry.csv').is_file())
+        self.assertTrue((out/'contact_friction_cases.csv').is_file())
+        diag=json.loads((out/'contact_friction_diagnostics.json').read_text())
+        self.assertEqual(diag['model']['shear_strength_pa'],1e5)
+        self.assertEqual(diag['cases'][0]['status'],'no_relative_sliding_static_unmodelled')
+        self.assertGreater(diag['cases'][1]['friction_force_magnitude_per_width_n_m'],0)
+
     def test_downloaded_shear_switch_and_parameter_presets(self):
         import json
         entry=self.project/'main.py'

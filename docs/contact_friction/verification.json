@@ -1,0 +1,12 @@
+{
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python -m unittest discover -s tests -v",
+  "tests": 135,
+  "elapsed_seconds": 109.407,
+  "result": "OK",
+  "log_sha256": "3e9f5374d298b64ba2902b826921d1d1245a1ec459131e868ed64d080860d32c",
+  "independent_checks": 13,
+  "downloaded_main_entry_verified": true,
+  "experimental_shear_strength_supplied": false,
+  "report_figure_dpi": 70,
+  "normal_solution_byte_identical_with_friction_on_off": true
+}

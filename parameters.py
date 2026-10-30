@@ -96,6 +96,30 @@ CASE = {
             'reference_pressure_pa': 1e5, # 报告气体体积时的参考绝对压力
         },
     },
+    # 固体接触滑动摩擦：main.py开启RUN_CONTACT_FRICTION；自动求解模块2+6的干接触
+    'contact_friction': {
+        'model': 'constant_shear_strength', # 日常使用常数；备选gaussian_log_velocity或custom
+        'model_parameters': {              # 只读取选中模型；剪切强度均作用在真实接触面积上
+            'constant_shear_strength': {
+                'shear_strength_pa': None, # 必填实验值，Pa；不由E或PSD推断，不默认猜测
+            },
+            'gaussian_log_velocity': {     # 后续选项：tau=baseline+amplitude*exp(-0.5*z^2)
+                'baseline_pa': None,
+                'amplitude_pa': None,
+                'peak_velocity_m_s': None, # 峰值相对速度的绝对值，必须>0
+                'width_decades': None,     # z=log10(|V|/V_peak)/width_decades
+            },
+            'custom': {                    # 自定义Python函数；state包含速度、压力和温度等
+                'module_file': 'examples/contact_shear_model.py',
+                'function': 'shear_strength',
+                'parameters': {'shear_strength_pa': None}, # 传给函数的自定义参数
+            },
+        },
+        'relative_velocities_m_s': [0., 1e-6, 1e-4, 1e-2, -1e-2], # V=上壁速度-下壁速度，沿+x
+        'temperature_k': 298.15,          # 仅传给模型；常数及高斯模型无温度依赖，不求热场
+        'transverse_width_m': None,       # 可选横向宽度B；None只输出N/m，填写后另输出总力N
+        # V=0不求静摩擦：滑动摩擦项及耗散为0，动摩擦系数与静摩擦极限留空
+    },
     # 剪切流动：main.py开启COMPUTE_SHEAR_FLOW后读取；首版限牛顿、无滑移、单侧粗糙
     'shear_flow': {
         'model': 'persson_interpolation', # 当前唯一实现的各向同性剪切因子模型

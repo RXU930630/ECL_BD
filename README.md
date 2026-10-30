@@ -6,13 +6,15 @@
 
 **宏观变形与粗糙干接触：** [模块6及2＋6说明、变形图和独立验证](docs/macroscopic_contact/README.md)。新增 `RUN_MACRO_CONTACT` 独立任务；输出形变前后平均表面、弹性位移、平均间隙、接触压力和接触面积比。原泄漏工作流不会自动改为完整流固耦合。
 
+**固体接触滑动摩擦：** [模块5说明、参数与验证](docs/contact_friction/README.md)。`RUN_CONTACT_FRICTION` 自动复用宏观干接触，在真实接触面积上积分实验给定的界面剪切强度。日常默认常数模型，实验值必须填写；log10相对速度高斯及自定义函数为可选接口。流体摩擦与黏弹性滞后尚未接入。
+
 **流体选择：** `parameters.py` 的 `CASE['leakage']['fluid']='liquid'` 使用液体模型，并用 `compute_equivalent_gas=True/False` 控制附加diffusive/ballistic估算；改为 `'gas'` 则独立计算K2和ballistic气体压力。参数按工况、模型与数值设置、输出目录整理，开发复算配置已移入测试数据。详见[参数说明](docs/parameters.md)、[气体单位与输出](docs/gas_leakage.md)及[气体验证记录](docs/gas_validation/report.md)。
 
 **牛顿流体与滑移：** 在CASE的interface中选择rheology与wall_slip，各自参数列在rheology_parameters和slip_parameters。支持两壁独立Navier滑移长度，已接入压力导流与液体泄漏；非零滑移时关闭附加气体估算。局部流量、壁面剪切应力及未来压温接口见[模块3说明](docs/module3_interface.md)。
 
 **剪切流动模块：** main.py开启COMPUTE_SHEAR_FLOW，在CASE的shear_flow中设置两侧速度与粗糙侧。可独立输出剪切因子；与泄漏一起使用非零速度时，需选择fixed_contact并关闭附加气体估算。首版为单侧粗糙、牛顿、无滑移插值，详见[模块4剪切流动说明](docs/shear_flow.md)。
 
-当前完整测试集124项通过；宏观模块另完成16项独立验证，剪切和数值积分的参考及收敛记录保留在各模块文档中。
+当前完整测试集135项通过；宏观模块另完成16项独立验证，固体接触摩擦另完成13项检查，剪切和数值积分的参考及收敛记录保留在各模块文档中。
 
 ## 新增：三种几何的空间液体泄漏
 
@@ -51,6 +53,7 @@ CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_press
 | --- | --- |
 | `RUN_CONTACT = True` | 计算共用 Persson 弹性接触数据库 |
 | `RUN_MACRO_CONTACT = False` | 独立宏观干接触；smooth为Hertz检验，persson为模块2＋6耦合；开启时关闭流动及泄漏任务 |
+| `RUN_CONTACT_FRICTION = False` | 固体接触滑动摩擦，自动调用宏观干接触；先在contact_friction中填写实验剪切强度，并关闭流动／泄漏及混合摩擦开关 |
 | `RUN_LEAKAGE = True` | 计算所选几何的空间泄漏与局部卸载，自动调用接触和流动基础 |
 | `RUN_MIXED_FRICTION = False` | 预留混合摩擦入口；求解器尚未实现 |
 | `COMPUTE_SHEAR_FLOW = False` | 单侧粗糙剪切因子；自动计算接触与压力导流基础 |
@@ -58,7 +61,7 @@ CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_press
 | `COMPUTE_GAP_PDF = True` | 是否导出所选尺度积分的间隙分布，不关闭流动所需的内部分布计算；独立宏观任务不使用此导出开关 |
 | `SAVE_PLOTS = True` | 是否生成 PNG 图 |
 
-混合摩擦、黏弹性和非牛顿流变尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。所有 RUN 开关和COMPUTE_SHEAR_FLOW全关时不执行计算。要只运行原微观干接触部分，保持 RUN_CONTACT=True，并关闭宏观任务、COMPUTE_PRESSURE_FLOW和其他应用开关。宏观任务需关闭泄漏、压力／剪切流动及混合摩擦开关；所需的Persson数据库由任务自身生成。
+完整混合摩擦、黏弹性和非牛顿流变尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。所有 RUN 开关和COMPUTE_SHEAR_FLOW全关时不执行计算。要只运行原微观干接触部分，保持 RUN_CONTACT=True，并关闭宏观／摩擦任务、COMPUTE_PRESSURE_FLOW和其他应用开关。宏观及固体摩擦任务需关闭泄漏、压力／剪切流动及混合摩擦开关；所需的Persson数据库由任务自身生成。
 
 默认Hertz示例的液体黏度为0.1 Pa·s，可在CASE的interface.rheology_parameters.newtonian分组修改。未实现模块的占位参数和开发复算配置已移出日常配置。路径始终相对于项目目录，不随启动终端的目录改变。非空输出目录会被拒绝，请修改OUTPUT_DIRECTORY后重新运行。
 

@@ -60,9 +60,13 @@ def prepare_macro(parameters,base):
     return raw,solver,hertz,elastic,representation,model
 
 
-def run_macro_project(parameters,*,base_directory,save_plots=True):
+def run_macro_project(parameters,*,base_directory,save_plots=True,compute_contact_friction=False):
     base=Path(base_directory).resolve()
     raw,solver,hertz,elastic,representation,kind=prepare_macro(parameters,base)
+    friction_plan=None
+    if compute_contact_friction:
+        from .contact_friction_output import prepare_contact_friction
+        friction_plan=prepare_contact_friction(parameters.get('contact_friction',{}),base)
     name=parameters.get('output_directory')
     if not isinstance(name,str) or not name.strip():raise ValueError('Provide output_directory')
     out=Path(name);out=out if out.is_absolute() else base/out
@@ -105,6 +109,10 @@ def run_macro_project(parameters,*,base_directory,save_plots=True):
         result=solve_smooth_contact(elastic,hertz,tolerance=solver['relative_tolerance'],max_iterations=solver['max_iterations'])
     if result.edge_pressure_ratio>solver['edge_pressure_ratio_tolerance']:
         raise ValueError('Macro pressure remains significant at domain edges; enlarge domain_half_width_m')
+    friction_results=None
+    if friction_plan is not None:
+        from .contact_friction_output import calculate_friction_sweep
+        friction_results=calculate_friction_sweep(result,friction_plan)
     if kind=='smooth':
         exact_gap=np.full_like(result.x_m,np.nan)
     rows=[]
@@ -161,6 +169,13 @@ def run_macro_project(parameters,*,base_directory,save_plots=True):
         _csv(out/'macro_contact_table.csv',[{'pressure_pa':p,'mean_gap_m':h,'relative_contact_area':a}
             for p,h,a in zip(table.pressures_pa,table.mean_gaps_m,table.contact_fractions)])
     if save_plots:plot_macro(out,result,hertz,representation)
+    if friction_results is not None:
+        from .contact_friction_output import write_contact_friction
+        friction_summary=write_contact_friction(out,friction_plan,friction_results,save_plots=save_plots)
+        summary['contact_friction']={'model':friction_plan.law.metadata,
+            'case_count':len(friction_results),'file':'contact_friction_diagnostics.json',
+            'scope':friction_summary['scope']}
+        summary['outputs']+=friction_summary['outputs']
     (out/'macro_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
     print(f'宏观干接触已保存到 {out.resolve()}；载荷误差 {result.load_relative_error:.3g}，最小平均间隙 {result.minimum_gap_m:.6g} m。')
     return summary

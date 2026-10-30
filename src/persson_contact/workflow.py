@@ -19,27 +19,29 @@ from .shear_output import run_shear_flow
 
 def run_project(parameters, *, base_directory, run_contact=True, run_leakage=False,
                 run_mixed_friction=False, compute_gap_pdf=True, save_plots=True,
-                compute_pressure_flow=False,compute_shear_flow=False,run_macro_contact=False):
+                compute_pressure_flow=False,compute_shear_flow=False,run_macro_contact=False,
+                run_contact_friction=False):
     switches = (run_contact, run_leakage, run_mixed_friction, compute_gap_pdf,
-                save_plots,compute_pressure_flow,compute_shear_flow,run_macro_contact)
+                save_plots,compute_pressure_flow,compute_shear_flow,run_macro_contact,run_contact_friction)
     if any(type(value) is not bool for value in switches):
         raise ValueError('所有功能开关必须为 True 或 False。')
-    if not any(switches[:3]) and not compute_shear_flow and not run_macro_contact:
+    if not any(switches[:3]) and not compute_shear_flow and not run_macro_contact and not run_contact_friction:
         print('没有启用计算功能；未创建任何结果文件。')
         return None
     base = Path(base_directory).resolve()
     problem_keys = {'description', 'psd', 'material', 'pressures_pa', 'contact_pressure', 'options'}
-    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact'}
+    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction'}
     if not isinstance(parameters, dict) or set(parameters) - allowed:
         raise ValueError('parameters.py 中存在未知参数分组。')
-    for name in ('leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact'):
+    for name in ('leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction'):
         if name in parameters and not isinstance(parameters[name], dict):
             raise ValueError(f'{name} 必须为参数字典。')
-    if run_macro_contact:
+    if run_macro_contact or run_contact_friction:
         if run_leakage or run_mixed_friction or compute_pressure_flow or compute_shear_flow:
             raise NotImplementedError('宏观干接触目前独立运行：关闭 RUN_LEAKAGE、RUN_MIXED_FRICTION、COMPUTE_PRESSURE_FLOW 和 COMPUTE_SHEAR_FLOW；尚未接入完整流体耦合。')
         from .macro_output import run_macro_project
-        return run_macro_project(parameters,base_directory=base,save_plots=save_plots)
+        return run_macro_project(parameters,base_directory=base,save_plots=save_plots,
+                                 compute_contact_friction=run_contact_friction)
     if run_mixed_friction:
         raise NotImplementedError('混合摩擦 RUN_MIXED_FRICTION 尚未实现。')
     flow_enabled=compute_pressure_flow or run_leakage or compute_shear_flow

@@ -1,0 +1,120 @@
+{
+  "base_commit": "53ab474b213509ef8625558e1f894e744d73620c",
+  "source_hashes": {
+    "src/persson_contact/__init__.py": "c90a64cd08a337adab676afb90d6f4fa7c506984cc6123eb2d0634f7694f4c95",
+    "src/persson_contact/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/persson_contact/applications.py": "3ee081c27cad4338cc4737004ade8c5d328248f2a7bdae452e7b221177f9efb0",
+    "src/persson_contact/ballistic.py": "90e4fef18e0a0ccfa4119d3a3d707601f243e518bdfd2c844122c6328d03f930",
+    "src/persson_contact/boundaries.py": "69fc54618845cb3bffc762c69cf4f359a28b909a0a5d17d1e8c514ebb2d609fc",
+    "src/persson_contact/cli.py": "33c59d6d818bf8952a1d07c2a3a5a1d04c797a8659636b9b5d8701c125e3b1bb",
+    "src/persson_contact/config.py": "d24b6b1c4a0fba1cbe5cd0fb3b4652d741a85d7b9958cfe7f4dd86dfe5b22728",
+    "src/persson_contact/contact_friction.py": "c21fc35b8f96b0c99fc8286d95a8b6479c1d1667249405df53ee8c8aad0cb4a2",
+    "src/persson_contact/contact_friction_output.py": "e0334e75db0c369ae42e0ce2cfcf8a1ec2eba0ebb223c44d3b1070c94120ea5e",
+    "src/persson_contact/core.py": "232d6a7374441d3027e876ceda811ab587719677b7f35fd90aa10b3a5438826a",
+    "src/persson_contact/dry_contact.py": "eaeafffde4f7e9aab95438628a74d427a3865ffe18d60b99337d3b68676f010c",
+    "src/persson_contact/flow.py": "b86561d41b4adf47ffa2199fc5e6422162c1853871555c0dbcccab4d0adea16a",
+    "src/persson_contact/flow_output.py": "2399d9eeccba511a1b7a1078968b2b1bb4fc86ba819e86d8b8886d81aa21b8a2",
+    "src/persson_contact/gas.py": "58f4da4f4fc3ea38e493f9ebec938bad1d3ecf773bbf9510f72f3a308541bbdd",
+    "src/persson_contact/interface.py": "4170558f5f404305adacf18652aca9cc58b9a3f03b7af6f7d915dd28d9f320e3",
+    "src/persson_contact/leakage.py": "02d98b32347f59dc3176f451755cb38177a76c64c4501675d4c9cab0db1a881b",
+    "src/persson_contact/macro_output.py": "e2babf3b7bca846e6b0d7ce53ba67023fd264ffca8467d0ea4eb4020544881f3",
+    "src/persson_contact/macroscopic.py": "1d832e1b24cf2d5c53f033d580e703c031b5d19415e55bb29e7b70b7786cc450",
+    "src/persson_contact/material.py": "cce4cc1ca348ae8de1d7370a3657f7cfeeaf403b6c0c62028568ad32e1931403",
+    "src/persson_contact/mechanics.py": "65e737518b9726a1fd1a13bc3860cb642b3860766fd9c64ace93c595b014ca73",
+    "src/persson_contact/moving_flow.py": "aa66bb5598eb3ab473bc9e51a36f6d820eecb98e413b6a073b93ead657b0e6aa",
+    "src/persson_contact/profiles.py": "2c4ef0d4a7208f5ee0a2e2336fd8da1904512926924d9b7c94fad5c23e623071",
+    "src/persson_contact/psd.py": "2074d0001af7deddb4cbcbb09a9f45429702ee933604016aa69b3295c0a7e366",
+    "src/persson_contact/shear.py": "c2be7c8df218a1550ffc50f1e4a87054be5c6d0d91eccab5c68ad0ad355c1e21",
+    "src/persson_contact/shear_output.py": "c4025269b513f7537fa6729288ed8c9b47559a58fe7fb8dd85ad1537b0cf76de",
+    "src/persson_contact/steady.py": "e802062c4377961ceab24a981fe331edf32ce82762a04ba058aea28095edf8c2",
+    "src/persson_contact/table.py": "aea65c6a4cc291c1cef273e3c0a0ef4fe9b3a93a4903633256727e6bf06396ef",
+    "src/persson_contact/transport_table.py": "ecf404412f52ea5be53ab2809b692b6f4a05d121432e9c264baa5d3d291493d9",
+    "src/persson_contact/workflow.py": "57e8cbe961545dff34be958d0ca3b350cee2431960365d98b86f90eea544e5b3"
+  },
+  "psd_sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+  "demonstration_only": true,
+  "experimental_shear_strength_supplied": false,
+  "demonstration_strength_pa": 100000.0,
+  "checks": [
+    {
+      "name": "analytic_nonuniform_real_area_force",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "analytic_normalization",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "action_reaction",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "reversal_upper_force",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "positive_dissipation",
+      "value": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "zero_speed_sliding_force",
+      "value": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "zero_speed_static_coefficient_not_invented",
+      "value": 0.0,
+      "limit": 0.0,
+      "passed": true
+    },
+    {
+      "name": "pressure_temperature_callback_integral",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "log_gaussian_peak",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "log_gaussian_symmetric_decades",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "default_coefficient_change_to_finer_mesh",
+      "value": 1.1981652624504235e-06,
+      "limit": 0.001,
+      "passed": true
+    },
+    {
+      "name": "width_doubles_total_force",
+      "value": 0.0,
+      "limit": 1e-13,
+      "passed": true
+    },
+    {
+      "name": "constant_strength_speed_independence",
+      "value": 1.1102230246251565e-16,
+      "limit": 1e-13,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "scope": "Dry solid-contact sliding friction on elastic normal state. No fluid friction, static solve or viscoelastic hysteresis."
+}

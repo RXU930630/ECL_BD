@@ -66,3 +66,13 @@ main.py开启RUN_MACRO_CONTACT，关闭RUN_LEAKAGE、RUN_MIXED_FRICTION、COMPUT
 NUMERICS.macro_contact.solver设置单元数、容差与边界压力检查；contact_table设置独立的Persson查表范围及点数。高压端不足报错，远场超过表域用有显式载荷上界的零尾压近似，不设置正压力地板。reference_length_m只选择二维绝对位移参考，改变它时应保持压力和平均间隙不变。
 
 建议新输出目录为results/macro_contact。结果包括形变后的平均几何、真实比例图、接触区放大图和力学残差。详细说明与验证见[宏观模块报告](macroscopic_contact/README.md)。
+
+## 固体接触界面剪切强度与摩擦力
+
+main.py开启RUN_CONTACT_FRICTION，关闭RUN_LEAKAGE、RUN_MIXED_FRICTION、COMPUTE_PRESSURE_FLOW和COMPUTE_SHEAR_FLOW；宏观干接触自动作为依赖计算，不要求额外开启RUN_MACRO_CONTACT。
+
+CASE.contact_friction.model默认constant_shear_strength。在model_parameters.constant_shear_strength.shear_strength_pa填写实验剪切强度（Pa，作用于真实接触面积），默认None表示必须给定，不能由E或PSD推算。摩擦名义牵引由真实面积比乘该强度得到。
+
+relative_velocities_m_s为上侧减下侧的带符号相对速度；零速度只关闭滑动项，不计算静摩擦。transverse_width_m可留空，此时输出N/m；给定真实横向宽度后另输出总力N。temperature_k传给模型，常数模型不含温度依赖。
+
+gaussian_log_velocity预设按log10(|V|/V_peak)定义，width_decades为十进制数量级宽度。custom预设指定用户Python文件与shear_strength(state,parameters)函数，状态包括速度、两种接触压力及温度；只读取当前选中的模型块。日常使用不必更改这些备选块。详细说明、输出与验证见[固体接触摩擦报告](contact_friction/README.md)。
