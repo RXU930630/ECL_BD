@@ -1,0 +1,429 @@
+{
+  "archive": {
+    "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+    "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+  },
+  "source": {
+    "file": "build/AI.ContactMechanics.14.09.2026.f90",
+    "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+    "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+    "modified": true,
+    "variant": "real-erf+diagnostic-real-cast",
+    "optimization": {
+      "name": "real-erf",
+      "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+      "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+      "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+      "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+    },
+    "compiled_sha256": "784f470f15e7a7031c00c62271c7f958b8a8464d91c42c6473aed039a52856e9",
+    "printing_fix": {
+      "before": "      WRITE(555,8276) LowPressure",
+      "after": "      WRITE(555,8276) DBLE(LowPressure)",
+      "scope": "Only the diagnostic WRITE argument; no physical arithmetic changed"
+    }
+  },
+  "run": {
+    "command": [
+      "/workspace/work/shear_archive_check/real_erf_print_n12/build/original"
+    ],
+    "cwd": "/workspace/work/shear_archive_check/real_erf_print_n12",
+    "log": "/workspace/work/shear_archive_check/real_erf_print_n12/run.log",
+    "returncode": 0,
+    "timed_out": false,
+    "elapsed_seconds": 244.06708436999907
+  },
+  "compiler": "GNU Fortran (Debian 14.2.0-19) 14.2.0",
+  "controls": {
+    "material": [
+      100000.0,
+      0.43,
+      0.5,
+      3000000.0,
+      10000000.0
+    ],
+    "numerical": [
+      0.01,
+      3.0,
+      0.0,
+      0.42,
+      110.0,
+      1e-12,
+      40000.0,
+      30.0,
+      0.4,
+      1.0,
+      2.0,
+      20.0,
+      4000.0,
+      512.0,
+      1.0,
+      3.1415,
+      0.0,
+      1.0,
+      0.9,
+      6000.0,
+      1.0,
+      3.85
+    ],
+    "fluid_viscosity_pa_s": 0.1
+  },
+  "counts": {
+    "native": 12,
+    "extended": 6,
+    "total": 18
+  },
+  "fortran_rms_reconstructed_m": 1.409876079186402e-06,
+  "python_rms_m": 1.4099223644453717e-06,
+  "fortran_percolation_gap_m": 9.212307056524539e-08,
+  "python_percolation_gap_m": 9.177350841473205e-08,
+  "metrics": {
+    "mean_gap": {
+      "count": 12,
+      "max_abs_relative": 0.004274707846076087,
+      "max_abs_difference": 2.1381119962426925e-08,
+      "worst_pressure_pa": 140.15146234871466
+    },
+    "shear_end_to_end": {
+      "count": 12,
+      "max_abs_relative": 0.0038554636889662763,
+      "max_abs_difference": 0.001324394837694698,
+      "worst_pressure_pa": 200000.04722866023
+    },
+    "shear_shared_state": {
+      "count": 12,
+      "max_abs_relative": 2.1326612555938596e-06,
+      "max_abs_difference": 4.950081002319529e-07,
+      "worst_pressure_pa": 103338.82294725331
+    },
+    "pressure_end_to_end": {
+      "count": 11,
+      "max_abs_relative": 0.019864957623768387,
+      "max_abs_difference": 0.017733527130568527,
+      "worst_pressure_pa": 271.2465488717254
+    },
+    "pressure_phi_above_001": {
+      "count": 11,
+      "max_abs_relative": 0.019864957623768387,
+      "max_abs_difference": 0.017733527130568527,
+      "worst_pressure_pa": 271.2465488717254
+    },
+    "pressure_vs_raw": {
+      "count": 11,
+      "max_abs_relative": 0.03312453326580278,
+      "max_abs_difference": 0.029975927130568514,
+      "worst_pressure_pa": 271.2465488717254
+    }
+  },
+  "conducting_K_relative_errors": [
+    {
+      "pressure_pa": 140.15146234871466,
+      "branch": "asymptotic",
+      "vs_final": -0.004530582193404187,
+      "vs_raw": -0.011723956138045888
+    },
+    {
+      "pressure_pa": 271.2465488717254,
+      "branch": "asymptotic",
+      "vs_final": -0.008111139679772061,
+      "vs_raw": -0.02152972467395986
+    },
+    {
+      "pressure_pa": 524.9655554200222,
+      "branch": "direct_pdf",
+      "vs_final": 1.88599978130366e-05,
+      "vs_raw": 1.8743634162099454e-05
+    },
+    {
+      "pressure_pa": 1016.008629506215,
+      "branch": "direct_pdf",
+      "vs_final": 1.892924966595544e-05,
+      "vs_raw": 1.8808606164322228e-05
+    },
+    {
+      "pressure_pa": 1966.3643158553168,
+      "branch": "direct_pdf",
+      "vs_final": 1.8775778349855443e-05,
+      "vs_raw": 1.9026317380710367e-05
+    },
+    {
+      "pressure_pa": 3805.665139427333,
+      "branch": "direct_pdf",
+      "vs_final": 1.954681856841667e-05,
+      "vs_raw": 1.9285423455084327e-05
+    },
+    {
+      "pressure_pa": 7365.413945254957,
+      "branch": "direct_pdf",
+      "vs_final": 1.91014928365707e-05,
+      "vs_raw": 1.8821840431781922e-05
+    },
+    {
+      "pressure_pa": 14254.88596537936,
+      "branch": "direct_pdf",
+      "vs_final": 1.5757657637616163e-05,
+      "vs_raw": 1.5440852680015382e-05
+    },
+    {
+      "pressure_pa": 27588.642728882707,
+      "branch": "direct_pdf",
+      "vs_final": 8.129141566559639e-06,
+      "vs_raw": 7.724008684428796e-06
+    },
+    {
+      "pressure_pa": 53394.54903185378,
+      "branch": "direct_pdf",
+      "vs_final": -7.151870419219719e-06,
+      "vs_raw": -8.274094827620537e-06
+    },
+    {
+      "pressure_pa": 103338.82294725331,
+      "branch": "direct_pdf",
+      "vs_final": -6.694854358191282e-05,
+      "vs_raw": -6.795310330054427e-05
+    }
+  ],
+  "python_failures": [],
+  "rows": [
+    {
+      "pressure_pa": 140.15146234871466,
+      "fortran_gap_m": 5.0017733918480475e-06,
+      "python_gap_m": 5.0231545118104745e-06,
+      "fortran_phi_p": 0.909708,
+      "fortran_raw_phi_p": 0.9163295,
+      "fortran_phi_s": 0.384109,
+      "python_phi_s": 0.3827846051623053,
+      "shared_fortran_state_python_phi_s": 0.3841091074088535,
+      "fortran_relative_area": 0.000313585,
+      "python_relative_area": 0.000313582572326601,
+      "fortran_gap_over_rms": 3.5476688098250615,
+      "fortran_K_final_m3": 1.1383453807578614e-16,
+      "fortran_K_raw_m3": 1.146631065767434e-16,
+      "fortran_branch": "asymptotic",
+      "python_phi_p": 0.8940717245888914,
+      "python_K_m3": 1.1331880134458559e-16,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 271.2465488717254,
+      "fortran_gap_m": 4.378592691896412e-06,
+      "python_gap_m": 4.396025941635399e-06,
+      "fortran_phi_p": 0.892704,
+      "fortran_raw_phi_p": 0.9049464,
+      "fortran_phi_s": 0.425737,
+      "python_phi_s": 0.4244579146879452,
+      "shared_fortran_state_python_phi_s": 0.42573650499189974,
+      "fortran_relative_area": 0.000606907,
+      "python_relative_area": 0.0006069018695356559,
+      "fortran_gap_over_rms": 3.1056578351362405,
+      "fortran_K_final_m3": 7.493955749817793e-17,
+      "fortran_K_raw_m3": 7.596726661420708e-17,
+      "fortran_branch": "asymptotic",
+      "python_phi_p": 0.8749704728694315,
+      "python_K_m3": 7.43317122797699e-17,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 524.9655554200222,
+      "fortran_gap_m": 3.758836598729288e-06,
+      "python_gap_m": 3.7725892833488953e-06,
+      "fortran_phi_p": 0.859391,
+      "fortran_raw_phi_p": 0.8593911,
+      "fortran_phi_s": 0.474179,
+      "python_phi_s": 0.4730005854011097,
+      "shared_fortran_state_python_phi_s": 0.47417946339665895,
+      "fortran_relative_area": 0.0011746,
+      "python_relative_area": 0.0011745863458798391,
+      "fortran_gap_over_rms": 2.6660758730642495,
+      "fortran_K_final_m3": 4.564057861671682e-17,
+      "fortran_K_raw_m3": 4.564058392752163e-17,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.8500427197435692,
+      "python_K_m3": 4.5641439397929715e-17,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 1016.008629506215,
+      "fortran_gap_m": 3.1514877922235616e-06,
+      "python_gap_m": 3.1621626935731187e-06,
+      "fortran_phi_p": 0.828904,
+      "fortran_raw_phi_p": 0.8289041,
+      "fortran_phi_s": 0.527982,
+      "python_phi_s": 0.5269610667243062,
+      "shared_fortran_state_python_phi_s": 0.5279820753150185,
+      "fortran_relative_area": 0.00227329,
+      "python_relative_area": 0.0022732704416075825,
+      "fortran_gap_over_rms": 2.2352941785083638,
+      "fortran_K_final_m3": 2.5944847532765952e-17,
+      "fortran_K_raw_m3": 2.5944850662784334e-17,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.820553139885072,
+      "python_K_m3": 2.5945338649262443e-17,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 1966.3643158553168,
+      "fortran_gap_m": 2.5773478110983466e-06,
+      "python_gap_m": 2.5855945587436236e-06,
+      "fortran_phi_p": 0.798294,
+      "fortran_raw_phi_p": 0.7982938,
+      "fortran_phi_s": 0.580661,
+      "python_phi_s": 0.5798864217598587,
+      "shared_fortran_state_python_phi_s": 0.5806606215279262,
+      "fortran_relative_area": 0.00439966,
+      "python_relative_area": 0.004399629237255841,
+      "fortran_gap_over_rms": 1.8280669125088342,
+      "fortran_K_final_m3": 1.3667275716772612e-17,
+      "fortran_K_raw_m3": 1.3667272292651746e-17,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.7906947122146867,
+      "python_K_m3": 1.3667532330512115e-17,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 3805.665139427333,
+      "fortran_gap_m": 2.0616667562262406e-06,
+      "python_gap_m": 2.067894753144823e-06,
+      "fortran_phi_p": 0.76514,
+      "fortran_raw_phi_p": 0.7651402,
+      "fortran_phi_s": 0.619133,
+      "python_phi_s": 0.6187341281842601,
+      "shared_fortran_state_python_phi_s": 0.6191334267233662,
+      "fortran_relative_area": 0.00851491,
+      "python_relative_area": 0.008514842600992363,
+      "fortran_gap_over_rms": 1.462303522034339,
+      "fortran_K_final_m3": 6.704961847003751e-18,
+      "fortran_K_raw_m3": 6.704963599614214e-18,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.758262373728587,
+      "python_K_m3": 6.705092907676483e-18,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 7365.413945254957,
+      "fortran_gap_m": 1.609175040874804e-06,
+      "python_gap_m": 1.6133779974434393e-06,
+      "fortran_phi_p": 0.715187,
+      "fortran_raw_phi_p": 0.7151872,
+      "fortran_phi_s": 0.627552,
+      "python_phi_s": 0.627601018265287,
+      "shared_fortran_state_python_phi_s": 0.6275519144836503,
+      "fortran_relative_area": 0.0164787,
+      "python_relative_area": 0.016478610101648195,
+      "fortran_gap_over_rms": 1.1413592049901375,
+      "fortran_K_final_m3": 2.9800906517060514e-18,
+      "fortran_K_raw_m3": 2.980091485079883e-18,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.709625774033039,
+      "python_K_m3": 2.980147575886287e-18,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 14254.88596537936,
+      "fortran_gap_m": 1.202672506059483e-06,
+      "python_gap_m": 1.2050043764110154e-06,
+      "fortran_phi_p": 0.631313,
+      "fortran_raw_phi_p": 0.6313132,
+      "fortran_phi_s": 0.589131,
+      "python_phi_s": 0.5894714229803795,
+      "shared_fortran_state_python_phi_s": 0.5891312672378743,
+      "fortran_relative_area": 0.0318864,
+      "python_relative_area": 0.0318861727121287,
+      "fortran_gap_over_rms": 0.8530341948588204,
+      "fortran_K_final_m3": 1.0982137598946426e-18,
+      "fortran_K_raw_m3": 1.0982141078088341e-18,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.6276649125739715,
+      "python_K_m3": 1.098231065171084e-18,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 27588.642728882707,
+      "fortran_gap_m": 8.370997571002844e-07,
+      "python_gap_m": 8.380471845587787e-07,
+      "fortran_phi_p": 0.493669,
+      "fortran_raw_phi_p": 0.4936692,
+      "fortran_phi_s": 0.491037,
+      "python_phi_s": 0.4913382723300483,
+      "shared_fortran_state_python_phi_s": 0.4910373830966467,
+      "fortran_relative_area": 0.0616673,
+      "python_relative_area": 0.061666822368660563,
+      "fortran_gap_over_rms": 0.5937399530768336,
+      "fortran_K_final_m3": 2.8957929351791205e-19,
+      "fortran_K_raw_m3": 2.8957941083509967e-19,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.49200058650146383,
+      "python_K_m3": 2.895816475489838e-19,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 53394.54903185378,
+      "fortran_gap_m": 5.205246550930811e-07,
+      "python_gap_m": 5.20404611491087e-07,
+      "fortran_phi_p": 0.267324,
+      "fortran_raw_phi_p": 0.2673243,
+      "fortran_phi_s": 0.343508,
+      "python_phi_s": 0.343411936472567,
+      "shared_fortran_state_python_phi_s": 0.34350814988167144,
+      "fortran_relative_area": 0.119024,
+      "python_relative_area": 0.11902299612309487,
+      "fortran_gap_over_rms": 0.36919886987050704,
+      "fortran_K_final_m3": 3.770178097320723e-20,
+      "fortran_K_raw_m3": 3.770182328341616e-20,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.26750712324990816,
+      "python_K_m3": 3.7701511334955136e-20,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 103338.82294725331,
+      "fortran_gap_m": 2.6332731725044924e-07,
+      "python_gap_m": 2.6282987796506266e-07,
+      "fortran_phi_p": 0.0298618,
+      "fortran_raw_phi_p": 0.02986183,
+      "fortran_phi_s": 0.183991,
+      "python_phi_s": 0.18364549881070272,
+      "shared_fortran_state_python_phi_s": 0.18399139239047707,
+      "fortran_relative_area": 0.228022,
+      "python_relative_area": 0.2280202170776,
+      "fortran_gap_over_rms": 0.18677337755982615,
+      "fortran_K_final_m3": 5.45260109303428e-22,
+      "fortran_K_raw_m3": 5.452606570869936e-22,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.030029662394575427,
+      "python_K_m3": 5.452236049332368e-22,
+      "python_pressure_status": "conducting",
+      "python_error": ""
+    },
+    {
+      "pressure_pa": 200000.04722866023,
+      "fortran_gap_m": 8.95758914651328e-08,
+      "python_gap_m": 8.923348543929172e-08,
+      "fortran_phi_p": 0.0,
+      "fortran_raw_phi_p": 1.211926e-26,
+      "fortran_phi_s": 0.0635346,
+      "python_phi_s": 0.063289644656707,
+      "shared_fortran_state_python_phi_s": 0.06353458490963575,
+      "fortran_relative_area": 0.425101,
+      "python_relative_area": 0.42509809650469554,
+      "fortran_gap_over_rms": 0.06353458490963575,
+      "fortran_K_final_m3": 0.0,
+      "fortran_K_raw_m3": 8.710629056831295e-48,
+      "fortran_branch": "direct_pdf",
+      "python_phi_p": 0.0,
+      "python_K_m3": 0.0,
+      "python_pressure_status": "blocked",
+      "python_error": ""
+    }
+  ]
+}

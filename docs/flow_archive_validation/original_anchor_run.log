@@ -1,0 +1,11 @@
+At line 4759 of file /workspace/work/shear_archive_check/pristine_n12/build/AI.ContactMechanics.14.09.2026.f90 (unit = 555, file = 'DATA.OUT.ContactMechanics')
+Fortran runtime error: Expected REAL for item 1 in formatted transfer, got INTEGER
+(3x,"for gas leakage: gas pressure on low pressure side (Pa)) =",E11.4)
+                                                                 ^
+
+Error termination. Backtrace:
+#0  0x55cc91b75fda in require_type.part.0
+#1  0x55cc91b79cd5 in formatted_transfer
+#2  0x55cc9197b526 in writeparameter1_
+#3  0x55cc91ad3486 in MAIN__
+#4  0x55cc9195ba25 in main

@@ -1,0 +1,657 @@
+{
+  "python_commit": "cf52c2beb6f8c6dd57e6016f29fc4d5d8e39eab6",
+  "runs": [
+    {
+      "archive": {
+        "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+        "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+      },
+      "source": {
+        "file": "build/AI.ContactMechanics.14.09.2026.f90",
+        "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "modified": true,
+        "variant": "real-erf+diagnostic-real-cast",
+        "optimization": {
+          "name": "real-erf",
+          "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+          "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+          "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+          "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+        },
+        "compiled_sha256": "784f470f15e7a7031c00c62271c7f958b8a8464d91c42c6473aed039a52856e9",
+        "printing_fix": {
+          "before": "      WRITE(555,8276) LowPressure",
+          "after": "      WRITE(555,8276) DBLE(LowPressure)",
+          "scope": "Only the diagnostic WRITE argument; no physical arithmetic changed"
+        }
+      },
+      "compiler": "GNU Fortran (Debian 14.2.0-19) 14.2.0",
+      "compile_flags": [
+        "-mcmodel=large",
+        "-ffree-line-length-none",
+        "-std=legacy",
+        "-fallow-argument-mismatch",
+        "-O3"
+      ],
+      "compile": {
+        "command": [
+          "/workspace/fortran_reference/toolchain/bin/gfortran",
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3",
+          "/workspace/work/shear_archive_check/real_erf_print_n12/build/AI.ContactMechanics.14.09.2026.f90",
+          "-o",
+          "/workspace/work/shear_archive_check/real_erf_print_n12/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/real_erf_print_n12/build",
+        "log": "/workspace/work/shear_archive_check/real_erf_print_n12/compile.log",
+        "returncode": 0,
+        "timed_out": false,
+        "elapsed_seconds": 82.81378242799838
+      },
+      "binary_sha256": "3d62d5344ab810c24a456435ae20582995948fb06d10296bc17350b0e80a181d",
+      "binary_origin": null,
+      "used_input_hashes": {
+        "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+        "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+        "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+        "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+        "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+        "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+        "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+        "IN.FLOWFACTORS": "ada81ccdc0c2766223d9143bd4a3ca266de1f77bb6f29e88a9db78cda4a857d9",
+        "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93",
+        "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+        "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+        "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+        "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+        "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+        "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+        "IN.SEALING": "5a7fcab81e4b45a05338a6864e591d9fa036dc95503d7208baa7b81014f0c15a",
+        "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+        "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+        "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+        "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+        "IN.flagparameters": "15d4d4fe10bdbfba597b5cc7f84481906dd6f57a5739aa84856a185cfc96be61",
+        "IN.mathematical": "7712427384f318d19ea31f6578d53ab5f7b23ef125e7d7faa1c6712929a95e70",
+        "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+        "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+        "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "dd4a2a202b662e9eb1d798b36e0b645091505552399da381d22558d9a968150b",
+        "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+        "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+        "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+        "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+        "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+        "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9"
+      },
+      "status": "finished",
+      "run": {
+        "command": [
+          "/workspace/work/shear_archive_check/real_erf_print_n12/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/real_erf_print_n12",
+        "log": "/workspace/work/shear_archive_check/real_erf_print_n12/run.log",
+        "returncode": 0,
+        "timed_out": false,
+        "elapsed_seconds": 244.06708436999907
+      },
+      "startup_note": null,
+      "name": "real_erf_print_n12",
+      "flow_outputs": {
+        "out.FLUID.FLOWFACTORS.1pressure.2averageSeparation.3PressureFlowFactor.4ShearFlowFactor.5xmult.6Area1Direct.7Area1FromPuSeparation.uboundary.8Area1FromPuSeparation.u1min": {
+          "bytes": 2191,
+          "sha256": "e077d0df5dfe423009d4ea366f086f2b5421b8e05203ff202099dc1d739d7e8a"
+        }
+      }
+    },
+    {
+      "archive": {
+        "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+        "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+      },
+      "source": {
+        "file": "build/AI.ContactMechanics.14.09.2026.f90",
+        "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "modified": true,
+        "variant": "real-erf",
+        "optimization": {
+          "name": "real-erf",
+          "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+          "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+          "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+          "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+        },
+        "compiled_sha256": "60d56888b85579d5806fab58007040767fed6659d2a5e1d6f11dd32a0ff4124c"
+      },
+      "compiler": "GNU Fortran (Debian 14.2.0-19) 14.2.0",
+      "compile_flags": [
+        "-mcmodel=large",
+        "-ffree-line-length-none",
+        "-std=legacy",
+        "-fallow-argument-mismatch",
+        "-O3"
+      ],
+      "compile": {
+        "command": [
+          "/workspace/fortran_reference/toolchain/bin/gfortran",
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3",
+          "/workspace/work/shear_archive_check/real_erf_n12/build/AI.ContactMechanics.14.09.2026.f90",
+          "-o",
+          "/workspace/work/shear_archive_check/real_erf_n12/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/real_erf_n12/build",
+        "log": "/workspace/work/shear_archive_check/real_erf_n12/compile.log",
+        "returncode": 0,
+        "timed_out": false,
+        "elapsed_seconds": 53.43316996200156
+      },
+      "binary_sha256": "cc52be909a6c20a83637b26680d929924634ca62e1465dae7b5d3626e808a398",
+      "binary_origin": null,
+      "used_input_hashes": {
+        "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+        "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+        "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+        "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+        "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+        "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+        "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+        "IN.FLOWFACTORS": "ada81ccdc0c2766223d9143bd4a3ca266de1f77bb6f29e88a9db78cda4a857d9",
+        "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93",
+        "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+        "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+        "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+        "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+        "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+        "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+        "IN.SEALING": "5a7fcab81e4b45a05338a6864e591d9fa036dc95503d7208baa7b81014f0c15a",
+        "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+        "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+        "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+        "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+        "IN.flagparameters": "15d4d4fe10bdbfba597b5cc7f84481906dd6f57a5739aa84856a185cfc96be61",
+        "IN.mathematical": "7712427384f318d19ea31f6578d53ab5f7b23ef125e7d7faa1c6712929a95e70",
+        "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+        "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+        "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "dd4a2a202b662e9eb1d798b36e0b645091505552399da381d22558d9a968150b",
+        "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+        "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+        "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+        "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+        "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+        "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9"
+      },
+      "status": "failed_or_timeout",
+      "run": {
+        "command": [
+          "/workspace/work/shear_archive_check/real_erf_n12/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/real_erf_n12",
+        "log": "/workspace/work/shear_archive_check/real_erf_n12/run.log",
+        "returncode": 2,
+        "timed_out": false,
+        "elapsed_seconds": 238.24458351400244
+      },
+      "startup_note": null,
+      "name": "real_erf_n12",
+      "flow_outputs": {
+        "out.FLUID.FLOWFACTORS.1pressure.2averageSeparation.3PressureFlowFactor.4ShearFlowFactor.5xmult.6Area1Direct.7Area1FromPuSeparation.uboundary.8Area1FromPuSeparation.u1min": {
+          "bytes": 2191,
+          "sha256": "e077d0df5dfe423009d4ea366f086f2b5421b8e05203ff202099dc1d739d7e8a"
+        }
+      }
+    },
+    {
+      "archive": {
+        "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+        "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+      },
+      "source": {
+        "file": "build/AI.ContactMechanics.14.09.2026.f90",
+        "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "modified": false,
+        "variant": "original",
+        "compiled_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854"
+      },
+      "compiler": null,
+      "compile_flags": [
+        "-mcmodel=large",
+        "-ffree-line-length-none",
+        "-std=legacy",
+        "-fallow-argument-mismatch",
+        "-O3"
+      ],
+      "compile": null,
+      "binary_sha256": "16cf8edc464e712d986d0bc8dca82fdcdacd99ac9c02bdd378b9b6188fe2b474",
+      "binary_origin": "/workspace/work/shear_archive_check/pristine_n12/manifest.json",
+      "used_input_hashes": {
+        "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+        "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+        "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+        "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+        "IN.FLOWFACTORS": "194cdc487bb0acc43c721e0f401811b375b9ed238a5ed571481db0cac20edd31",
+        "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+        "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9",
+        "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+        "IN.mathematical": "ca2028b91a10ecf88d8d5a30dcbec25d7f049bbc0e1f4d630974c47d90fe511d",
+        "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+        "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+        "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+        "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+        "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+        "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+        "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+        "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+        "IN.flagparameters": "9f8ce673753592fba17a49812c670a1f9a7b380ef329e4456f04d0caa4d561b0",
+        "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+        "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+        "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+        "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+        "IN.SEALING": "fd9fa8631f4ed4a44c471f32887e806a443adc7be4ad3cce0fab870d411cb745",
+        "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+        "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "dd4a2a202b662e9eb1d798b36e0b645091505552399da381d22558d9a968150b",
+        "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+        "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+        "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+        "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+        "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+        "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93"
+      },
+      "status": "failed_or_timeout",
+      "run": {
+        "command": [
+          "/workspace/work/shear_archive_check/pristine_coarse_anchor/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/pristine_coarse_anchor",
+        "log": "/workspace/work/shear_archive_check/pristine_coarse_anchor/run.log",
+        "returncode": 2,
+        "timed_out": false,
+        "elapsed_seconds": 869.3617141829964
+      },
+      "startup_note": null,
+      "name": "pristine_coarse_anchor",
+      "flow_outputs": {
+        "out.FLUID.FLOWFACTORS.1pressure.2averageSeparation.3PressureFlowFactor.4ShearFlowFactor.5xmult.6Area1Direct.7Area1FromPuSeparation.uboundary.8Area1FromPuSeparation.u1min": {
+          "bytes": 134,
+          "sha256": "0a18b1292ba4151980b013d16acf9ed5db65bdfd42481b62384dc92f8a4d7dbc"
+        }
+      }
+    },
+    {
+      "archive": {
+        "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+        "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+      },
+      "source": {
+        "file": "build/AI.ContactMechanics.14.09.2026.f90",
+        "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "modified": true,
+        "variant": "real-erf+diagnostic-real-cast",
+        "optimization": {
+          "name": "real-erf",
+          "description": "Replace the real-valued DERF1 wrapper around complex CERROR with standard intrinsic ERF(x); CERROR and all other source bytes remain unchanged",
+          "before": "     real*8 function DERF1(x)\n     real*8 x\n     complex*16 zg,zgg \n!      y=DERF(x)\n      zg=x\n      call cerror(zg,zgg)\n      DERF1=zgg\n     return\n     end\n",
+          "after": "     real*8 function DERF1(x)\n     real*8 x\n      DERF1=ERF(x)\n     return\n     end\n",
+          "diff": "--- DERF1.original\n+++ DERF1.real-erf\n@@ -1,9 +1,5 @@\n      real*8 function DERF1(x)\n      real*8 x\n-     complex*16 zg,zgg \n-!      y=DERF(x)\n-      zg=x\n-      call cerror(zg,zgg)\n-      DERF1=zgg\n+      DERF1=ERF(x)\n      return\n      end\n"
+        },
+        "compiled_sha256": "784f470f15e7a7031c00c62271c7f958b8a8464d91c42c6473aed039a52856e9",
+        "printing_fix": {
+          "before": "      WRITE(555,8276) LowPressure",
+          "after": "      WRITE(555,8276) DBLE(LowPressure)",
+          "scope": "Only the diagnostic WRITE argument; no physical arithmetic changed"
+        }
+      },
+      "compiler": null,
+      "compile_flags": [
+        "-mcmodel=large",
+        "-ffree-line-length-none",
+        "-std=legacy",
+        "-fallow-argument-mismatch",
+        "-O3"
+      ],
+      "compile": null,
+      "binary_sha256": "3d62d5344ab810c24a456435ae20582995948fb06d10296bc17350b0e80a181d",
+      "binary_origin": "/workspace/work/shear_archive_check/real_erf_print_n12/manifest.json",
+      "used_input_hashes": {
+        "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+        "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+        "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+        "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+        "IN.FLOWFACTORS": "194cdc487bb0acc43c721e0f401811b375b9ed238a5ed571481db0cac20edd31",
+        "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+        "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9",
+        "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+        "IN.mathematical": "ca2028b91a10ecf88d8d5a30dcbec25d7f049bbc0e1f4d630974c47d90fe511d",
+        "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+        "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+        "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+        "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+        "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+        "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+        "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+        "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+        "IN.flagparameters": "9f8ce673753592fba17a49812c670a1f9a7b380ef329e4456f04d0caa4d561b0",
+        "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+        "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+        "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+        "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+        "IN.SEALING": "fd9fa8631f4ed4a44c471f32887e806a443adc7be4ad3cce0fab870d411cb745",
+        "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+        "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "dd4a2a202b662e9eb1d798b36e0b645091505552399da381d22558d9a968150b",
+        "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+        "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+        "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+        "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+        "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+        "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93"
+      },
+      "status": "finished",
+      "run": {
+        "command": [
+          "/workspace/work/shear_archive_check/real_erf_print_coarse_anchor/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/real_erf_print_coarse_anchor",
+        "log": "/workspace/work/shear_archive_check/real_erf_print_coarse_anchor/run.log",
+        "returncode": 0,
+        "timed_out": false,
+        "elapsed_seconds": 29.342613024004095
+      },
+      "startup_note": null,
+      "name": "real_erf_print_coarse_anchor",
+      "flow_outputs": {
+        "out.FLUID.FLOWFACTORS.1pressure.2averageSeparation.3PressureFlowFactor.4ShearFlowFactor.5xmult.6Area1Direct.7Area1FromPuSeparation.uboundary.8Area1FromPuSeparation.u1min": {
+          "bytes": 134,
+          "sha256": "0a18b1292ba4151980b013d16acf9ed5db65bdfd42481b62384dc92f8a4d7dbc"
+        }
+      }
+    },
+    {
+      "archive": {
+        "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+        "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+      },
+      "source": {
+        "file": "build/AI.ContactMechanics.14.09.2026.f90",
+        "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "modified": false,
+        "variant": "original",
+        "compiled_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854"
+      },
+      "compiler": "GNU Fortran (Debian 14.2.0-19) 14.2.0",
+      "compile_flags": [
+        "-mcmodel=large",
+        "-ffree-line-length-none",
+        "-std=legacy",
+        "-fallow-argument-mismatch",
+        "-O3"
+      ],
+      "compile": {
+        "command": [
+          "/workspace/fortran_reference/toolchain/bin/gfortran",
+          "-mcmodel=large",
+          "-ffree-line-length-none",
+          "-std=legacy",
+          "-fallow-argument-mismatch",
+          "-O3",
+          "/workspace/work/shear_archive_check/pristine_n12/build/AI.ContactMechanics.14.09.2026.f90",
+          "-o",
+          "/workspace/work/shear_archive_check/pristine_n12/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/pristine_n12/build",
+        "log": "/workspace/work/shear_archive_check/pristine_n12/compile.log",
+        "returncode": 0,
+        "timed_out": false,
+        "elapsed_seconds": 52.14634224499605
+      },
+      "binary_sha256": "16cf8edc464e712d986d0bc8dca82fdcdacd99ac9c02bdd378b9b6188fe2b474",
+      "binary_origin": null,
+      "used_input_hashes": {
+        "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+        "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+        "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+        "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+        "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+        "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+        "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+        "IN.FLOWFACTORS": "ada81ccdc0c2766223d9143bd4a3ca266de1f77bb6f29e88a9db78cda4a857d9",
+        "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93",
+        "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+        "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+        "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+        "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+        "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+        "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+        "IN.SEALING": "5a7fcab81e4b45a05338a6864e591d9fa036dc95503d7208baa7b81014f0c15a",
+        "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+        "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+        "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+        "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+        "IN.flagparameters": "15d4d4fe10bdbfba597b5cc7f84481906dd6f57a5739aa84856a185cfc96be61",
+        "IN.mathematical": "7712427384f318d19ea31f6578d53ab5f7b23ef125e7d7faa1c6712929a95e70",
+        "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+        "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+        "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "dd4a2a202b662e9eb1d798b36e0b645091505552399da381d22558d9a968150b",
+        "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+        "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+        "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+        "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+        "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+        "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9"
+      },
+      "status": "failed_or_timeout",
+      "run": {
+        "command": [
+          "/workspace/work/shear_archive_check/pristine_n12/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/pristine_n12",
+        "log": "/workspace/work/shear_archive_check/pristine_n12/run.log",
+        "returncode": -15,
+        "timed_out": false,
+        "elapsed_seconds": 789.2543359150004
+      },
+      "startup_note": null,
+      "name": "pristine_n12",
+      "flow_outputs": {
+        "out.FLUID.FLOWFACTORS.1pressure.2averageSeparation.3PressureFlowFactor.4ShearFlowFactor.5xmult.6Area1Direct.7Area1FromPuSeparation.uboundary.8Area1FromPuSeparation.u1min": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "archive": {
+        "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+        "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+      },
+      "source": {
+        "file": "build/AI.ContactMechanics.14.09.2026.f90",
+        "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "modified": false,
+        "variant": "original",
+        "compiled_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854"
+      },
+      "compiler": null,
+      "compile_flags": [
+        "-mcmodel=large",
+        "-ffree-line-length-none",
+        "-std=legacy",
+        "-fallow-argument-mismatch",
+        "-O3"
+      ],
+      "compile": null,
+      "binary_sha256": "16cf8edc464e712d986d0bc8dca82fdcdacd99ac9c02bdd378b9b6188fe2b474",
+      "binary_origin": "/workspace/work/shear_archive_check/pristine_n12/manifest.json",
+      "used_input_hashes": {
+        "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+        "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+        "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+        "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+        "IN.FLOWFACTORS": "194cdc487bb0acc43c721e0f401811b375b9ed238a5ed571481db0cac20edd31",
+        "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+        "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9",
+        "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+        "IN.mathematical": "80d512850cd35df9c8fcabbd15363969d68ac953258dfa588bd843f78d021b24",
+        "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+        "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+        "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+        "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+        "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+        "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+        "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+        "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+        "IN.flagparameters": "9f8ce673753592fba17a49812c670a1f9a7b380ef329e4456f04d0caa4d561b0",
+        "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+        "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+        "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+        "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+        "IN.SEALING": "fd9fa8631f4ed4a44c471f32887e806a443adc7be4ad3cce0fab870d411cb745",
+        "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+        "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "dd4a2a202b662e9eb1d798b36e0b645091505552399da381d22558d9a968150b",
+        "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+        "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+        "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+        "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+        "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+        "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93"
+      },
+      "status": "failed_or_timeout",
+      "run": {
+        "command": [
+          "/workspace/work/shear_archive_check/pristine_anchor/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/pristine_anchor",
+        "log": "/workspace/work/shear_archive_check/pristine_anchor/run.log",
+        "returncode": -15,
+        "timed_out": false,
+        "elapsed_seconds": 449.05774215600104
+      },
+      "startup_note": "Initial process launch failed because copyfile did not preserve execute permission; corrected mode and restarted. No outputs from failed launch.",
+      "name": "pristine_anchor",
+      "flow_outputs": {
+        "out.FLUID.FLOWFACTORS.1pressure.2averageSeparation.3PressureFlowFactor.4ShearFlowFactor.5xmult.6Area1Direct.7Area1FromPuSeparation.uboundary.8Area1FromPuSeparation.u1min": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "archive": {
+        "path": "/workspace/attachments/0063ac36-e86d-4bac-a4f1-cacd790e937c/AI.QQQ.ContactMechanics.11.09.2026.GNU.zip",
+        "sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968"
+      },
+      "source": {
+        "file": "build/AI.ContactMechanics.14.09.2026.f90",
+        "sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "original_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+        "modified": false,
+        "variant": "original",
+        "compiled_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854"
+      },
+      "compiler": null,
+      "compile_flags": [
+        "-mcmodel=large",
+        "-ffree-line-length-none",
+        "-std=legacy",
+        "-fallow-argument-mismatch",
+        "-O3"
+      ],
+      "compile": null,
+      "binary_sha256": "16cf8edc464e712d986d0bc8dca82fdcdacd99ac9c02bdd378b9b6188fe2b474",
+      "binary_origin": "/workspace/work/shear_archive_check/pristine_n12/manifest.json",
+      "used_input_hashes": {
+        "IN.CAPILLARY": "ff185ea22b75a0b16d5763ffc46901b0066b3a6c462a277b6574b00a78cb7aba",
+        "IN.BREAKLOOSE": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+        "IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
+        "IN.MIXEDLUBRICATION": "152960dba1f2e14731bd5364697322bb57e34ae3eaa0a1b02d1a8a4495683c36",
+        "IN.FLOWFACTORS": "194cdc487bb0acc43c721e0f401811b375b9ed238a5ed571481db0cac20edd31",
+        "IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
+        "IN_npolyCq.npolyab.npolyE": "3018a37ef5ad4a0bf124f29717bbafb5d85d748d4c8f4d091814c2f268fc9ca9",
+        "IN.addCq": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+        "IN.mathematical": "80d512850cd35df9c8fcabbd15363969d68ac953258dfa588bd843f78d021b24",
+        "IN.HEATTRANSFER": "5da11067045e23748751f39c5d97be88c6cf189176f1b0f7a58f3c11e37caf83",
+        "IN.mathematical.old": "5d24088489dee7cbd74d34fe6c2cc95514cc75ff57546125293736979a26b7d7",
+        "IN.ELECTROAdhesion": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+        "IN.SQUEEZEOUT.convergence": "3365ee13fd71132dc52a3b0b35c723c31648484d8ff1bddd7f1a3876045cb83d",
+        "IN.ContactRadiusAndWear": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+        "IN.velocity.profile.transient.lubrication": "1555143395ed6f90055dec87e4916387ea7c88f2c175b2067ed6bde391c5433d",
+        "IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": "41bf34f28f19326c3aaaa006a41e98e24163a28014d2217f22dce99d7a82d20d",
+        "IN.MIXEDLUBRICATION.mathematical": "322ace43dd4d73a7b105865a5f3bbd82ed9fe4313b9c1e95dde092f507b78262",
+        "IN.flagparameters": "9f8ce673753592fba17a49812c670a1f9a7b380ef329e4456f04d0caa4d561b0",
+        "IN.HERTZ": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+        "IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+        "IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
+        "IN_TREADCOMPOUND.1temperature.C.2aT.3bT": "c17c9fb57eabbf55edd1372e0eb0a3043ac971d6b27ada27737698f05b65dab8",
+        "IN.SEALING": "fd9fa8631f4ed4a44c471f32887e806a443adc7be4ad3cce0fab870d411cb745",
+        "IN.LAYER": "85e5b8c31f43ea1ceea00ee8575ff055ebdc05853a558293fb8fb97330d32789",
+        "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "fb3980c30ab5277588294d2c3c1e1623564991ea24ac0bdbf01180e4310f7598",
+        "IN.SQUEEZEOUT": "4323cd7b0884fef66cb2ac6bc9ef901e415d71238d38673b74752aae2adacbe9",
+        "IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+        "IN.ThermalDataMeanSqureFlashTemperature": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+        "IN.plots": "2f0d6cd70744c4fbcbcc72e20bebd7cbd8292010085b79359380162e7d60da4a",
+        "IN.PARAMETER": "d53c328721a6ecbebd4a938d62bd1e466c9150335767fb044aa1432169ce2757",
+        "IN.FLUID.viscosity.and.TrippNumber": "387423d9292725341b221bdc89f62531342cafc44bf9e6cef47d99a86e2ecd93"
+      },
+      "status": "failed_or_timeout",
+      "run": {
+        "command": [
+          "/workspace/work/shear_archive_check/pristine_low_anchor/build/original"
+        ],
+        "cwd": "/workspace/work/shear_archive_check/pristine_low_anchor",
+        "log": "/workspace/work/shear_archive_check/pristine_low_anchor/run.log",
+        "returncode": -15,
+        "timed_out": false,
+        "elapsed_seconds": 152.9917673710006
+      },
+      "startup_note": null,
+      "name": "pristine_low_anchor",
+      "flow_outputs": {
+        "out.FLUID.FLOWFACTORS.1pressure.2averageSeparation.3PressureFlowFactor.4ShearFlowFactor.5xmult.6Area1Direct.7Area1FromPuSeparation.uboundary.8Area1FromPuSeparation.u1min": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "primary_input_texts": {
+    "IN.FLOWFACTORS": "2  NvF = number of velocities for friction flow factors Phif and Phifs (Phifp does not depend on the shear rate); give shearthinning data in IN.FLUID.viscosity.and.TrippNumber \n0.01  vmaxF = highest velocity for flow factor (in m/s)\n0.001  vminF = lowest velocity for flow factors (in m/s)\n12  Np = number of pressure points (max 1000)\n200000.0  pmaxF = maximum nominal contact pressure\n6  Npadd = added data points for large separation (Np+Npadd max 1000)\n1.0  addp = added number of decades in separation using asympthotic relation for flowfactors\n",
+    "IN_npolyCq.npolyab.npolyE": "0  npolyCq: polynomial used for smoothing powerspectrum; =0 no smoothing\n0  npolyab: smoothing shift factor a(T), b(T)\n0  npolyE: smoothing viscoelastic modulus\n",
+    "IN.mathematical": "0.01  delzeta: step length in integration over magnification; 0.0025 good, but use maximum 0.01\n3.0       xjump (mathematical): the separation \\bar u/h_{rms} where you switch to asymthotic pressure flow factor; us of order 3.0\n0         idonot (mathematical) =0 make flow factor continous at xjump, =1 do not make continous\n0.42      percolation: contact area percolate at the realative contact area A/A0 = percolation\n110       Np number of pressure points for flow factor in squeeze-out and mixed lubrication\n1.0E-12   u1min: smallest separation for which height distribution calculated; must be ~ 0.001 smaller than smallest relevant length scale (could be atomic dimension)\n40000     nMontestep: number of MonteCarlo steps in fitting E to time serie\n30        nterm: number of relaxation time terms in fitting E to time series\n0.4       UcorrectionFactor: =0.4 gives good elastic energy S=0.4+(1-0.4)*P^2\n1         iubar=1 method 1 calculate baru and u1 and P(u); =0 method 0 involving direct solution of p=-dUel/du, slow method\n2.0       ony used if iuber=0 or if iflag003=20 or 30:    pfraction: sigmaMax=pfraction*x*rmsslopenl; us of order 2.0\n20.0      ony used if iuber=0 or if iflag003=20 or 30:    pm: delpmu=pm/(1.0*Np); use of order 20.0\n4000      ony used if iuber=0 or if iflag003=20 or 30:    Npu:  pmu=delpmu*i, i=1,..,Npu;  sigma=sigmaMax*exp(-pmu); use of order 4000\n512  nurange = number of data points used for interfacial separation probability distribution; max allowed 10000; if bigger needed increase Nur in IN.PARAMETER\n1.0       afact = factor in expression for P(u): hrms*hrms is replaced with 1/[hrms*hrms+afact*u1*u1] \n3.1415    scaleL = factor giving load on macroasperity for Finite Size u(p); A0=(scaleL/q0)**2.0, F=pnormal*A0; standard value = pi, best value??? = 1.8 according to study with Carbone\n0         iTurnOnFinite=1 include finite sice effect when calculating integrals with P(u); if =1 the P(u) for p<pFiniteSize is for p=pFiniteSize, =2 readin pFiniteSize from IN.ELECTROADHESION, only used for ELECTROADHESION\n1.0       scaleC; scale the power spectrum with this factor; result in scaling hrms with sqrt(scaleC)\n0.9  feedback1: during iteration for seal effective medium conductivity sigmaNEW = sigmaOLD*feedback1 +sigmaNEW*(1-feedback1); typically choose feedback1=0.99\n6000  NittSeal = number of iterations to get converged flow conductivity sigma; must choose NittSeal >> 1/(1-feedback1); typically use 100000\n1.0 2.2   scaleK: the finite-size stiffness scale factor of order unity; choose scaleK so that separation for p=0 is height of highest asperity; only used when iflag003>0\n3.85      Ciavarella parameter about 3.85 (for H=0.9); 4.75 (H=0.7); 5.44 (H=0.5); 5.58 (H=0.3) \n",
+    "IN.flagparameters": "25.0 T0 = temperature used only when doing viscoelastic calculation\n0  iflag000 =0 elastic, =1 elastoplastic\n0  iflag001 =1 adhesion, =2 +adhesion (pressure dependence), =3 +u(z),u1(z), 4 adhesion at a distance (stiff solid) (put iubar=1 in IN.mathematical to get fast calculation), =5 gives approximative, =6 gives adhesive input for friction code  \n1  iflag002 =1 read-in C(q) numerically\n0  iflag003 =1 calculate u0, beta, =2 +u(p), =3 u(zeta), u1(zeta), P(zeta); 20, 30 the same as 2, 3 using method 0, =20 faster than 2, but =30 slower than 3 \n0  iflag004 viscoelastic contact area, uses aT, bT, E(omega), =1 use E=|E(1/time)|, =2 and 3 relaxation modulus (1/E)(t)\n0  iflag005 layered material, =1 exact numerical, =2 exact analytical\n0  iflag006 capillary adhesion, =1 work of adhesion, =2 contact area at fixed p0\n0  iflag007 heat transfer, =1 contact and non-contact contributions, =2 contribution capillary bridges\n0  iflag008 leak-rate, =1,2 critical junction (cj), effective medium (em); =4,5 OringElastic cj,em; 40,50 SquareRingElastic cj,em; =6or 7 Hertz or Gaussian pressure p(x) without elastic deformations, run first iflag008=2, =500 (liquid and gas), 5000 (gas ballistic) readin pressure profile from IN.1SyringeName... \n0  iflag009 squeeze-out Hertz plate, =1 pressure flow factor from cj, =2 from em; contact pressure from IN.sigma...\n0  iflag010 squeeze-out elastic cylinder, =1, viscoelastic =10; radie, load from data in IN.MIXEDLUBRICATION; must first run iflag009 = 2 \n0  iflag011 mixed lubrication cylinder, =1 or 2 generate u(p), =20,21,22 +phi_p, +<1/u> from P, =30,31,32 +<1/u> from A', with minus v-down, =4 read in flowfactors (run first with iflag015 =1),=200 generate only pressure profile p(x) with roughness\n0  iflag012 viscoelastic mixed lubrication cylinder, =1 or 2 generate u(p), =20,21,22 +phi_p+<1/u> from P, =30,31,32 +<1/u> from A', with minus v-down\n0  iflag013 unsteady mixed lubrication cylinder, =1 or 2 generate u(p), =20,21,22 +phi_p +<1/u> from P, =30,31,32 +<1/u> from A', with minus load ff from old file\n0  iNonlinear =1 includes elastic non-linearity but may be with some problem for adhesion case\n0  iflag014 =1 do Electroadhesion\n1  iflag015 =1 calculate flow and friction factors, for fluid slip give sliplength in IN.FLUID.. \n0  iflag016 =1 calculate size of contact regions and stress-stress correlation decay and flash temperature and temperature-stress correlation with increasing magnification,=2 wear,removal of crack-particles,IN.ContactRadiusAndWear\n0  iflag017 =1 calculate flash temperature for accelerated motion; input in: IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa \n",
+    "IN.SEALING": "1.0E+05     PressureDrop: difference in fluid pressure (in Pa) between inside and outside; applied (maximum) pressure from IN.sigma...\n150         Np: number of pressure points in output\n0.12        width (in cm) of rectangular seal in fluid flow direction, or diameter (in cm) of O-ring: only used if iflag008=4, 5, 40 or 50 \n0           irepeat: if = 1 and iflag008=4 or 5 or 40 or 50 --> deformation of seal done fast; assumes iflag008=1 or 2 done to prepare input data\n\n0.8         spc: when contact area percolate replace sigmaeff(p) in percolated region (p>pc) with sigmaeff(spc*pc) for O-ring \n10000       Nx: integer number of x-values fot p(x),u(x): must be large to get converged resuly, Nx ~ 10^4 (or more) for O-ring (iflag008=4 or 5)        \n3000000     Npa: integer number of fluid pressures: must be large to get converged resuly, Npa ~ 3x10^6 (or more) for O-ring (iflag008=4 or 5)         \n0.99        old: mix old and new to get converged result for O-ring (iflag008=4 or 5)\n\n\n0.1E+05     gas pressure (in Pa) on high pressure side (for gas leakage) (1 atm is added)\n0.0         gas pressure (in Pa) on low pressure side (for gas leakage) (1 atm is added)\n1.76E-05    gas viscosity (in Pas) (for gas leakage; for liquid leakage it is in IN.FLUID...); He: 1.96E-05 Pas, N2: 1.76E-05 Pas at T=20C\n471.0       barv=average speed of gas molecule (for gas leakage) barv=sqrt(8*kB*T/pi*m); He: 1255 m/s; N2: 471 m/s at T=20C\n20.0        temperature in Celsius (for gas leakage)\n",
+    "IN.sigma.gammabar.xnu.ElasticModul.yieldstress": "1.0E+05\n0.43\n0.5\n3.0E+06\n10.0E+06\n",
+    "IN.PARAMETER": "      PARAMETER (Nur=10000,Npr=400,nCMax=1000000,nnMax=10000,nEmax=10000,nTempMax=10000,nq0h0Max1=20,nFMax=100000,ntMax=1000000)\n",
+    "IN.FLUID.viscosity.and.TrippNumber": "0.1       viscosity: viscosity of fluid\n2.0E-09    dmin: (for confined fluid shear friction--not used in present code)\n1.0E+05    UniversalC: (for confined fluid shear friction--not used in present code)\n1.0E+30 1.5E+04  1.326E+30  bthin: shear thinning parameter; use very large value to eliminate shear thinning\n0.77     -0.193     cthin: shear thinning parameter; shearthin=1.0/(1.0+(viscosity/bthin)*dotgamma**cthin)\n1.0        ellipsgamma: Surface anisotropy Tripp number; if ellipsgamma > 10^4 asympthotic em-formula used\n1.0E-09    uboundary=minimum lubrication film thickness i.e. boundary lubrication film which cannot be squeezed out  \n0.0E-00    sliplength: fluid partial slip occur on the lower flat moving surface; sliplength is distance (in meter) below bottom surface where extrapolated v(z) vanish \n"
+  },
+  "original_anchor_controls": {
+    "pressure_pa": 100000,
+    "log_step": 0.03,
+    "nurange": 128,
+    "internal_pdf_nodes": 512,
+    "iterations": 6000,
+    "feedback": 0.9,
+    "idonot": 1,
+    "iflag008": 2,
+    "iflag015": 0,
+    "Np_sealing": 1,
+    "Npadd": 0
+  },
+  "anchor_flow_tables_byte_identical": true,
+  "full_tables_with_and_without_print_fix_byte_identical": true,
+  "excluded_runs": {
+    "pristine_n12": "Terminated after slow run before any usable table",
+    "pristine_anchor": "Terminated after slow run before any usable table; initial copy permission launch fixed separately",
+    "pristine_low_anchor": "Redundant run terminated after coarse native anchor completed; no usable table"
+  },
+  "scope": "Pressure and shear factor chain only; does not validate spatial moving mixed-lubrication solver or friction factors"
+}
