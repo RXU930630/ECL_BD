@@ -2,11 +2,15 @@
 
 项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度牛顿流体与无滑移/Navier滑移界面规律，以及模块4的各向同性压力流动部分。已增加模块6参考压力几何、模块7压力边界和模块8—9稳态守恒求解，可计算空间分布及局部卸载后的液体泄漏。使用 Python；不需要 MATLAB 许可证。
 
-第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。液体与ballistic泄漏考虑局部流体压力卸载；非局部结构柔度、剪切流动因子、混合摩擦、有限供油及空化尚未实现。
+第一版范围：线弹性、非黏附、各向同性二维 PSD、局部弹性半空间响应。液体与ballistic泄漏考虑局部流体压力卸载；已增加单侧粗糙的剪切流动插值和固定接触运动输运；非局部结构柔度、混合摩擦、有限供油及空化尚未实现。
 
 **流体选择：** `parameters.py` 的 `CASE['leakage']['fluid']='liquid'` 使用液体模型，并用 `compute_equivalent_gas=True/False` 控制附加diffusive/ballistic估算；改为 `'gas'` 则独立计算K2和ballistic气体压力。参数按工况、模型与数值设置、输出目录整理，开发复算配置已移入测试数据。详见[参数说明](docs/parameters.md)、[气体单位与输出](docs/gas_leakage.md)及[气体验证记录](docs/gas_validation/report.md)。
 
 **牛顿流体与滑移：** 在CASE的interface中选择rheology与wall_slip，各自参数列在rheology_parameters和slip_parameters。支持两壁独立Navier滑移长度，已接入压力导流与液体泄漏；非零滑移时关闭附加气体估算。局部流量、壁面剪切应力及未来压温接口见[模块3说明](docs/module3_interface.md)。
+
+**剪切流动模块：** main.py开启COMPUTE_SHEAR_FLOW，在CASE的shear_flow中设置两侧速度与粗糙侧。可独立输出剪切因子；与泄漏一起使用非零速度时，需选择fixed_contact并关闭附加气体估算。首版为单侧粗糙、牛顿、无滑移插值，详见[模块4剪切流动说明](docs/shear_flow.md)。
+
+当前完整测试集102项通过；剪切模块另完成原Fortran插值核心对照和上下壁面粗糙两组完整示例。
 
 ## 新增：三种几何的空间液体泄漏
 
@@ -46,11 +50,12 @@ CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_press
 | `RUN_CONTACT = True` | 计算共用 Persson 弹性接触数据库 |
 | `RUN_LEAKAGE = True` | 计算所选几何的空间泄漏与局部卸载，自动调用接触和流动基础 |
 | `RUN_MIXED_FRICTION = False` | 预留混合摩擦入口；求解器尚未实现 |
+| `COMPUTE_SHEAR_FLOW = False` | 单侧粗糙剪切因子；自动计算接触与压力导流基础 |
 | `COMPUTE_PRESSURE_FLOW = True` | 接触计算后计算压力流动系数；泄漏开启时自动计算 |
 | `COMPUTE_GAP_PDF = True` | 是否导出 Fortran method 1 间隙分布，不关闭流动所需的内部分布计算 |
 | `SAVE_PLOTS = True` | 是否生成 PNG 图 |
 
-混合摩擦、黏弹性和非牛顿流变尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。三个 RUN 开关全关时不执行计算。要只运行原干接触部分，保持 RUN_CONTACT=True，并关闭 COMPUTE_PRESSURE_FLOW 和两个应用开关。
+混合摩擦、黏弹性和非牛顿流变尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。三个 RUN 开关和COMPUTE_SHEAR_FLOW全关时不执行计算。要只运行原干接触部分，保持 RUN_CONTACT=True，并关闭 COMPUTE_PRESSURE_FLOW 和两个应用开关。
 
 默认Hertz示例的液体黏度为0.1 Pa·s，可在CASE的interface.rheology_parameters.newtonian分组修改。未实现模块的占位参数和开发复算配置已移出日常配置。路径始终相对于项目目录，不随启动终端的目录改变。非空输出目录会被拒绝，请修改OUTPUT_DIRECTORY后重新运行。
 
@@ -195,13 +200,13 @@ PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的�
 
 ## 流动模块的范围与缺口处理
 
-无滑移时局部规律为 `sigma_local=s^3/(12 eta)`；Navier滑移使用包含两侧滑移长度的完整导流律，并提供局部Poiseuille+Couette通量和壁面剪切应力。均质化只实现压力驱动部分；局部Couette规律不等于已实现剪切流动因子。
+无滑移时局部规律为 `sigma_local=s^3/(12 eta)`；Navier滑移使用包含两侧滑移长度的完整导流律，并提供局部Poiseuille+Couette通量和壁面剪切应力。压力均质化使用PDF有效介质；剪切因子使用单独的单侧粗糙Persson插值，具体定义见模块4剪切说明。
 
 压力流动沿用原Sealing3的各向同性Bruggeman闭合，渗流相对面积共用 `options.critical_relative_contact_area`。`pressure_flow.gap_points` 为内部分布积分网格，独立于 `options.n_gap` 的导出网格；采用CDF分箱和加密比较，未收敛时明确报错。
 
 默认结果将遗漏PDF概率作为零导流相，并输出该概率无限导流时的上界；两者均保留原接触面积、不归一化PDF。上界不是统计置信区间。状态 `conducting` 为默认闭合可导通，`blocked` 为上下界均阻断，`unresolved_connectivity` 为默认值零但上界非零。极端情况下上界无穷，CSV上界留空并置 `upper_bound_unbounded=True`。
 
-新空间泄漏联立恒定通量与局部接触卸载；旧固定状态接口仍使用 `Q=(W/L)*sigma_eff*DeltaP`。压差反向则流动反向，零压差给Q=0。导流表仍是已验证的各向同性直接PDF分支；大间隙渐近切换、各向异性、边界膜、剪切流动因子和完整混合摩擦尚未实现。
+新空间泄漏联立恒定通量与局部接触卸载；旧固定状态接口仍使用 `Q=(W/L)*sigma_eff*DeltaP`。压差反向则流动反向，零压差给Q=0。导流表仍是已验证的各向同性直接PDF分支；大间隙渐近切换、各向异性、边界膜、双侧粗糙剪切输运和完整混合摩擦尚未实现。
 
 ## 概率与干接触验证限制
 

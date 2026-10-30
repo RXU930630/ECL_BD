@@ -15,6 +15,7 @@ from .mechanics import make_mechanics
 from .steady import solve_steady_flow
 from .transport_table import TransportTable
 from .gas import GasProperties,read_gas_properties,equivalent_gas_estimates
+from .moving_flow import solve_fixed_contact_motion
 
 
 @dataclass
@@ -128,7 +129,7 @@ def required_pressures(plan,model,configured,percolation):
     return p,active_plateau,perc
 
 
-def make_transport(plan,model,interface,pressure_rows,percolation,area_tolerance=.005):
+def make_transport(plan,model,interface,pressure_rows,percolation,area_tolerance=.005,*,shear_law=None):
     p=np.array([r['pressure_pa'] for r in pressure_rows]);h=np.array([r['mean_gap_m'] for r in pressure_rows])
     perc=model.pressure_for_relative_contact_area(percolation)
     plateau=plan.spc*perc if plan.percolation_policy=='legacy_spc_plateau' else None
@@ -145,8 +146,11 @@ def make_transport(plan,model,interface,pressure_rows,percolation,area_tolerance
         if invalid:raise ValueError(f'Critical-junction database has unresolved u1: {invalid[0]}')
         k=np.array([float(interface.geometric_mobility(plan.critical_alpha*v.critical_separation_m))
                     if v.status=='found' else 0 for v in values]);upper=k.copy()
-    return TransportTable(p,h,k,upper,model,interface,interpolation=plan.interpolation,
+    table=TransportTable(p,h,k,upper,model,interface,interpolation=plan.interpolation,
         percolation_policy=policy,plateau_pressure_pa=plateau)
+    table.shear_law=shear_law
+    if shear_law is not None:table.metadata['shear_flow']=shear_law.metadata
+    return table
 
 
 def _csv(path,rows):
@@ -158,6 +162,30 @@ def solve_case(plan,table,inlet,*,upper=False,initial_pressure_profile=None):
     if table.gap_power!=(2 if plan.fortran_mode==5000 else 3):
         raise ValueError('Transport conductivity units do not match fortran_mode')
     mech=plan.mechanics;out=plan.outlet_pressure_pa
+    shear=getattr(table,'shear_law',None)
+    if shear is not None and shear.options.moving:
+        if plan.coupling!='fixed_contact' or plan.method!='effective_medium' or plan.fortran_mode!=500:
+            raise ValueError('Moving-flow spatial solve requires fixed_contact, effective_medium and liquid')
+        if getattr(table.interface,'has_slip',False):
+            raise NotImplementedError('Moving shear interpolation requires no-slip walls')
+        def state(x):
+            pc=mech.evaluate(x)[0]
+            if np.any(pc<=0):
+                raise ValueError('Moving-wall spatial flow needs a finite gap; open interior contact regions are unresolved')
+            return pc
+        solution=solve_fixed_contact_motion(lambda x:table.resistance(state(x),upper),
+            lambda x:shear.source(table.mean_gap(state(x))),
+            mech.x_m[0],mech.x_m[-1],float(inlet),out,
+            required_points=mech.integration_points,pressure_floor_pa=shear.options.pressure_floor_pa,
+            **plan.solver)
+        return {'x':solution.x_m,'fluid':solution.fluid_pressure_pa,
+                'contact':mech.evaluate(solution.x_m)[0],'flux':solution.flux_per_width,
+                'status':'converged_motion','solver_nodes':solution.solver_nodes,
+                'equation_residual':solution.maximum_equation_residual,
+                'pressure_drop_error':solution.pressure_drop_relative_error,
+                'flux_spread':solution.face_flux_relative_spread,'iterations':solution.iterations,
+                'flux_check_pressure_fraction':solution.flux_check_pressure_fraction,
+                'grid_difference':solution.grid_relative_flux_difference}
     def contact(x,pf):
         return mech.contact_pressure(x,pf,plan.coupling)
     def resistance(x,pf):return table.resistance(contact(x,pf),upper)
@@ -194,6 +222,10 @@ def validate_liquid_estimates(plan,interface):
 
 def run_spatial_leakage(plan,table,output,*,plot=False):
     validate_liquid_estimates(plan,table.interface)
+    shear=getattr(table,'shear_law',None)
+    moving=shear is not None and shear.options.moving
+    if moving and plan.compute_equivalent_gas:
+        raise ValueError('Set compute_equivalent_gas=False for moving-wall flow')
     output=Path(output);rows=[];profiles=[]
     ballistic=plan.fortran_mode==5000
     unit='m2' if ballistic else 'm3'
@@ -210,15 +242,20 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
     for i,inlet in enumerate(plan.inlet_pressures_pa):
         result=solve_case(plan,table,float(inlet))
         upper=None;upper_error=None
-        if plan.compute_upper_bound:
+        if plan.compute_upper_bound and not moving:
             try:upper=solve_case(plan,table,float(inlet),upper=True)
             except ValueError as exc:upper_error=str(exc)
+        elif moving and plan.compute_upper_bound:
+            upper_error='Pressure-only PDF bounds do not bound combined moving-wall flux; no bound reported.'
         x,pf,pc=result['x'],result['fluid'],result['contact'];c0,f0=plan.mechanics.evaluate(x)
         h=table.mean_gap(pc[np.isfinite(pc)])
         gaps=np.full_like(pc,np.nan);gaps[np.isfinite(pc)]=h
         area=np.full_like(pc,np.nan);mask=np.isfinite(pc);area[mask]=table.model.area(pc[mask])
         low=(pc>0)&(pc<table.p[0]);opened=(pc<=0)&np.isfinite(pc)
         k=np.full_like(pc,np.nan);k[mask]=table.geometric_conductivity(pc[mask])
+        motion=np.full_like(pc,np.nan)
+        if moving:
+            finite_gap=np.isfinite(gaps);motion[finite_gap]=shear.source(gaps[finite_gap])
         data=[]
         for j in range(len(x)):
             finite=lambda value:float(value) if np.isfinite(value) else None
@@ -227,6 +264,10 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
                 'contact_pressure_pa':finite(pc[j]),'mean_gap_m':finite(gaps[j]),
                 'relative_contact_area':finite(area[j]),f'geometric_conductivity_{unit}':finite(k[j]),
                 'open_reservoir_limit':bool(opened[j]),'low_pressure_continuation':bool(low[j])})
+            if moving:
+                data[-1].update(motion_flux_per_width_m2_s=finite(motion[j]),
+                    pressure_flux_per_width_m2_s=finite(result['flux']-motion[j]),
+                    combined_flux_per_width_m2_s=float(result['flux']))
         file=f'leakage_profile_{i:03d}.csv';_csv(output/file,data)
         q=result['flux']*plan.width_m;qupper=upper['flux']*plan.width_m if upper is not None else None
         number=q if ballistic else None
@@ -251,6 +292,11 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
             flow_quantity='gas_volume_at_reference_pressure' if ballistic else 'incompressible_liquid_volume',
             flow_rate_mm3_h=q*3.6e12,
             square_unit_flow_m3_s=q*plan.mechanics.length_m/plan.width_m)
+        if moving:
+            row.update(rough_surface=shear.options.rough_surface,
+                lower_wall_velocity_m_s=shear.options.lower_wall_velocity_m_s,
+                upper_wall_velocity_m_s=shear.options.upper_wall_velocity_m_s,
+                minimum_fluid_pressure_pa=float(np.min(pf)),maximum_fluid_pressure_pa=float(np.max(pf)))
         if ballistic:
             dp=float(inlet)-plan.outlet_pressure_pa
             gap=(2*plan.gas.reference_pressure_pa*plan.mechanics.length_m*abs(q)/
@@ -273,15 +319,19 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
     summary={'scope':('Independent quadratic ballistic gas; conserved molecular flux; '
                      'volumes at the stated reference pressure and gas temperature. ' if ballistic else
                      'Incompressible Newtonian liquid with the selected wall law; optional gas columns are no-slip estimates at the liquid-derived state. ')+
-        'One-dimensional local reference-traction unloading; no nonlocal FEM compliance or cavitation.',
+        ('Fixed-contact conserved pressure/motion transport; no load balance, film-thickness solve or cavitation.' if moving else
+         'One-dimensional local reference-traction unloading; no nonlocal FEM compliance or cavitation.'),
         'geometry':plan.mechanics.metadata,'reference_external_load_policy':'Held fixed for all interface-pressure cases; '
         'reference interface pressure is included only when explicitly supplied. Exterior FEM load is not added again.',
         'transport_database':table.metadata,'transport_file':'leakage_transport_table.csv','solver':plan.solver,'parameters':plan.original,
         'open_region_policy':'Reservoir (zero-resistance) limit for pc<=0; no finite gap reported. '
             'A full open-gap deformation model is required for physical aperture and fully open seals.',
-        'pdf_bounds_scope':('No PDF-based bound for critical-junction model; equal bounds do not quantify its model error. ' if plan.method=='critical_junction' else '')+'Same local approximation with missing-PDF conductivity bounds; not statistical confidence intervals.',
+        'pdf_bounds_scope':('No total moving-flux bound: pressure-PDF bounds alone do not bound the coupled motion source.' if moving else
+            ('No PDF-based bound for critical-junction model; equal bounds do not quantify its model error. ' if plan.method=='critical_junction' else '')+
+            'Same local approximation with missing-PDF conductivity bounds; not statistical confidence intervals.'),
         'cases':rows}
     summary.update(fluid=plan.fluid,fortran_mode=plan.fortran_mode,gas=asdict(plan.gas) if plan.gas is not None else None,
+        motion_transport_enabled=moving,shear_flow=shear.metadata if shear is not None else None,
         liquid_interface=table.interface.metadata if not ballistic else None,
         flow_quantity='gas_volume_at_reference_pressure' if ballistic else 'incompressible_liquid_volume',
         equivalent_gas_estimates_enabled=plan.compute_equivalent_gas,

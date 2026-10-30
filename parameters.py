@@ -79,6 +79,17 @@ CASE = {
             'reference_pressure_pa': 1e5, # 报告气体体积时的参考绝对压力
         },
     },
+    # 剪切流动：main.py开启COMPUTE_SHEAR_FLOW后读取；首版限牛顿、无滑移、单侧粗糙
+    'shear_flow': {
+        'model': 'persson_interpolation', # 当前唯一实现的各向同性剪切因子模型
+        'rough_surface': 'lower',         # lower下壁粗糙 / upper上壁粗糙；另一侧光滑
+        'lower_wall_velocity_m_s': 0.0,   # 下壁沿+x方向速度，m/s，允许负值
+        'upper_wall_velocity_m_s': 0.01,  # 上壁沿+x方向速度，m/s，允许负值
+        'pressure_gradient_pa_m': 0.0,    # 仅用于均匀接触状态表的测试梯度，Pa/m
+        'pressure_floor_pa': 0.0,         # 运动空间输运的压力检查下限，Pa表压；低于则报错，不裁剪
+        # 同时计算运动壁面空间流动时：coupling='fixed_contact'，附加气体估算设False
+        # 这一步不求空化、摩擦、载荷分担或膜厚；现有压力卸载仍可独立使用
+    },
     'interface': {                     # 仅liquid使用；两个选择器互相独立
         # 流变选择器：目前实现newtonian恒黏度；压温依赖及剪切稀化留待扩展
         'rheology': 'newtonian',

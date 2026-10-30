@@ -76,6 +76,27 @@ runpy.run_path(str(entry), run_name='__main__')
         self.assertIn('pip install -r requirements.txt', result.stdout)
         self.assertNotIn('Traceback', result.stderr)
 
+    def test_downloaded_shear_switch_and_parameter_presets(self):
+        import json
+        entry=self.project/'main.py'
+        entry.write_text(entry.read_text().replace('RUN_LEAKAGE = False','RUN_LEAKAGE = True')
+            .replace('COMPUTE_SHEAR_FLOW = False','COMPUTE_SHEAR_FLOW = True'))
+        config=self.project/'parameters.py'
+        config.write_text(config.read_text().replace("'geometry': 'oring_hertz',","'geometry': 'square_ring',")
+            .replace("'coupling': 'local_unloading',","'coupling': 'fixed_contact',")
+            .replace("'compute_equivalent_gas': True,","'compute_equivalent_gas': False,")
+            .replace("'number_of_points': 110","'number_of_points': 3")
+            .replace('[0.0, 1e4, 2e4, 5e4]','[0.0, 1e4]'))
+        driver="import runpy,sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(p.parent)); runpy.run_path(str(p),run_name='__main__')"
+        result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
+                              capture_output=True,text=True,timeout=60)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        output=self.project/'results/leakage'
+        self.assertTrue((output/'shear_flow_table.csv').exists())
+        saved=json.loads((output/'leakage_diagnostics.json').read_text())
+        self.assertTrue(saved['motion_transport_enabled'])
+        self.assertGreater(saved['cases'][0]['flow_rate_m3_s'],0.)
+
     def test_downloaded_navier_switch_in_parameters(self):
         import json
         entry=self.project/'main.py'

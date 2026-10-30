@@ -46,3 +46,7 @@ Hertz截面直径不是密封环整体直径。Square ring当前不从截面尺�
 interface中用rheology选择流变，用wall_slip选择壁面边界；所有已支持预设均列出，仅读取所选块。目前流变为newtonian恒黏度；壁面为no_slip或navier，后者分别给lower_slip_length_m、upper_slip_length_m（单位m，允许0）。两侧均为0恢复无滑移。非零滑移时需将leakage.compute_equivalent_gas设为False，避免套用无滑移气体估算。
 
 旧的interface.viscosity_pa_s仍可读取，但不能与新的rheology_parameters同时填写。压温相关黏度和非牛顿流体尚未启用，只有底层接口预留。详见[模块3说明](module3_interface.md)。
+
+## 剪切流动与粗糙侧
+
+main.py中的COMPUTE_SHEAR_FLOW默认关闭。打开后，在CASE的shear_flow块选择rough_surface=lower/upper、两侧速度和测试压力梯度，所有字段均有注释。可以关闭RUN_LEAKAGE只生成因子表；非零速度与空间输运一起计算时，当前需fixed_contact、无滑移、有效介质，并关闭附加气体估算。详见[剪切流动模块](shear_flow.md)。

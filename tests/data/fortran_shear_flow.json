@@ -1,0 +1,127 @@
+{
+  "source_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+  "kernel_sha256": "505d0083d06bd01ab4767ce192b956580f29c183a67ee434bf31df17de3dcc57",
+  "driver_sha256": "3909e4c7976cee32a02aab74eb90e9f579a3ad25c6cd078a9af593f9683ffb53",
+  "compiler": "GNU Fortran (Debian 14.2.0-19) 14.2.0",
+  "scope": "Unmodified Sealing3 phi_s kernel, isotropic and no slip; supplied mean/RMS/percolation gaps. Not a full mixed-lubrication run.",
+  "branch_difference": "Python uses max(h-hc,0); original uses a fixed positive 1e-10 m switch. One explicit near-cutoff case records the difference.",
+  "cases": [
+    {
+      "mean_gap_m": 1.25e-08,
+      "rms_height_m": 1.4e-06,
+      "percolation_gap_m": 2.5e-08,
+      "fortran_shear_flow_factor": 0.008928571428571428,
+      "python_shear_flow_factor": 0.008928571428571428,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 2.5e-08,
+      "rms_height_m": 1.4e-06,
+      "percolation_gap_m": 2.5e-08,
+      "fortran_shear_flow_factor": 0.017857142857142856,
+      "python_shear_flow_factor": 0.017857142857142856,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 2.5999999999999998e-08,
+      "rms_height_m": 1.4e-06,
+      "percolation_gap_m": 2.5e-08,
+      "fortran_shear_flow_factor": 0.018571264335757575,
+      "python_shear_flow_factor": 0.01857126433575757,
+      "relative_difference": -2.220446049250313e-16,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 1.4e-06,
+      "rms_height_m": 1.4e-06,
+      "percolation_gap_m": 2.5e-08,
+      "fortran_shear_flow_factor": 0.60431654676259,
+      "python_shear_flow_factor": 0.60431654676259,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 4.2e-06,
+      "rms_height_m": 1.4e-06,
+      "percolation_gap_m": 2.5e-08,
+      "fortran_shear_flow_factor": 0.43076923076923074,
+      "python_shear_flow_factor": 0.43076923076923074,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 0.00014,
+      "rms_height_m": 1.4e-06,
+      "percolation_gap_m": 2.5e-08,
+      "fortran_shear_flow_factor": 0.015000428583673817,
+      "python_shear_flow_factor": 0.015000428583673817,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 2.5e-07,
+      "rms_height_m": 2e-06,
+      "percolation_gap_m": 5e-07,
+      "fortran_shear_flow_factor": 0.125,
+      "python_shear_flow_factor": 0.125,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 5e-07,
+      "rms_height_m": 2e-06,
+      "percolation_gap_m": 5e-07,
+      "fortran_shear_flow_factor": 0.25,
+      "python_shear_flow_factor": 0.25,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 5.009999999999999e-07,
+      "rms_height_m": 2e-06,
+      "percolation_gap_m": 5e-07,
+      "fortran_shear_flow_factor": 0.2504790849964028,
+      "python_shear_flow_factor": 0.2504790849964028,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 2e-06,
+      "rms_height_m": 2e-06,
+      "percolation_gap_m": 5e-07,
+      "fortran_shear_flow_factor": 0.6666666666666666,
+      "python_shear_flow_factor": 0.6666666666666666,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 6e-06,
+      "rms_height_m": 2e-06,
+      "percolation_gap_m": 5e-07,
+      "fortran_shear_flow_factor": 0.46153846153846156,
+      "python_shear_flow_factor": 0.46153846153846156,
+      "relative_difference": 0.0,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 0.00019999999999999998,
+      "rms_height_m": 2e-06,
+      "percolation_gap_m": 5e-07,
+      "fortran_shear_flow_factor": 0.015035333032626675,
+      "python_shear_flow_factor": 0.015035333032626674,
+      "relative_difference": -1.1102230246251565e-16,
+      "original_cutoff_only": false
+    },
+    {
+      "mean_gap_m": 5.0005e-07,
+      "rms_height_m": 2e-06,
+      "percolation_gap_m": 5e-07,
+      "fortran_shear_flow_factor": 0.250025,
+      "python_shear_flow_factor": 0.25002395812933115,
+      "relative_difference": -4.167065968840866e-06,
+      "original_cutoff_only": true
+    }
+  ]
+}

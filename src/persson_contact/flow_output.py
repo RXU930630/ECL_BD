@@ -40,7 +40,8 @@ def run_pressure_flow(model, pressures, interface, options, output, *, percolati
           'not additional real contact. The upper result assigns it infinite conductance while true contact remains zero.',
         'reference_scope':('Sealing3gas' if ballistic else 'Sealing3')+' isotropic Bruggeman branch and area-dependent dimension; '
           'direct PDF integration only. Large-gap asymptotic switching, continuity correction, '
-          'anisotropy, boundary films and shear-flow factors are not implemented.',
+          'anisotropy and boundary films are not implemented. This file contains pressure flow only; '
+          'enabled shear interpolation is recorded separately in shear_diagnostics.json.',
         'leakage_parameters':asdict(leakage) if leakage is not None else None,
         'leakage_scope':'Uniform fixed contact; no fluid load feedback, cavitation or cylinder mechanics.' if leaks else None,
         'status_counts':{name:sum(row['status']==name for row in rows) for name in sorted({row['status'] for row in rows})},

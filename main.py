@@ -15,6 +15,7 @@ RUN_LEAKAGE = True
 RUN_MIXED_FRICTION = False
 
 COMPUTE_PRESSURE_FLOW = True # 压力流动系数；泄漏开启时会自动计算
+COMPUTE_SHEAR_FLOW = False   # 剪切流动因子；速度与粗糙侧在parameters.py的shear_flow中
 COMPUTE_GAP_PDF = True      # 是否导出微观间隙分布，不控制流动所需的内部计算
 SAVE_PLOTS = True           # 输出 PNG，需 matplotlib
 
@@ -29,7 +30,8 @@ def main():
                     run_contact=RUN_CONTACT, run_leakage=RUN_LEAKAGE,
                     run_mixed_friction=RUN_MIXED_FRICTION,
                     compute_gap_pdf=COMPUTE_GAP_PDF, save_plots=SAVE_PLOTS,
-                    compute_pressure_flow=COMPUTE_PRESSURE_FLOW)
+                    compute_pressure_flow=COMPUTE_PRESSURE_FLOW,
+                    compute_shear_flow=COMPUTE_SHEAR_FLOW)
     except ModuleNotFoundError as exc:
         if exc.name not in {'numpy', 'scipy', 'matplotlib'}:
             raise
