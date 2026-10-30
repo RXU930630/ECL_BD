@@ -81,10 +81,10 @@ class WorkflowTests(unittest.TestCase):
             self.assertTrue(np.all(density['microgap_m'] > 0))
             self.assertAlmostEqual(np.sum(bins['nominal_area_probability']), record['exported_bin_mass'], places=12)
 
-    def test_reserved_applications_fail_before_contact_calculation(self):
+    def test_incomplete_or_incompatible_mixed_inputs_fail_before_output(self):
         for switches in ({'run_mixed_friction': True},
                          {'run_leakage': True, 'run_mixed_friction': True}):
-            with self.subTest(switches=switches), self.assertRaises(NotImplementedError):
+            with self.subTest(switches=switches), self.assertRaises(ValueError):
                 run_project(self.parameters, base_directory=self.directory, **switches)
         self.assertFalse((self.directory / 'result').exists())
 

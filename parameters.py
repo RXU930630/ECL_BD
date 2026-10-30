@@ -96,7 +96,26 @@ CASE = {
             'reference_pressure_pa': 1e5, # 报告气体体积时的参考绝对压力
         },
     },
-    # 固体接触滑动摩擦：main.py开启RUN_CONTACT_FRICTION；自动求解模块2+6的干接触
+    # 混合润滑：main.py开启RUN_MIXED_FRICTION，关闭RUN_LEAKAGE/RUN_MACRO_CONTACT/RUN_CONTACT_FRICTION
+    # 几何、载荷和弹性仍使用macro_contact；固体剪切强度仍在contact_friction填写
+    'mixed_friction': {
+        # 坐标随上部圆柱移动：圆柱速度为0，下部平面沿+x移动；V_relative=-U_plane
+        'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2],
+        'rough_surface': 'upper',          # upper弹性圆柱粗糙 / lower刚性平面粗糙；另一侧光滑
+        'inlet_pressure_pa': 0.,           # 小坐标端储液边界，表压Pa，必须>=0
+        'outlet_pressure_pa': 0.,          # 大坐标端储液边界；允许反向速度，流入端均为满液
+        'cavitation_model': 'mass_conserving', # p>=0、0<=theta<=1、p*(1-theta)=0，不裁剪负压
+        'cavitation_friction': 'uniform_wetted_fraction', # 空化区剪切乘theta；明确的近似闭合
+        # 首版：恒定牛顿黏度、无滑移、等温、1D稳态、连通导流分支
+        # 物理零导流保持0；阻断/封闭液袋会报错，不使用旧spc平台来强行导通
+    },
+    'fluid_friction': {
+        'model': 'persson_scale_u1',  # phi_f、phi_fs、phi_fp；不同于pressure/shear FLOW factors
+        # 演示假设1nm，须按研究体系调整并检查敏感性；不由PSD或E自动确定
+        # u1低于下限的尺度样本不计液体剪切；该部分边界膜剪切尚未建模，不改接触面积
+        'minimum_shear_gap_m': 1e-9,   # 不是滑移长度，不是宏观最小间隙，不影响法向解或流量
+    },
+    # 固体接触滑动摩擦：干摩擦和混合润滑共用剪切模型、温度、横向宽度
     'contact_friction': {
         'model': 'constant_shear_strength', # 日常使用常数；备选gaussian_log_velocity或custom
         'model_parameters': {              # 只读取选中模型；剪切强度均作用在真实接触面积上
@@ -115,7 +134,7 @@ CASE = {
                 'parameters': {'shear_strength_pa': None}, # 传给函数的自定义参数
             },
         },
-        'relative_velocities_m_s': [0., 1e-6, 1e-4, 1e-2, -1e-2], # V=上壁速度-下壁速度，沿+x
+        'relative_velocities_m_s': [0., 1e-6, 1e-4, 1e-2, -1e-2], # 仅干摩擦扫描；混合润滑速度在mixed_friction
         'temperature_k': 298.15,          # 仅传给模型；常数及高斯模型无温度依赖，不求热场
         'transverse_width_m': None,       # 可选横向宽度B；None只输出N/m，填写后另输出总力N
         # V=0不求静摩擦：滑动摩擦项及耗散为0，动摩擦系数与静摩擦极限留空
@@ -155,6 +174,11 @@ CASE = {
 
 # 二、模型与数值设置：控制接触模型、积分精度与空间求解
 NUMERICS = {
+    'mixed_friction': {
+        'transport_points': 161,          # 独立输运/摩擦查表分辨率；可用321检查
+        'relative_tolerance': 1e-8,
+        'max_iterations': 100,
+    },
     'macro_contact': {
         'solver': {
             'cells': 257,             # 均匀压力单元数；通常129/257/513检查收敛
@@ -216,5 +240,6 @@ PARAMETERS = {
     **NUMERICS,
     'leakage': {**CASE['leakage'], **NUMERICS['leakage']},
     'macro_contact': {**CASE['macro_contact'], **NUMERICS['macro_contact']},
+    'mixed_friction': {**CASE['mixed_friction'], **NUMERICS['mixed_friction']},
     'output_directory': OUTPUT_DIRECTORY,
 }

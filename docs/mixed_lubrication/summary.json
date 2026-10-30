@@ -1,0 +1,239 @@
+{
+  "purpose": "Programming verification with explicitly illustrative tau=0.1MPa and shear cutoff=1nm; no experimental calibration.",
+  "checks": {
+    "spatial_257_to_513_all_reported_changes_below_3percent": true,
+    "coupled_load_geometry_mass_residuals": true,
+    "domain_enlargement_coefficient_change_below_3percent": true,
+    "transport_coarsening_coefficient_change_below_2percent": true,
+    "cutoff_changes_friction_without_changing_normal_solution": true,
+    "zero_boundary_fluid_force_opposes_moving_plane": true,
+    "independent_JFO_finest_flux_and_pressure_errors_below_0p2percent": true,
+    "scale_step_halving_inverse_moment_change_below_3percent": true,
+    "saved_case_reproduced_at_257_cells": true,
+    "signed_velocity_reversal": true,
+    "all_case_cavitation_complementarity": true
+  },
+  "all_checks_pass": true,
+  "spatial_relative_changes": {
+    "coefficient": 0.005739120034379486,
+    "fluid_load_fraction": 0.0004506734663037859,
+    "minimum_gap_m": 0.0012393678613087378,
+    "flux_per_width_m2_s": 0.005659120513109461
+  },
+  "domain_coefficient_relative_change": 0.0008838344846984203,
+  "transport_coefficient_relative_change": 0.00011583770802525706,
+  "independent_JFO_reference": {
+    "rupture_m": 4.74778569974693e-05,
+    "flux_per_width_m2_s": 6.127073452536072e-09
+  },
+  "case_input": {
+    "description": "Hertz example.",
+    "material": {
+      "model": "elastic",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5
+    },
+    "psd": {
+      "path": "examples/data/roughness_psd.dat",
+      "scale_c": 1.0,
+      "tail_is_extrapolated": true
+    },
+    "macro_contact": {
+      "geometry": "cylinder_plane",
+      "geometry_parameters": {
+        "cylinder_plane": {
+          "radius_m": 0.005
+        }
+      },
+      "elastic_model": "half_space_plane_strain",
+      "body_representation": "upper_elastic_lower_rigid",
+      "contact_model": "persson",
+      "line_load_n_m": 100.0,
+      "domain_half_width_m": 0.0012,
+      "reference_length_m": null,
+      "solver": {
+        "cells": 257,
+        "relative_tolerance": 1e-09,
+        "max_iterations": 80,
+        "edge_pressure_ratio_tolerance": 0.0001
+      },
+      "contact_table": {
+        "minimum_pressure_pa": 1e-100,
+        "maximum_pressure_pa": 2000000.0,
+        "points": 1201
+      }
+    },
+    "leakage": {
+      "mode": "spatial",
+      "fluid": "liquid",
+      "compute_equivalent_gas": true,
+      "geometry": "oring_hertz",
+      "geometry_parameters": {
+        "oring_hertz": {
+          "cross_section_diameter_m": 0.003,
+          "peak_pressure_pa": 100000.0
+        },
+        "square_ring": {
+          "length_m": 0.001,
+          "reference_contact_pressure_pa": 100000.0
+        },
+        "prescribed_profile": {
+          "pressure_file": "examples/data/seal_pressure_profile.csv",
+          "file_format": "csv",
+          "interpolation": "pchip"
+        },
+        "gaussian": {
+          "length_m": 0.001,
+          "peak_pressure_pa": 100000.0,
+          "sigma_m": 0.0002
+        }
+      },
+      "seal_width_m": 0.01,
+      "inlet_pressures_pa": [
+        0.0,
+        10000.0,
+        20000.0,
+        50000.0
+      ],
+      "outlet_pressure_pa": 0.0,
+      "coupling": "local_unloading",
+      "conductance_model": "effective_medium",
+      "percolation_policy": "legacy_spc_plateau",
+      "spc": 0.8,
+      "gas": {
+        "temperature_c": 25.0,
+        "mean_molecular_speed_m_s": 471.0,
+        "viscosity_pa_s": 1.82e-05,
+        "ambient_pressure_pa": 100000.0,
+        "reference_pressure_pa": 100000.0
+      },
+      "database_interpolation": "log_pchip",
+      "compute_upper_bound": true,
+      "solver": {
+        "nodes": 201,
+        "output_points": 1001,
+        "tolerance": 1e-05,
+        "max_nodes": 20001
+      }
+    },
+    "mixed_friction": {
+      "lower_wall_velocities_m_s": [
+        0.0,
+        0.0001,
+        0.001,
+        0.01,
+        -0.01
+      ],
+      "rough_surface": "upper",
+      "inlet_pressure_pa": 0.0,
+      "outlet_pressure_pa": 0.0,
+      "cavitation_model": "mass_conserving",
+      "cavitation_friction": "uniform_wetted_fraction",
+      "transport_points": 161,
+      "relative_tolerance": 1e-08,
+      "max_iterations": 100
+    },
+    "fluid_friction": {
+      "model": "persson_scale_u1",
+      "minimum_shear_gap_m": 1e-09
+    },
+    "contact_friction": {
+      "model": "constant_shear_strength",
+      "model_parameters": {
+        "constant_shear_strength": {
+          "shear_strength_pa": 100000.0
+        },
+        "gaussian_log_velocity": {
+          "baseline_pa": null,
+          "amplitude_pa": null,
+          "peak_velocity_m_s": null,
+          "width_decades": null
+        },
+        "custom": {
+          "module_file": "examples/contact_shear_model.py",
+          "function": "shear_strength",
+          "parameters": {
+            "shear_strength_pa": null
+          }
+        }
+      },
+      "relative_velocities_m_s": [
+        0.0,
+        1e-06,
+        0.0001,
+        0.01,
+        -0.01
+      ],
+      "temperature_k": 298.15,
+      "transverse_width_m": 0.01
+    },
+    "shear_flow": {
+      "model": "persson_interpolation",
+      "rough_surface": "lower",
+      "lower_wall_velocity_m_s": 0.0,
+      "upper_wall_velocity_m_s": 0.01,
+      "pressure_gradient_pa_m": 0.0,
+      "pressure_floor_pa": 0.0
+    },
+    "interface": {
+      "rheology": "newtonian",
+      "rheology_parameters": {
+        "newtonian": {
+          "viscosity_pa_s": 0.1
+        }
+      },
+      "wall_slip": "no_slip",
+      "slip_parameters": {
+        "no_slip": {},
+        "navier": {
+          "lower_slip_length_m": 1e-08,
+          "upper_slip_length_m": 1e-08
+        }
+      }
+    },
+    "contact_pressure": {
+      "reference_pa": 100000.0,
+      "upper_factor": 2.0,
+      "number_of_points": 110
+    },
+    "options": {
+      "gamma": 0.4,
+      "pdf_afact": 1.0,
+      "critical_relative_contact_area": 0.42,
+      "critical_area_tolerance": 0.005,
+      "n_q": 256,
+      "pdf_scale_method": "conservative",
+      "pdf_log_step": 0.01,
+      "pdf_max_relative_contact_area": 0.999,
+      "pdf_min_relative_contact_area": 0.0001,
+      "pdf_min_u1_m": 1e-12,
+      "n_gap": 600
+    },
+    "pressure_flow": {
+      "closure": "fortran_isotropic_bruggeman",
+      "gap_points": 2049,
+      "quadrature_relative_tolerance": 0.002,
+      "max_gap_refinements": 2,
+      "unresolved_flow_policy": "zero_conductance_with_upper_bound"
+    },
+    "output_directory": "/workspace/work/mixed_friction/full_run"
+  },
+  "source_sha256": {
+    "src/persson_contact/mixed.py": "06452286fbbb4760d6f7795fe0543a5adf206391363989d6afe50b6bfd9fc446",
+    "src/persson_contact/mixed_transport.py": "7b2ca5b3ec1eabfe87681267e5625bc28e55807fd0e46b069581b30f8480711e",
+    "src/persson_contact/mixed_output.py": "5ad80721ab00aa59961d0b672f10ed29309f5b850c034c3ec962ac8162f1ae52",
+    "src/persson_contact/fluid_friction.py": "f8f47381f0dcf20a0186c5d9c8ba98440db447929ebb94ca4c7af717eab40704",
+    "src/persson_contact/macroscopic.py": "1d832e1b24cf2d5c53f033d580e703c031b5d19415e55bb29e7b70b7786cc450",
+    "src/persson_contact/dry_contact.py": "eaeafffde4f7e9aab95438628a74d427a3865ffe18d60b99337d3b68676f010c",
+    "src/persson_contact/core.py": "232d6a7374441d3027e876ceda811ab587719677b7f35fd90aa10b3a5438826a",
+    "src/persson_contact/flow.py": "b86561d41b4adf47ffa2199fc5e6422162c1853871555c0dbcccab4d0adea16a",
+    "src/persson_contact/shear.py": "c2be7c8df218a1550ffc50f1e4a87054be5c6d0d91eccab5c68ad0ad355c1e21",
+    "src/persson_contact/interface.py": "4170558f5f404305adacf18652aca9cc58b9a3f03b7af6f7d915dd28d9f320e3",
+    "scripts/validate_mixed_lubrication.py": "5af3cc5052ce97e559dfbc36e5b8488be61eb6ab0aad7534a078f71479d11ac1",
+    "scripts/verify_shear_friction_reference.py": "9a534ad6c72e974a733d5f2278fea8416d1a515279b32133550f633c449e36e3",
+    "parameters.py": "e4b190d56e9b7ab7f06d99cf05614aefc1f0473f69db4c48f51c44bec3ae03b2",
+    "main.py": "54c07097dfd7907aa1e1ade6d2c57cb081dcbd93e39016c79103cc1c65ca3c4a"
+  },
+  "source_run_diagnostics_sha256": "c5e9c51e323a0c51cc768c66448b742b6abcd2bf3fe4e873cb8e5026e8f90fd1",
+  "source_transport_table_sha256": "75f3c6fef0dbb4d1887155f699098f3043a81e98d090b1b3656a8a9c03377013"
+}

@@ -1,12 +1,14 @@
-# Persson 接触、泄漏与宏观干接触计算
+# Persson 接触、泄漏与混合润滑计算
 
-项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度牛顿流体与无滑移/Navier滑移界面规律，以及模块4的压力与单侧粗糙剪切流动。模块6已增加非局部线弹性半空间响应及模块2＋6的粗糙干接触耦合；原参考压力几何、模块7压力边界和模块8—9的简化稳态泄漏求解继续保留。完整宏观变形与流体的联立耦合尚未启用。使用 Python；不需要 MATLAB 许可证。
+项目按十模块方案组织，目前包括模块1输入配置、模块2 Persson干接触、模块3恒黏度牛顿流体与无滑移/Navier滑移界面规律，以及模块4的压力与单侧粗糙剪切流动。模块6包含非局部线弹性半空间响应及模块2＋6的粗糙干接触耦合；新增独立混合润滑任务，联立圆柱—平面的流体压力、粗糙接触、宏观变形、守恒空化和固体／流体摩擦。原简化稳态泄漏求解继续保留。使用 Python；不需要 MATLAB 许可证。
 
-第一版范围：线弹性、非黏附、各向同性二维 PSD。液体与ballistic泄漏考虑局部流体压力卸载；单侧粗糙剪切采用插值和固定接触运动输运；独立宏观干接触使用一维圆柱—平面半空间变形。有限厚度结构、混合摩擦、有限供油及空化尚未实现。
+当前范围：线弹性、非黏附、各向同性二维 PSD。旧液体与ballistic泄漏考虑局部流体压力卸载；独立混合润滑采用一维弹性圆柱—平面、恒黏度牛顿液体、无滑移及连通导流分支。有限厚度结构、有限供油、封闭液袋、黏弹滞后及非牛顿流变尚未实现。
 
 **宏观变形与粗糙干接触：** [模块6及2＋6说明、变形图和独立验证](docs/macroscopic_contact/README.md)。新增 `RUN_MACRO_CONTACT` 独立任务；输出形变前后平均表面、弹性位移、平均间隙、接触压力和接触面积比。原泄漏工作流不会自动改为完整流固耦合。
 
-**固体接触滑动摩擦：** [模块5说明、参数与验证](docs/contact_friction/README.md)。`RUN_CONTACT_FRICTION` 自动复用宏观干接触，在真实接触面积上积分实验给定的界面剪切强度。日常默认常数模型，实验值必须填写；log10相对速度高斯及自定义函数为可选接口。流体摩擦与黏弹性滞后尚未接入。
+**固体接触滑动摩擦：** [模块5说明、参数与验证](docs/contact_friction/README.md)。`RUN_CONTACT_FRICTION` 自动复用宏观干接触，在真实接触面积上积分实验给定的界面剪切强度。日常默认常数模型，实验值必须填写；log10相对速度高斯及自定义函数为可选接口。
+
+**混合润滑与流体摩擦：** [耦合方程、shear friction factors、参数、图及验证](docs/mixed_lubrication/README.md)。`RUN_MIXED_FRICTION` 计算接触／流体承载、形变后平均几何、液体充满比例、两侧流体壁面力和运动平面的总摩擦。剪切间隙下限是显式研究参数；示例1nm须检查敏感性，不是滑移长度。空化区剪切使用明确的充满比例近似。
 
 **流体选择：** `parameters.py` 的 `CASE['leakage']['fluid']='liquid'` 使用液体模型，并用 `compute_equivalent_gas=True/False` 控制附加diffusive/ballistic估算；改为 `'gas'` 则独立计算K2和ballistic气体压力。参数按工况、模型与数值设置、输出目录整理，开发复算配置已移入测试数据。详见[参数说明](docs/parameters.md)、[气体单位与输出](docs/gas_leakage.md)及[气体验证记录](docs/gas_validation/report.md)。
 
@@ -55,13 +57,13 @@ CSV表头为 `x_m,contact_pressure_pa`，还可增加 `interface_reference_press
 | `RUN_MACRO_CONTACT = False` | 独立宏观干接触；smooth为Hertz检验，persson为模块2＋6耦合；开启时关闭流动及泄漏任务 |
 | `RUN_CONTACT_FRICTION = False` | 固体接触滑动摩擦，自动调用宏观干接触；先在contact_friction中填写实验剪切强度，并关闭流动／泄漏及混合摩擦开关 |
 | `RUN_LEAKAGE = True` | 计算所选几何的空间泄漏与局部卸载，自动调用接触和流动基础 |
-| `RUN_MIXED_FRICTION = False` | 预留混合摩擦入口；求解器尚未实现 |
+| `RUN_MIXED_FRICTION = False` | 独立混合润滑耦合；自动调用接触、形变、流动与摩擦，关闭其他独立任务 |
 | `COMPUTE_SHEAR_FLOW = False` | 单侧粗糙剪切因子；自动计算接触与压力导流基础 |
 | `COMPUTE_PRESSURE_FLOW = True` | 接触计算后计算压力流动系数；泄漏开启时自动计算 |
 | `COMPUTE_GAP_PDF = True` | 是否导出所选尺度积分的间隙分布，不关闭流动所需的内部分布计算；独立宏观任务不使用此导出开关 |
 | `SAVE_PLOTS = True` | 是否生成 PNG 图 |
 
-完整混合摩擦、黏弹性和非牛顿流变尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。所有 RUN 开关和COMPUTE_SHEAR_FLOW全关时不执行计算。要只运行原微观干接触部分，保持 RUN_CONTACT=True，并关闭宏观／摩擦任务、COMPUTE_PRESSURE_FLOW和其他应用开关。宏观及固体摩擦任务需关闭泄漏、压力／剪切流动及混合摩擦开关；所需的Persson数据库由任务自身生成。
+黏弹性和非牛顿流变尚未实现；选择后会明确报错。开启泄漏会自动计算所需接触和压力流动，即使 RUN_CONTACT=False 或 COMPUTE_PRESSURE_FLOW=False。所有 RUN 开关和COMPUTE_SHEAR_FLOW全关时不执行计算。要只运行原微观干接触部分，保持 RUN_CONTACT=True，并关闭宏观／摩擦任务、COMPUTE_PRESSURE_FLOW和其他应用开关。宏观及固体干摩擦任务需关闭泄漏、压力／剪切流动及混合摩擦开关。混合润滑任务关闭独立泄漏、宏观干接触和干摩擦任务，其内部自动生成所需的接触／输运数据库；旧leakage中的局部卸载、gas和spc规则不参与混合任务。
 
 默认Hertz示例的液体黏度为0.1 Pa·s，可在CASE的interface.rheology_parameters.newtonian分组修改。未实现模块的占位参数和开发复算配置已移出日常配置。路径始终相对于项目目录，不随启动终端的目录改变。非空输出目录会被拒绝，请修改OUTPUT_DIRECTORY后重新运行。
 
@@ -212,7 +214,7 @@ PSD 两列固定为 `log10(q)`、`log10(C)`，分别采用 m⁻¹ 和 m⁴ 的�
 
 默认结果将遗漏PDF概率作为零导流相，并输出该概率无限导流时的上界；两者均保留原接触面积、不归一化PDF。上界不是统计置信区间。状态 `conducting` 为默认闭合可导通，`blocked` 为上下界均阻断，`unresolved_connectivity` 为默认值零但上界非零。极端情况下上界无穷，CSV上界留空并置 `upper_bound_unbounded=True`。
 
-新空间泄漏联立恒定通量与局部接触卸载；旧固定状态接口仍使用 `Q=(W/L)*sigma_eff*DeltaP`。压差反向则流动反向，零压差给Q=0。导流表仍是已验证的各向同性直接PDF分支；大间隙渐近切换、各向异性、边界膜、双侧粗糙剪切输运和完整混合摩擦尚未实现。
+空间泄漏联立恒定通量与局部接触卸载；旧固定状态接口仍使用 `Q=(W/L)*sigma_eff*DeltaP`。压力驱动时压差反向则流动反向，零压差给Q=0。该泄漏工作流继续使用各向同性直接PDF导流分支。独立混合润滑增加了明确的大间隙渐近切换与守恒空化，不会自动改变历史泄漏结果；各向异性、边界膜和双侧粗糙剪切仍未实现。
 
 ## 概率与干接触验证限制
 

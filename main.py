@@ -17,6 +17,8 @@ RUN_MACRO_CONTACT = False
 RUN_CONTACT_FRICTION = False
 # 在参数文件中用fluid='liquid'/'gas'选择液体或ballistic气体。
 RUN_LEAKAGE = True
+# 混合润滑：自动联立接触、宏观形变、牛顿流体和摩擦；开启时关闭上面三个独立任务
+# 读取macro_contact、mixed_friction、contact_friction和interface；不读取leakage的旧卸载/spc规则
 RUN_MIXED_FRICTION = False
 
 COMPUTE_PRESSURE_FLOW = True # 压力流动系数；泄漏开启时会自动计算

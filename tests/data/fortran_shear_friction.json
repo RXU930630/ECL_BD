@@ -1,0 +1,144 @@
+{
+  "archive_sha256": "ae0dfddc8a5b8a8e5058d8cbe74f67fd00102bc76df42f6c734bfd41cea2b968",
+  "source_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+  "archive_member": "AI.QQQ.ContactMechanics.11.09.2026.GNU/AI.ContactMechanics.14.09.2026.f90",
+  "extracted_kernel_start_line": 25682,
+  "kernel": "Phifp=0.0\nif (sepu.gt.baruc) Phifp=sepu*(sepu-baruc)/(sepu*sepu+forfluidflow)\nPhifs=3.0*sepu/uii\nif (sepu.gt.baruc) Phifs=3.0*sepu/(uii+(sepu-baruc)*(3.0*sepu*sepu/forfluidflow))",
+  "compiled_program_sha256": "ca11f388ca07a8022f2ad218648c819e154f4345587c9abc1c602d5336487c25",
+  "scope": "No-slip isotropic interpolation kernel only; phi_f before original clamp/index fit. Not full Fortran mixed-lubrication equivalence.",
+  "maximum_relative_difference": 2.3161053856837423e-16,
+  "cases": [
+    {
+      "h": 1e-07,
+      "inverse": 8000000.000000001,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        0.8,
+        2.4,
+        0.0
+      ]
+    },
+    {
+      "h": 1e-07,
+      "inverse": 20000000.0,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        2.0,
+        6.0,
+        0.0
+      ]
+    },
+    {
+      "h": 5e-07,
+      "inverse": 1600000.0000000002,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        0.8,
+        2.4000000000000004,
+        0.0
+      ]
+    },
+    {
+      "h": 5e-07,
+      "inverse": 4000000.0,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        2.0,
+        6.0,
+        0.0
+      ]
+    },
+    {
+      "h": 5.000000999999999e-07,
+      "inverse": 1599999.6800000644,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        0.8,
+        2.3999998079999774,
+        2.8571432635698793e-08
+      ]
+    },
+    {
+      "h": 5.000000999999999e-07,
+      "inverse": 3999999.200000161,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        2.0,
+        5.999998800000001,
+        2.8571432635698793e-08
+      ]
+    },
+    {
+      "h": 1e-06,
+      "inverse": 800000.0000000001,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        0.8,
+        1.3333333333333335,
+        0.19999999999999998
+      ]
+    },
+    {
+      "h": 1e-06,
+      "inverse": 2000000.0,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        2.0,
+        2.0,
+        0.19999999999999998
+      ]
+    },
+    {
+      "h": 3e-06,
+      "inverse": 266666.6666666667,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        0.8,
+        0.1846153846153846,
+        0.7142857142857144
+      ]
+    },
+    {
+      "h": 3e-06,
+      "inverse": 666666.6666666666,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        2.0,
+        0.1935483870967742,
+        0.7142857142857144
+      ]
+    },
+    {
+      "h": 1.9999999999999998e-05,
+      "inverse": 40000.00000000001,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        0.8,
+        0.0038400000000000005,
+        0.9713574097135742
+      ]
+    },
+    {
+      "h": 1.9999999999999998e-05,
+      "inverse": 100000.00000000001,
+      "rms": 1e-06,
+      "hc": 5e-07,
+      "factors": [
+        2.0,
+        0.0038436899423446515,
+        0.9713574097135742
+      ]
+    }
+  ]
+}

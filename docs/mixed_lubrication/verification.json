@@ -1,0 +1,30 @@
+{
+  "unit_test_command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 python -m unittest discover -s tests -v",
+  "test_count": 148,
+  "elapsed_seconds": 111.036,
+  "result": "OK",
+  "unit_test_log_sha256": "501c918927dccfd32d6342ef7e429fc7e9484bd4f079f9822268110cd47b7320",
+  "independent_check_count": 11,
+  "independent_all_checks_pass": true,
+  "fortran_kernel_cases": 12,
+  "fortran_kernel_maximum_relative_difference": 2.3161053856837423e-16,
+  "trial_jacobian_warning_count": 4,
+  "trial_jacobian_note": "Fine-grid initialization encountered ill-conditioned trial matrices; final original-equation residuals and spatial convergence were checked independently. This count is not a count of failed final cases.",
+  "sample_run_diagnostics_sha256": "c5e9c51e323a0c51cc768c66448b742b6abcd2bf3fe4e873cb8e5026e8f90fd1",
+  "published_artifact_sha256": {
+    "mixed_geometry.png": "46a538834416892bab86565faaa7f370182a56349c2555faf4298bfd4f7d1432",
+    "example_diagnostics.json": "c5e9c51e323a0c51cc768c66448b742b6abcd2bf3fe4e873cb8e5026e8f90fd1",
+    "example_transport_table.csv": "75f3c6fef0dbb4d1887155f699098f3043a81e98d090b1b3656a8a9c03377013",
+    "mixed_profiles.png": "bd6c83b8b538c884386c74ea27ab5d893bc0d0a5f67e223f8e3b2fbabc39caf5",
+    "rigid_JFO_convergence.csv": "9e49d0afde78ecb521f66c2513d0f67c590a200e4f4c5a6a17c9de7e8318a630",
+    "shear_cutoff_sensitivity.csv": "cc5885ae41ffd060c03e28574ca1d0caee37b1c947d3c77a91e3e4d0b7f9b5c6",
+    "domain_convergence.csv": "ab9509d86f6d840af4078d681b399bdd5549077fcd4f117cbb45c5c83abfa456",
+    "scale_step_convergence.csv": "f695fbc4707812ca6f70d75f971e47b462304c4342a507f4c62899e4fd3608cf",
+    "transport_convergence.csv": "8f64a9d7815f24be191d2666eeececd7315911d29783e76b0932bf542efc6263",
+    "spatial_convergence.csv": "af7fa63c15a7718db50f98c66a6fa8bad2c330cf7915526b55c18d4b8e45ad43",
+    "example_profile.csv": "1c677b88cea5d45ffeb2894eb6d0722d616f8b6cc001de8c6e7ef777880288a6",
+    "summary.json": "67d91edefe4ec0b21845f607402e9478949d06fce158e69da4fdab9ffed6accf",
+    "example_cases.csv": "1fb1dbf56daeab44d405b145913801975e8f86fe64cc4a27da014755686a307b",
+    "mixed_friction.png": "b96486d2531200cf96d098abf4710da50203799abd7a4cfe60da312c544b810e"
+  }
+}

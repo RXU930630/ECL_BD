@@ -30,20 +30,23 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
         return None
     base = Path(base_directory).resolve()
     problem_keys = {'description', 'psd', 'material', 'pressures_pa', 'contact_pressure', 'options'}
-    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction'}
+    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction'}
     if not isinstance(parameters, dict) or set(parameters) - allowed:
         raise ValueError('parameters.py 中存在未知参数分组。')
-    for name in ('leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction'):
+    for name in ('leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction'):
         if name in parameters and not isinstance(parameters[name], dict):
             raise ValueError(f'{name} 必须为参数字典。')
+    if run_mixed_friction:
+        if run_leakage or run_macro_contact or run_contact_friction:
+            raise ValueError('RUN_MIXED_FRICTION自动耦合接触、形变和流动；请关闭独立泄漏、宏观干接触和干摩擦任务。')
+        from .mixed_output import run_mixed_project
+        return run_mixed_project(parameters,base_directory=base,save_plots=save_plots)
     if run_macro_contact or run_contact_friction:
         if run_leakage or run_mixed_friction or compute_pressure_flow or compute_shear_flow:
-            raise NotImplementedError('宏观干接触目前独立运行：关闭 RUN_LEAKAGE、RUN_MIXED_FRICTION、COMPUTE_PRESSURE_FLOW 和 COMPUTE_SHEAR_FLOW；尚未接入完整流体耦合。')
+            raise NotImplementedError('宏观干接触独立运行：关闭 RUN_LEAKAGE、RUN_MIXED_FRICTION、COMPUTE_PRESSURE_FLOW 和 COMPUTE_SHEAR_FLOW；完整流体耦合请选择 RUN_MIXED_FRICTION 独立任务。')
         from .macro_output import run_macro_project
         return run_macro_project(parameters,base_directory=base,save_plots=save_plots,
                                  compute_contact_friction=run_contact_friction)
-    if run_mixed_friction:
-        raise NotImplementedError('混合摩擦 RUN_MIXED_FRICTION 尚未实现。')
     flow_enabled=compute_pressure_flow or run_leakage or compute_shear_flow
     shear_options=read_shear_options(parameters.get('shear_flow',{})) if compute_shear_flow else None
     interface=flow_options=leakage=None

@@ -76,3 +76,17 @@ CASE.contact_friction.model默认constant_shear_strength。在model_parameters.c
 relative_velocities_m_s为上侧减下侧的带符号相对速度；零速度只关闭滑动项，不计算静摩擦。transverse_width_m可留空，此时输出N/m；给定真实横向宽度后另输出总力N。temperature_k传给模型，常数模型不含温度依赖。
 
 gaussian_log_velocity预设按log10(|V|/V_peak)定义，width_decades为十进制数量级宽度。custom预设指定用户Python文件与shear_strength(state,parameters)函数，状态包括速度、两种接触压力及温度；只读取当前选中的模型块。日常使用不必更改这些备选块。详细说明、输出与验证见[固体接触摩擦报告](contact_friction/README.md)。
+
+## 混合润滑与 shear friction factors
+
+main.py开启RUN_MIXED_FRICTION，关闭RUN_LEAKAGE、RUN_MACRO_CONTACT和RUN_CONTACT_FRICTION。内部自动计算所需接触、形变与输运，不要求另开COMPUTE_PRESSURE_FLOW或COMPUTE_SHEAR_FLOW。旧leakage参数不参与此任务。
+
+几何和载荷使用macro_contact，首版要求cylinder_plane、persson、upper_elastic_lower_rigid。interface要求newtonian恒黏度、无滑移。mixed_friction.lower_wall_velocities_m_s是随上部圆柱移动的坐标系内下部平面速度，圆柱速度固定为0；因此相对速度等于该值的相反数。rough_surface独立选择上侧或下侧粗糙，另一侧光滑。
+
+mixed_friction设置两个储液端的表压（Pa，>=0），以零表压为空化压力。流入储液边界满液；程序求压力与充满比例theta，满足压力非负、theta在0..1、p*(1-theta)=0和通量守恒。空化区流体运动剪切乘theta是显式的uniform_wetted_fraction近似，并未求液条或气泡的微观形状。
+
+fluid_friction.model=persson_scale_u1通过保守尺度积分求逆间隙矩，再计算phi_f、phi_fs、phi_fp。minimum_shear_gap_m是液体剪切积分的研究下限：默认1nm仅作演示，需要检查0.5/1/2nm敏感性。它不是滑移长度、数值PDF截断或宏观最小膜厚；不改变法向解、导流、真实接触面积，也不把被排除的流体区域改算成固体接触。该下限以下的边界膜剪切尚未建模。
+
+固体剪切模型、温度和可选横向宽度继续使用contact_friction；其中relative_velocities_m_s仅用于独立干摩擦扫描，不控制混合任务。实验剪切强度仍为必填。主报告是运动下平面受到的固体力、流体力及二者合计；N/m乘横向宽度才是N。速度扫描会重新求解法向状态，不能复用一份干接触面积来生成整条混合摩擦曲线。
+
+数值设置在NUMERICS.mixed_friction；空间网格仍在macro_contact.solver。近接触查表与大间隙渐近模型、物理零导流限制及验证范围见[混合润滑说明](mixed_lubrication/README.md)。
