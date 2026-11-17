@@ -15,6 +15,7 @@ from .material import parse_material
 from .interface import positive
 from .psd import read_psd
 from .table import build_contact_table
+from .geometry import FiniteCylindricalPad,finite_geometry_parameters,line_load,friction_parameters,geometry_metadata,transverse_width
 
 
 def _keys(raw,allowed,name):
@@ -30,21 +31,26 @@ def _csv(path,rows):
 def prepare_macro(parameters,base):
     raw=parameters.get('macro_contact',{})
     _keys(raw,{'geometry','geometry_parameters','elastic_model','body_representation','contact_model',
-        'line_load_n_m','domain_half_width_m','reference_length_m','solver','contact_table'},'macro_contact')
+        'line_load_n_m','normal_force_n','domain_half_width_m','reference_length_m','solver','contact_table'},'macro_contact')
     if raw.get('elastic_model','half_space_plane_strain')!='half_space_plane_strain':
         raise NotImplementedError('Only plane-strain elastic half-space response is implemented')
-    if raw.get('geometry')!='cylinder_plane':raise NotImplementedError('Macro contact currently requires cylinder_plane')
+    if raw.get('geometry') not in ('cylinder_plane','finite_cylindrical_pad'):
+        raise NotImplementedError('Choose cylinder_plane or finite_cylindrical_pad')
     presets=raw.get('geometry_parameters',{})
     if not isinstance(presets,dict):raise ValueError('geometry_parameters must be a dictionary')
-    geometry=presets.get('cylinder_plane',{})
-    _keys(geometry,{'radius_m'},'cylinder_plane')
+    geometry=presets.get(raw['geometry'],{})
+    finite=finite_geometry_parameters(parameters)
+    if finite is None:_keys(geometry,{'radius_m'},'cylinder_plane')
     representation=raw.get('body_representation','upper_elastic_lower_rigid')
     if representation not in ('upper_elastic_lower_rigid','relative_only'):
         raise NotImplementedError('Choose upper_elastic_lower_rigid or relative_only; separate two-body displacements are not implemented')
     model=raw.get('contact_model','persson')
     if model not in ('smooth','persson'):raise ValueError('contact_model must be smooth or persson')
     effective=parse_material(parameters.get('material',{}),base).elastic_modulus()
-    hertz=HertzLine(geometry.get('radius_m'),raw.get('line_load_n_m'),effective)
+    load=line_load(parameters)
+    hertz=(HertzLine(geometry.get('radius_m'),load,effective) if finite is None else
+        FiniteCylindricalPad(finite.radius_m,load,effective,finite.axial_length_m,finite.sliding_length_m,
+            finite.length_definition,finite.rubber_thickness_m))
     user_solver=raw.get('solver',{})
     _keys(user_solver,{'cells','relative_tolerance','max_iterations','edge_pressure_ratio_tolerance'},'macro solver')
     solver={'cells':257,'relative_tolerance':1e-9,'max_iterations':80,'edge_pressure_ratio_tolerance':1e-4,**user_solver}
@@ -54,8 +60,9 @@ def prepare_macro(parameters,base):
     if (type(solver['max_iterations']) is not int or solver['max_iterations']<1 or
         not solver['relative_tolerance']<.01 or not solver['edge_pressure_ratio_tolerance']<.01):
         raise ValueError('Invalid macro solver tolerance/iteration limit')
-    elastic=HalfSpaceLine(raw.get('domain_half_width_m'),solver['cells'],effective,raw.get('reference_length_m'))
-    if elastic.edges_m[-1]<=hertz.half_width_m:
+    half=raw.get('domain_half_width_m') if finite is None else finite.domain_half_width_m
+    elastic=HalfSpaceLine(half,solver['cells'],effective,raw.get('reference_length_m'))
+    if finite is None and elastic.edges_m[-1]<=hertz.half_width_m:
         raise ValueError('Macro domain must extend beyond the Hertz half-width')
     return raw,solver,hertz,elastic,representation,model
 
@@ -66,7 +73,7 @@ def run_macro_project(parameters,*,base_directory,save_plots=True,compute_contac
     friction_plan=None
     if compute_contact_friction:
         from .contact_friction_output import prepare_contact_friction
-        friction_plan=prepare_contact_friction(parameters.get('contact_friction',{}),base)
+        friction_plan=prepare_contact_friction(friction_parameters(parameters),base)
     name=parameters.get('output_directory')
     if not isinstance(name,str) or not name.strip():raise ValueError('Provide output_directory')
     out=Path(name);out=out if out.is_absolute() else base/out
@@ -107,7 +114,7 @@ def run_macro_project(parameters,*,base_directory,save_plots=True,compute_contac
         closure=exact_gap-result.mean_gap_m
     else:
         result=solve_smooth_contact(elastic,hertz,tolerance=solver['relative_tolerance'],max_iterations=solver['max_iterations'])
-    if result.edge_pressure_ratio>solver['edge_pressure_ratio_tolerance']:
+    if not getattr(hertz,'physical_boundaries',False) and result.edge_pressure_ratio>solver['edge_pressure_ratio_tolerance']:
         raise ValueError('Macro pressure remains significant at domain edges; enlarge domain_half_width_m')
     friction_results=None
     if friction_plan is not None:
@@ -132,13 +139,17 @@ def run_macro_project(parameters,*,base_directory,save_plots=True,compute_contac
     if table is not None:output_names.append('macro_contact_table.csv')
     if save_plots:output_names+=['macro_geometry.png','macro_geometry_true_scale.png','macro_response.png']
     scale=hertz.half_width_m**2/(2*hertz.radius_m)
+    width=transverse_width(parameters)
     summary={'workflow_status':'complete','scope':'Dry 1D plane-strain cylinder/plane mean-interface contact. No fluid/thermal/friction coupling.',
         'contact_model':kind,'elastic_model':'half_space_plane_strain','body_representation':representation,
-        'representation_note':('Upper elastic parabolic cylinder against rigid plane; E* is the one-body plane-strain modulus.'
+        'geometry':geometry_metadata(hertz,elastic),
+        'far_field_edge_pressure_check_applied':not getattr(hertz,'physical_boundaries',False),
+        'representation_note':('Upper elastic prescribed cylindrical profile against rigid plane; E* is the one-body plane-strain modulus.'
             if representation=='upper_elastic_lower_rigid' else
             'Only combined relative compliance is known; displayed upper profile is equivalent, not a uniquely determined individual-body shape.'),
         'effective_modulus_pa':hertz.effective_modulus_pa,'radius_m':hertz.radius_m,
         'target_line_load_n_m':hertz.line_load_n_m,'actual_line_load_n_m':result.line_load_n_m,
+        'transverse_width_m':width,'target_normal_force_n':None if width is None else hertz.line_load_n_m*width,
         'load_relative_error':result.load_relative_error,'geometry_relative_residual':result.equilibrium_relative_residual,
         'pressure_min_pa':float(min(result.pressure_pa)),'pressure_max_pa':float(max(result.pressure_pa)),
         'minimum_mean_gap_m':result.minimum_gap_m,'rigid_offset_m':result.rigid_offset_m,
@@ -146,11 +157,11 @@ def run_macro_project(parameters,*,base_directory,save_plots=True,compute_contac
         'domain_m':[float(elastic.edges_m[0]),float(elastic.edges_m[-1])],
         'reference_length_m':elastic.reference_length_m,
         'displacement_reference':'u=2/(pi E*) integral p(s) log(Lref/|x-s|) ds. Absolute u and h0 depend on Lref; pressure and mean gap do not.',
-        'geometry_convention':'Unloaded upper z=g=x^2/(2R); rigidly positioned z=h0+g; deformed upper z=h0+g+u=h. Lower z=0. Positive u opens gap.',
+        'geometry_convention':'Unloaded upper z=g(x), using the selected geometry; rigidly positioned z=h0+g; deformed upper z=h0+g+u=h. Lower z=0. Positive u opens gap.',
         'microscopic_roughness':'Curves are mean surfaces, not a PSD phase reconstruction. Persson mean gap equals the macro gap; it is not added twice.',
         'hertz_reference':{'half_width_m':hertz.half_width_m,'peak_pressure_pa':hertz.peak_pressure_pa},
-        'hertz_smooth_pressure_L1_relative_error':None if kind!='smooth' else float(np.sum(abs(result.pressure_pa-hertz.cell_pressure(elastic.edges_m)))*elastic.dx_m/hertz.line_load_n_m),
-        'hertz_smooth_gap_max_error_over_scale':None if kind!='smooth' else float(np.max(abs(result.mean_gap_m-hertz.gap(result.x_m)))/scale),
+        'hertz_smooth_pressure_L1_relative_error':None if kind!='smooth' or getattr(hertz,'physical_boundaries',False) else float(np.sum(abs(result.pressure_pa-hertz.cell_pressure(elastic.edges_m)))*elastic.dx_m/hertz.line_load_n_m),
+        'hertz_smooth_gap_max_error_over_scale':None if kind!='smooth' or getattr(hertz,'physical_boundaries',False) else float(np.max(abs(result.mean_gap_m-hertz.gap(result.x_m)))/scale),
         'contact_table_range_pa':None if table is None else [float(table.pressures_pa[0]),float(table.pressures_pa[-1])],
         'contact_table_points':None if table is None else len(table.pressures_pa),
         'contact_table_max_gap_error_m':None if closure is None else float(np.nanmax(abs(closure))),
@@ -158,7 +169,7 @@ def run_macro_project(parameters,*,base_directory,save_plots=True,compute_contac
         'far_tail_zero_pressure_cells':0 if table is None else int(np.sum(result.pressure_pa==0)),
         'far_tail_fixed_gap_load_bound_n_m':None if table is None else float(table.pressures_pa[0]*np.ptp(elastic.edges_m)),
         'far_tail_policy':'Beyond the maximum table gap use zero pressure; omitted positive pressure is at most p_min per cell. The reported bound is at fixed gaps, not a global coupled error bound.',
-        'assumptions':['Linear elastic half-space and parabolic local cylinder geometry; not finite thickness or whole-O-ring FEM.',
+        'assumptions':['Linear elastic half-space with the selected mean profile; finite thickness, backing constraints and prestress are not modelled.',
             'PSD describes residual roughness about the prescribed mean profile; spectral/macro scale separation is a model input.',
             'One-dimensional line load in N/m, not axisymmetric ball contact or total ring load.',
             'Solver residual, table error, spatial/domain convergence and constitutive-model uncertainty are different checks.'],
@@ -197,7 +208,9 @@ def plot_macro(out,result,hertz,representation):
     zoom=ax.inset_axes([.64,.48,.33,.36])
     zoom.plot(x,h,color='C0');zoom.axhline(0,color='black',lw=1)
     zoom.fill_between(x,0,h,where=h>=0,color='C0',alpha=.15)
-    zoom.set_xlim(-1.3*hertz.half_width_m*1e3,1.3*hertz.half_width_m*1e3)
+    radius=1.3*hertz.half_width_m
+    if getattr(hertz,'physical_boundaries',False):radius=min(radius,hertz.domain_half_width_m)
+    zoom.set_xlim(-radius*1e3,radius*1e3)
     zoom.set_ylim(-.02,max(5*max(result.minimum_gap_m,0)*1e6,.05*hertz.half_width_m**2/(2*hertz.radius_m)*1e6))
     zoom.set_title('Contact detail: z [um], x [mm]',fontsize=8);zoom.tick_params(labelsize=7);zoom.grid(alpha=.2)
     ax.set(xlabel='x [mm]',ylabel='z [um]',title='Dry macro deformation: different horizontal/vertical scales')
@@ -211,7 +224,7 @@ def plot_macro(out,result,hertz,representation):
     ax.legend(fontsize=8);ax.grid(alpha=.2);fig.savefig(out/'macro_geometry_true_scale.png',dpi=170);plt.close(fig)
     fig,axes=plt.subplots(3,1,figsize=(10,9),sharex=True,layout='constrained')
     axes[0].plot(x,result.pressure_pa/1e6,label='Solved dry contact')
-    axes[0].plot(x,hertz.cell_pressure(result.cell_edges_m)/1e6,'--',label='Smooth Hertz reference')
+    axes[0].plot(x,hertz.cell_pressure(result.cell_edges_m)/1e6,'--',label='Infinite parabolic-cylinder Hertz reference')
     axes[0].set_ylabel('Pressure [MPa]');axes[0].legend()
     axes[1].plot(x,result.mean_gap_m*1e6,label='Mean gap')
     axes[1].set_ylabel('Mean gap [um]')

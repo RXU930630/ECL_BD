@@ -26,7 +26,7 @@ class LocalPackageTests(unittest.TestCase):
 
     def test_manifest_complete_runtime_clean_paths_and_deterministic_build(self):
         manifest=json.loads((self.project/'PACKAGE_MANIFEST.json').read_text())
-        self.assertEqual(manifest['version'],'0.2.0rc1')
+        self.assertEqual(manifest['version'],'0.2.0rc2')
         for name,data in manifest['files'].items():
             self.assertEqual(hashlib.sha256((self.project/name).read_bytes()).hexdigest(),data['sha256'])
             self.assertFalse(any(part in name.split('/') for part in ('tests','results','.git','__pycache__','.venv')))
@@ -69,6 +69,23 @@ class LocalPackageTests(unittest.TestCase):
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
         d=json.loads((self.workspace/'main_result/fit_summary.json').read_text())
         self.assertAlmostEqual(d['fitted_shear_strength_pa'],3e5)
+
+    def test_silicone_trial_preset_has_real_dimensions_and_fit_ready_entry(self):
+        import runpy
+        target=self.workspace/'silicone.zip'
+        builder.build_package(ROOT,target,preset='silicone_cylinder')
+        with zipfile.ZipFile(target) as z:z.extractall(self.workspace/'silicone')
+        project=next((self.workspace/'silicone').iterdir())
+        p=runpy.run_path(str(project/'parameters.py'))['PARAMETERS']
+        from persson_contact.macro_output import prepare_macro
+        args=prepare_macro(p,project)
+        self.assertEqual(args[2].line_load_n_m,1000.)
+        self.assertEqual(args[3].edges_m[-1],.015)
+        self.assertEqual(p['material']['young_modulus_pa'],1.8e6)
+        self.assertEqual(p['interface']['rheology_parameters']['newtonian']['viscosity_pa_s'],1.)
+        self.assertIn('RUN_SHEAR_STRENGTH_FIT = True',(project/'main.py').read_text())
+        self.assertIn('RUN_LEAKAGE = False',(project/'main.py').read_text())
+        self.assertFalse((project/'inputs/experiment.csv').exists())
 
 
 if __name__=='__main__':unittest.main()

@@ -114,7 +114,7 @@ def solve_smooth_contact(elastic,hertz,*,tolerance=1e-9,max_iterations=2000):
         raise ValueError('Invalid contact tolerance/iteration limit')
     if not math.isclose(elastic.effective_modulus_pa,hertz.effective_modulus_pa,rel_tol=1e-13):
         raise ValueError('Elastic operator and geometry reference must use the same E*')
-    if elastic.edges_m[-1]<=hertz.half_width_m:
+    if not getattr(hertz,'physical_boundaries',False) and elastic.edges_m[-1]<=hertz.half_width_m:
         raise ValueError('Domain must extend beyond the Hertz contact half-width')
     x=elastic.x_m;g=hertz.profile(x);a=hertz.half_width_m;p0=hertz.peak_pressure_pa
     scale=a*a/(2*hertz.radius_m)

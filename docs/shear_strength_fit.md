@@ -33,12 +33,12 @@ speed_m_s,friction_coefficient
 | speed_m_s | 是 | 正的速度大小m/s；不接受0，当前不拟合静摩擦 |
 | friction_coefficient | 是 | 以总法向载荷归一化的阻力系数；按阻碍运动为正的统一约定 |
 | line_load_n_m | 否 | 总线载荷N/m；可逐行变化 |
-| normal_force_n | 否 | 总法向力N；需在contact_friction.transverse_width_m填写横向宽度B，Wprime=F_N/B |
+| normal_force_n | 否 | 总法向力N；有限曲面模式自动使用轴向长度B，旧圆柱模式填写contact_friction.transverse_width_m；Wprime=F_N/B |
 | background_friction_coefficient | 否 | 独立已知背景项；空白取0，正负按同一阻力约定 |
 | standard_uncertainty_mu | 否 | 摩擦系数的正的标准不确定度；加权拟合时参与点必须填写 |
 | use_for_fit | 否 | true/false或1/0；空白为true，false作留出验证 |
 
-两个载荷列均空时使用macro_contact.line_load_n_m。两个载荷列同时给出时必须与宽度换算一致。摩擦系数不是摩擦力；不要把N、mm/s、MPa数值直接填入其他单位的列。
+两个载荷列均空时使用macro_contact的默认载荷（总力或线载荷）。两个载荷列同时给出时必须与宽度换算一致。有限曲面的输入和边界解释见[几何说明](finite_geometry.md)。摩擦系数不是摩擦力；不要把N、mm/s、MPa数值直接填入其他单位的列。
 
 CSV支持UTF-8 BOM、重复实验点和空行；拒绝NaN、Infinity、未知／重复列名和列数不匹配。重复实验使用同一个正向状态，但保留为多个测量点。滑动方向在shear_strength_fit.sliding_direction中选择+1或-1，表示圆柱随动坐标系下平面的运动方向，CSV始终填写正速度大小。
 

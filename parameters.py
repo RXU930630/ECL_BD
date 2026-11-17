@@ -19,10 +19,19 @@ CASE = {
     },
     # 宏观干接触：main.py开启RUN_MACRO_CONTACT；与当前泄漏任务分开运行
     'macro_contact': {
+        # cylinder_plane：无限长圆柱的局部抛物线，数值域须自行检查远场收敛
+        # finite_cylindrical_pad：直接给定实际曲面尺寸，自动生成物理边界和横向宽度
         'geometry': 'cylinder_plane',
         'geometry_parameters': {
             'cylinder_plane': {
                 'radius_m': 5e-3,     # 接触截面曲率半径；不是塞子的整体周向半径
+            },
+            'finite_cylindrical_pad': {
+                'outer_radius_m': 0.17,       # 粘贴成形后的外表面曲率半径，m
+                'axial_length_m': 0.10,       # 轴向长度B，自动用于总力N/线载荷N/m换算
+                'sliding_length_m': 0.03,     # 滑动方向的实际曲面长度，m；不是接触宽度
+                'length_definition': 'projected', # projected投影长度 / arc_length沿圆弧测量的长度
+                'rubber_thickness_m': 0.02,   # 仅记录尺寸；当前半空间弹性不计算厚度/背衬效应
             },
         },
         'elastic_model': 'half_space_plane_strain', # 一维线接触、平面应变、线弹性半空间
@@ -30,8 +39,8 @@ CASE = {
         # relative_only：material给合并E*，只确定相对变形；显示的上轮廓为等效轮廓
         'body_representation': 'upper_elastic_lower_rigid',
         'contact_model': 'persson',    # persson：模块2+6粗糙干接触；smooth：光滑Hertz检验
-        'line_load_n_m': 100.,         # N/m线载荷；总力需除以横向宽度，不能直接填N
-        'domain_half_width_m': 1.2e-3, # 计算域[-L,L]；检查边界压力和域加宽收敛
+        'line_load_n_m': 100.,         # N/m；可用'normal_force_n':100.替换本行（不能同时给），程序自动除以B
+        'domain_half_width_m': 1.2e-3, # 仅cylinder_plane读取；finite模式从实际长度自动生成，无需估计
         'reference_length_m': None,   # 2D位移参考长度；None取全域长度，只影响绝对位移与刚体偏移
     },
     'leakage': {
@@ -126,8 +135,9 @@ CASE = {
         'speed_range_m_s': [None, None],   # 参与拟合速度的[min,max]；None不限；CSV中还可use_for_fit=false留出验证
         'minimum_solid_coefficient_at_1mpa': 1e-5, # 固定以1MPa评估接触敏感性，低于此值不参与拟合
         # 可选CSV背景项background_friction_coefficient直接相加；省略表示假定0，不自动计算橡胶滞后/毛细项
-        # CSV可另给line_load_n_m，或normal_force_n（需contact_friction.transverse_width_m）
-        # 两个载荷列都空时使用macro_contact.line_load_n_m；摩擦系数始终以总法向载荷归一化
+        # CSV可另给line_load_n_m，或normal_force_n（finite模式自动读取轴向长度B）
+        # 两个载荷列都空时使用macro_contact的载荷；CSV所填载荷逐行覆盖默认值
+        # 同时填两列时必须满足normal_force_n=B*line_load_n_m；mu始终以总法向载荷归一化
     },
     'fluid_friction': {
         'model': 'persson_scale_u1',  # phi_f、phi_fs、phi_fp；不同于pressure/shear FLOW factors
@@ -156,7 +166,7 @@ CASE = {
         },
         'relative_velocities_m_s': [0., 1e-6, 1e-4, 1e-2, -1e-2], # 仅干摩擦扫描；混合润滑速度在mixed_friction
         'temperature_k': 298.15,          # 仅传给模型；常数及高斯模型无温度依赖，不求热场
-        'transverse_width_m': None,       # 可选横向宽度B；None只输出N/m，填写后另输出总力N
+        'transverse_width_m': None,       # finite模式自动使用轴向长度，请留None；旧cylinder模式可手填B
         # V=0不求静摩擦：滑动摩擦项及耗散为0，动摩擦系数与静摩擦极限留空
     },
     # 剪切流动：main.py开启COMPUTE_SHEAR_FLOW后读取；首版限牛顿、无滑移、单侧粗糙
@@ -204,7 +214,7 @@ NUMERICS = {
             'cells': 257,             # 均匀压力单元数；通常129/257/513检查收敛
             'relative_tolerance': 1e-9,
             'max_iterations': 80,
-            'edge_pressure_ratio_tolerance': 1e-4, # 边界压力/峰值过大时报错，需增大计算域
+            'edge_pressure_ratio_tolerance': 1e-4, # 仅旧圆柱远场截断检查；finite模式的物理边缘不应用此阈值
         },
         'contact_table': {            # 仅persson读取；远场极小压力保留正值，不加压力地板
             'minimum_pressure_pa': 1e-100,

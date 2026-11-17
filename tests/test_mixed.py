@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 from scipy.integrate import quad
@@ -12,7 +13,7 @@ from scipy.optimize import brentq
 from persson_contact.fluid_friction import shear_friction_factors,wall_tractions,scale_inverse_gap
 from persson_contact.interface import NewtonianNoSlip
 from persson_contact.mixed import film_flux,solve_film
-from persson_contact.mixed import solve_mixed
+from persson_contact.mixed import solve_mixed,solve_mixed_continuation
 from persson_contact.macroscopic import HalfSpaceLine,HertzLine
 from persson_contact.core import PerssonModel
 from persson_contact.psd import read_psd
@@ -187,6 +188,16 @@ class CoupledNormalTests(unittest.TestCase):
         b=solve_mixed(el,self.hertz,self.law,tr,dry)
         np.testing.assert_allclose(a.mean_gap_m,b.mean_gap_m,rtol=1e-8)
         np.testing.assert_allclose(a.fluid_pressure_pa,b.fluid_pressure_pa,rtol=1e-8,atol=1e-6)
+
+    def test_velocity_continuation_from_converged_nonzero_state(self):
+        factory=lambda speed:ConservativeCavitationTests.smooth(.1,speed,0.)
+        first,_=solve_mixed_continuation(self.elastic,self.hertz,self.law,factory,.001,self.dry)
+        with patch('persson_contact.mixed.solve_film',side_effect=AssertionError('Warm states preserve coupled pressure')):
+            warm,_=solve_mixed_continuation(self.elastic,self.hertz,self.law,factory,.003,first,initial_velocity_m_s=.001)
+        direct,_=solve_mixed_continuation(self.elastic,self.hertz,self.law,factory,.003,self.dry)
+        np.testing.assert_allclose(warm.mean_gap_m,direct.mean_gap_m,rtol=1e-7,atol=1e-13)
+        np.testing.assert_allclose(warm.fluid_pressure_pa,direct.fluid_pressure_pa,rtol=1e-7,atol=1e-5)
+        self.assertLess(warm.mass_relative_residual,1e-6)
 
 
 if __name__=='__main__':unittest.main()

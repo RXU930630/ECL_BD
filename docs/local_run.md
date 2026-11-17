@@ -1,6 +1,6 @@
 # 本地运行与候选版本范围
 
-本包版本0.2.0rc1，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。
+本包版本0.2.0rc2，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。有限圆柱曲面的尺寸、自动载荷换算和物理边缘见[几何说明](finite_geometry.md)。
 
 ## 任务选择
 
@@ -36,9 +36,9 @@ macro_contact用于圆柱接触、混合润滑及拟合；leakage.geometry用于
 - 输出目录非空：换一个新的OUTPUT_DIRECTORY，避免覆盖前次结果。
 - 实验CSV没有数据：空白模板只有表头，必须填入恒速段测量值。
 - reference tau与实验tau：1MPa只是拟合参考，不是最后结果；普通正向计算则需要给定真实或明确假设的tau。
-- normal_force_n报缺宽度：在contact_friction.transverse_width_m填写实际横向宽度，单位m。
+- normal_force_n报缺宽度：有限曲面模式填写geometry_parameters.finite_cylindrical_pad.axial_length_m；旧圆柱模式在contact_friction.transverse_width_m填写横向宽度，单位m。
 - 缓存缺少对应速度／载荷：选择simulate按实验点计算；不自动插值。
-- 模型表域或计算域不足：按具体报错扩大压力表域或宏观域，并做分辨率／域宽检查。
+- 模型表域或计算域不足：按报错检查压力表域及数值分辨率。有限曲面保持真实尺寸，不为改善收敛而扩大胶块；旧圆柱远场截断才检查域宽收敛。
 - 零导流／封闭液袋：这是当前模型适用范围限制，不通过增加spc地板来强行求解。
 - 矩阵病态或不收敛：保留报错和参数；检查工况、查表范围及连通分支，不把失败结果用于反演。
 

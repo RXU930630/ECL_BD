@@ -12,6 +12,7 @@ from .contact_friction import finite
 from .macro_output import _csv,_keys
 from .mixed_output import prepare_mixed,run_mixed_project
 from .shear_fit import read_experiments,fit_constant_strength
+from .geometry import transverse_width,line_load
 
 
 def _path(name,base):
@@ -22,11 +23,15 @@ def _path(name,base):
 def _signature(diag):
     """Saved physical model is authoritative; current PSD/material is not read."""
     p=diag.get('parameters_snapshot',{});macro=p.get('macro_contact',{});mixed=p.get('mixed_friction',{})
+    selected=macro.get('geometry')
+    geometry={k:macro.get(k) for k in ('geometry','elastic_model','body_representation','contact_model')}
+    geometry['geometry_parameters']=macro.get('geometry_parameters',{}).get(selected,{})
+    if selected!='finite_cylindrical_pad':geometry['domain_half_width_m']=macro.get('domain_half_width_m')
     return json.dumps({'material':p.get('material'),'psd_sha256':diag.get('psd_sha256'),
         'psd_settings':{k:v for k,v in p.get('psd',{}).items() if k!='path'},
         'interface':p.get('interface'),'options':p.get('options'),
         'pressure_flow':p.get('pressure_flow'),
-        'macro':{k:macro.get(k) for k in ('geometry','geometry_parameters','elastic_model','body_representation','contact_model','domain_half_width_m')},
+        'macro':geometry,
         'mixed':{k:mixed.get(k) for k in ('rough_surface','inlet_pressure_pa','outlet_pressure_pa','cavitation_model','cavitation_friction')},
         'fluid_friction':p.get('fluid_friction')},sort_keys=True,allow_nan=False)
 
@@ -95,10 +100,11 @@ def prepare_fit(parameters,base):
     speed_range=[None if v is None else finite(v,'fit speed range',minimum=0,strict=True) for v in speed_range]
     if all(v is not None for v in speed_range) and speed_range[0]>speed_range[1]:raise ValueError('Invalid fit speed range')
     experiment_path=_path(raw.get('experiment_file'),base)
-    width=parameters.get('contact_friction',{}).get('transverse_width_m')
-    if width is not None:width=finite(width,'transverse_width_m',minimum=0,strict=True)
+    width=transverse_width(parameters)
+    macro=parameters.get('macro_contact',{})
+    default_load=line_load(parameters) if macro.get('line_load_n_m') is not None or macro.get('normal_force_n') is not None else None
     experiments=read_experiments(experiment_path,
-        default_line_load_n_m=parameters.get('macro_contact',{}).get('line_load_n_m'),transverse_width_m=width)
+        default_line_load_n_m=default_load,transverse_width_m=width)
     # Validate membership and measurement uncertainties before expensive work.
     fit_constant_strength(experiments,np.ones(len(experiments))/ref,np.zeros(len(experiments)),
         reference_strength_pa=ref,weighting=weighting,speed_range_m_s=speed_range,
@@ -115,6 +121,7 @@ def prepare_fit(parameters,base):
             if not loads or not np.isclose(value,loads[-1],rtol=1e-9,atol=0.):loads.append(value)
         for load in loads:
             p=deepcopy(parameters)
+            p['macro_contact'].pop('normal_force_n',None)
             p['macro_contact']['line_load_n_m']=load
             velocities=[]
             for value in sorted(set(e.speed_m_s for e in experiments if np.isclose(e.line_load_n_m,load,rtol=1e-9,atol=0.))):

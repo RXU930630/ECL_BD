@@ -126,9 +126,15 @@ def solve_mixed(elastic,hertz,contact_law,transport,initial,*,inlet_pressure_pa=
     g=hertz.profile(elastic.x_m);c=elastic.compliance_m_pa*p0/hs
     mass_scale=elastic.dx_m*p0/hertz.line_load_n_m
     y=np.asarray(initial.mean_gap_m,float)/hs;offset=initial.rigid_offset_m/hs
-    film=solve_film(y*hs,elastic.dx_m,transport,pressure_scale_pa=p0,
-        inlet_pressure_pa=inlet_pressure_pa,outlet_pressure_pa=outlet_pressure_pa,tolerance=min(tolerance,1e-10))
-    psi=film.pressure_pa/p0+film.saturation-1.
+    if isinstance(initial,MixedSolution):
+        # Preserve the converged load/geometry balance when advancing velocity.
+        # A fresh rigid-gap film solve can otherwise inject a huge transient
+        # fluid load into a near-contact gap before elasticity can respond.
+        psi=initial.fluid_pressure_pa/p0+initial.saturation-1.
+    else:
+        film=solve_film(y*hs,elastic.dx_m,transport,pressure_scale_pa=p0,
+            inlet_pressure_pa=inlet_pressure_pa,outlet_pressure_pa=outlet_pressure_pa,tolerance=min(tolerance,1e-10))
+        psi=film.pressure_pa/p0+film.saturation-1.
     m,_,s,_=transport(y*hs)
     qs=max(float(np.max(abs(s))),float(np.min(m))*p0/np.ptp(elastic.edges_m),np.finfo(float).tiny)
     # Characteristic Reynolds scale is held fixed during each nonlinear solve.
@@ -174,18 +180,24 @@ def solve_mixed(elastic,hertz,contact_law,transport,initial,*,inlet_pressure_pa=
 
 
 def solve_mixed_continuation(elastic,hertz,contact_law,transport_factory,velocity,initial,*,
-                             inlet_pressure_pa=0.,outlet_pressure_pa=0.,tolerance=1e-8,max_iterations=100):
+                             inlet_pressure_pa=0.,outlet_pressure_pa=0.,tolerance=1e-8,max_iterations=100,
+                             initial_velocity_m_s=0.,initial_inlet_pressure_pa=0.,initial_outlet_pressure_pa=0.):
     """Adaptive load-preserving continuation of velocity and boundary pressures.
 
     Try the requested state directly; on a nonlinear failure insert midpoint
     driving states. Every accepted final state solves the original equations;
     intermediate states are numerical initialization, not altered parameters.
+    For a converged nonzero initial state, specify its velocity and reservoir
+    pressures so subdivision interpolates between the correct driving states.
     """
     accepted=[]
     def advance(start,factor0,factor1,depth):
         try:
-            result=solve_mixed(elastic,hertz,contact_law,transport_factory(velocity*factor1),start,
-                inlet_pressure_pa=inlet_pressure_pa*factor1,outlet_pressure_pa=outlet_pressure_pa*factor1,
+            speed=initial_velocity_m_s+(velocity-initial_velocity_m_s)*factor1
+            pin=initial_inlet_pressure_pa+(inlet_pressure_pa-initial_inlet_pressure_pa)*factor1
+            pout=initial_outlet_pressure_pa+(outlet_pressure_pa-initial_outlet_pressure_pa)*factor1
+            result=solve_mixed(elastic,hertz,contact_law,transport_factory(speed),start,
+                inlet_pressure_pa=pin,outlet_pressure_pa=pout,
                 tolerance=tolerance,max_iterations=max_iterations)
             accepted.append({'driving_fraction':factor1,'iterations':result.iterations})
             return result

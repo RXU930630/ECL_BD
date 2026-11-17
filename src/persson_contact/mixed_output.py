@@ -18,6 +18,7 @@ from .mixed import MixedSolution,solve_mixed_continuation
 from .mixed_transport import MixedTransport
 from .psd import read_psd
 from .table import build_contact_table
+from .geometry import friction_parameters,geometry_metadata
 
 
 def prepare_mixed(parameters,base):
@@ -44,7 +45,7 @@ def prepare_mixed(parameters,base):
     macro,solver,hertz,elastic,representation,kind=prepare_macro(parameters,base)
     if kind!='persson' or representation!='upper_elastic_lower_rigid':
         raise NotImplementedError('Mixed workflow currently requires Persson contact and upper_elastic_lower_rigid cylinder/plane geometry')
-    friction=prepare_contact_friction(parameters.get('contact_friction',{}),base)
+    friction=prepare_contact_friction(friction_parameters(parameters),base)
     opts=Options(**parameters.get('options',{}))
     if opts.pdf_scale_method!='conservative':raise ValueError('Mixed friction requires pdf_scale_method=conservative')
     flow_options=FlowOptions(**parameters.get('pressure_flow',{}))
@@ -92,7 +93,7 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
     transport=MixedTransport(model,law,interface,flow_options,points=points,
         percolation_relative_contact_area=opts.critical_relative_contact_area,rough_surface=rough,
         minimum_shear_gap_m=parameters['fluid_friction']['minimum_shear_gap_m'])
-    cases=[];profiles=[];solutions=[];factors_rows=[]
+    cases=[];profiles=[];solutions=[];boundaries=[]
     dx=elastic.dx_m
     for index,speed in enumerate(speeds):
         continuation=[]
@@ -103,12 +104,20 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
                 np.zeros(len(dry.pressure_pa)+1),0,dry.equilibrium_relative_residual,
                 dry.equilibrium_relative_residual,dry.load_relative_error,0.)
         else:
-            v,continuation=solve_mixed_continuation(elastic,hertz,law,transport.at_velocity,speed,dry,
-                inlet_pressure_pa=pin,outlet_pressure_pa=pout,tolerance=tol,max_iterations=limit)
+            # Reuse a converged neighbouring speed, preserving the requested
+            # equations; continuation interpolates from that state's drive.
+            neighbours=[i for i,c in enumerate(cases) if c['lower_wall_velocity_m_s']*speed>0]
+            previous=min(neighbours,key=lambda i:abs(cases[i]['lower_wall_velocity_m_s']-speed)) if neighbours else None
+            start=dry if previous is None else solutions[previous]
+            v,continuation=solve_mixed_continuation(elastic,hertz,law,transport.at_velocity,speed,start,
+                inlet_pressure_pa=pin,outlet_pressure_pa=pout,tolerance=tol,max_iterations=limit,
+                initial_velocity_m_s=0. if previous is None else cases[previous]['lower_wall_velocity_m_s'],
+                initial_inlet_pressure_pa=0. if previous is None else pin,
+                initial_outlet_pressure_pa=0. if previous is None else pout)
         total=v.contact_pressure_pa+v.fluid_pressure_pa
         edge=float(max(total[0],total[-1])/max(total))
         # Positive imposed edge pressure need not decay to zero; check only zero-reservoir cases.
-        if pin==pout==0 and edge>solver['edge_pressure_ratio_tolerance']:
+        if not getattr(hertz,'physical_boundaries',False) and pin==pout==0 and edge>solver['edge_pressure_ratio_tolerance']:
             raise ValueError('Mixed pressure remains significant at edges; enlarge macro domain')
         a=model.area(v.contact_pressure_pa)
         solid=evaluate_contact_friction(elastic.edges_m,a,v.contact_pressure_pa,v.mean_gap_m,-speed,
@@ -150,6 +159,10 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
             'edge_pressure_ratio':edge,'iterations':v.iterations,'continuation_states':len(continuation),
             'profile_file':f'mixed_profile_{index:03d}.csv'}
         cases.append(case);solutions.append(v)
+        for side,x,pressure,flux in [('small_x',elastic.edges_m[0],pin,v.face_flux_m2_s[0]),
+                                    ('large_x',elastic.edges_m[-1],pout,v.face_flux_m2_s[-1])]:
+            boundaries.append({'case_index':index,'side':side,'x_m':x,
+                'reservoir_pressure_pa':pressure,'face_flux_m2_s':flux})
         rows=[]
         for i,x in enumerate(elastic.x_m):
             rows.append({'x_m':x,'cell_left_m':elastic.edges_m[i],'cell_right_m':elastic.edges_m[i+1],
@@ -165,11 +178,14 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
                 **{k:values[i] for k,values in tr.items()}})
         profiles.append(rows)
         print(f'混合润滑 V_plane={speed:g} m/s：流体承载 {wf/hertz.line_load_n_m:.3%}，最小间隙 {min(v.mean_gap_m):.5g} m，空化单元 {case["cavitated_cells"]}',flush=True)
-    outputs=['mixed_cases.csv','mixed_transport_table.csv','mixed_contact_table.csv','mixed_diagnostics.json',*[c['profile_file'] for c in cases]]
+    outputs=['mixed_cases.csv','mixed_boundaries.csv','mixed_transport_table.csv','mixed_contact_table.csv','mixed_diagnostics.json',*[c['profile_file'] for c in cases]]
     summary={'workflow_status':'complete','scope':'Steady 1D isothermal constant-Newtonian no-slip cylinder/plane elastic mixed lubrication; connected liquid-mobility branch.',
         'reference_frame':'Cylinder-following; upper elastic cylinder velocity=0, lower rigid plane velocity specified; signed flux in this frame.',
         'pressure_convention':'Gauge Pa, cavitation pressure=0; fully flooded reservoirs at boundary inflow. No negative-pressure clipping.',
-        'normal_equations':'h=h0+x^2/(2R)+C(pc+pf); pc=Persson(h); integral(pc+pf)dx=Wprime.',
+        'normal_equations':'h=h0+g(x)+C(pc+pf); pc=Persson(h); integral(pc+pf)dx=Wprime; g(x) is the selected geometry profile.',
+        'geometry':geometry_metadata(hertz,elastic),
+        'far_field_edge_pressure_check_applied':not getattr(hertz,'physical_boundaries',False) and pin==pout==0,
+        'boundary_note':'Reservoir pressure is imposed at boundary faces, not adjacent cell centres. Edge-cell pressure is diagnostic; physical pad edges need not resemble a far field.',
         'cavitation':'Conservative finite-volume pressure/saturation complementarity p>=0, 0<=theta<=1, p(1-theta)=0; harmonic mobility and upwind theta.',
         'cavitation_friction':'Explicit approximation: sliding traction multiplied by liquid saturation; not a microscopically validated cavitation shear theory.',
         'reported_body':'Moving lower plane: lower_resisting_friction_coefficient includes solid and averaged fluid wall traction. Its macroscopic slope is zero.',
@@ -177,6 +193,7 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
         'upper_force_note':'Upper wall traction includes the roughness-scale form drag assigned by the interpolation. Macroscopic fluid pressure projection is exported separately; upper solid normal-pressure slope force is not included in a total upper drag.',
         'transport':transport.metadata,'solid_friction':friction.law.metadata,
         'transverse_width_m':friction.transverse_width_m,
+        'target_normal_force_n':None if friction.transverse_width_m is None else hertz.line_load_n_m*friction.transverse_width_m,
         'target_line_load_n_m':hertz.line_load_n_m,'psd_sha256':psd_sha,
         'far_tail_fixed_gap_load_bound_n_m':float(table.pressures_pa[0]*np.ptp(elastic.edges_m)),
         'limitations':['No viscoelastic hysteresis, heating, non-Newtonian fluid, slip, transient motion or starvation.',
@@ -186,7 +203,7 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
             'Only mean deformed geometry is reconstructed, not individual roughness phases.'],
         'cases':cases,'parameters_snapshot':parameters,'outputs':outputs}
     out.mkdir(parents=True,exist_ok=True)
-    _csv(out/'mixed_cases.csv',cases);_csv(out/'mixed_transport_table.csv',transport.rows)
+    _csv(out/'mixed_cases.csv',cases);_csv(out/'mixed_boundaries.csv',boundaries);_csv(out/'mixed_transport_table.csv',transport.rows)
     _csv(out/'mixed_contact_table.csv',[{'pressure_pa':p,'mean_gap_m':h,'relative_contact_area':a}
         for p,h,a in zip(table.pressures_pa,table.mean_gaps_m,table.contact_fractions)])
     for case,rows in zip(cases,profiles):_csv(out/case['profile_file'],rows)
@@ -236,6 +253,7 @@ def plot_mixed(out,elastic,hertz,solutions,cases):
         ax.axhline(0,color='k',lw=1,label='Rigid plane')
         ax.set(xlabel='x [mm]',ylabel='z [um]');ax.grid(alpha=.2)
     radius=1.5*hertz.half_width_m
+    if getattr(hertz,'physical_boundaries',False):radius=min(radius,hertz.domain_half_width_m)
     central=abs(elastic.x_m)<=radius
     axes[1].set_xlim(-radius*1e3,radius*1e3)
     axes[1].set_ylim(-.05,max(float(np.max(v.mean_gap_m[central]))*1e6,.1))
