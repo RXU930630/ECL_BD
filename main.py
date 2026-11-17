@@ -20,6 +20,9 @@ RUN_LEAKAGE = True
 # 混合润滑：自动联立接触、宏观形变、牛顿流体和摩擦；开启时关闭上面三个独立任务
 # 读取macro_contact、mixed_friction、contact_friction和interface；不读取leakage的旧卸载/spc规则
 RUN_MIXED_FRICTION = False
+# 独立实验反演：自动按实验CSV计算，或复用保存的混合润滑结果；无需预先知道tau
+# 开启时关闭RUN_LEAKAGE、RUN_MACRO_CONTACT、RUN_CONTACT_FRICTION、RUN_MIXED_FRICTION
+RUN_SHEAR_STRENGTH_FIT = False
 
 COMPUTE_PRESSURE_FLOW = True # 压力流动系数；泄漏开启时会自动计算
 COMPUTE_SHEAR_FLOW = False   # 剪切流动因子；速度与粗糙侧在parameters.py的shear_flow中
@@ -40,7 +43,8 @@ def main():
                     compute_pressure_flow=COMPUTE_PRESSURE_FLOW,
                     compute_shear_flow=COMPUTE_SHEAR_FLOW,
                     run_macro_contact=RUN_MACRO_CONTACT,
-                    run_contact_friction=RUN_CONTACT_FRICTION)
+                    run_contact_friction=RUN_CONTACT_FRICTION,
+                    run_shear_strength_fit=RUN_SHEAR_STRENGTH_FIT)
     except ModuleNotFoundError as exc:
         if exc.name not in {'numpy', 'scipy', 'matplotlib'}:
             raise

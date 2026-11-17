@@ -1,5 +1,7 @@
 # 参数文件
 
+新增剪切强度反演任务的参数、实验CSV列及复用方式见[拟合说明](shear_strength_fit.md)。纯净本地包的安装步骤见[试运行指南](../README_LOCAL.md)。
+
 日常使用只需编辑 `main.py` 和 `parameters.py`。main选择计算任务；parameters选择工况、模型与数值精度。开发复算输入单独保存在tests/data中，不需要在日常入口中切换。
 
 | 位置 | 内容 |

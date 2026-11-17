@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "persson-contact"
-version = "0.1.0"
-description = "PSD input and dry elastic Persson contact building blocks"
+version = "0.2.0rc1"
+description = "Persson contact, elastic mixed lubrication and interface shear-strength fitting"
 requires-python = ">=3.11"
 dependencies = ["numpy>=2.0", "scipy>=1.13"]
 
