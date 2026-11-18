@@ -1,0 +1,180 @@
+{
+  "fortran_kind": "real-erf-diagnostic",
+  "convergence_certified": false,
+  "headers": [
+    "speed_m_s",
+    "Ws_prime_n_m",
+    "Wf_prime_n_m",
+    "Ar_over_B_m",
+    "hmin_effective_profile_m",
+    "pfluid_max_pa",
+    "mu_solid_resisting",
+    "mu_fluid_sliding_resisting",
+    "mu_fluid_pressure_resisting",
+    "mu_total_resisting"
+  ],
+  "records": [
+    {
+      "speed_m_s": 1e-08,
+      "python": {
+        "speed_m_s": 1e-08,
+        "Ws_prime_n_m": 1.9999811660849909,
+        "Wf_prime_n_m": 1.8834012045858366e-05,
+        "Ar_over_B_m": 7.664454453491899e-06,
+        "hmin_effective_profile_m": 8.966903214409171e-07,
+        "pfluid_max_pa": 0.12977553426540173,
+        "mu_solid_resisting": 3.8322272265600175,
+        "mu_fluid_sliding_resisting": 5.249671722343022e-07,
+        "mu_fluid_pressure_resisting": 7.793126021614531e-08,
+        "mu_total_resisting": 3.832227829644383
+      },
+      "fortran": {
+        "speed_m_s": 1e-08,
+        "Ws_prime_n_m": 2.0,
+        "Wf_prime_n_m": 1.704e-05,
+        "Ar_over_B_m": 7.58e-06,
+        "hmin_effective_profile_m": 8.79e-07,
+        "pfluid_max_pa": 0.1123,
+        "mu_solid_resisting": 3.79,
+        "mu_fluid_sliding_resisting": 4.448e-07,
+        "mu_fluid_pressure_resisting": 7.795e-08,
+        "mu_total_resisting": 3.7900005227499998
+      }
+    },
+    {
+      "speed_m_s": 1e-07,
+      "python": {
+        "speed_m_s": 1e-07,
+        "Ws_prime_n_m": 1.999811667238106,
+        "Wf_prime_n_m": 0.00018833276189480456,
+        "Ar_over_B_m": 7.663805370442146e-06,
+        "hmin_effective_profile_m": 8.96728571708513e-07,
+        "pfluid_max_pa": 1.2976721636043067,
+        "mu_solid_resisting": 3.831902685221072,
+        "mu_fluid_sliding_resisting": 5.249293192403894e-06,
+        "mu_fluid_pressure_resisting": 7.792956671265983e-07,
+        "mu_total_resisting": 3.8319087138099333
+      },
+      "fortran": {
+        "speed_m_s": 1e-07,
+        "Ws_prime_n_m": 2.0,
+        "Wf_prime_n_m": 0.0001704,
+        "Ar_over_B_m": 7.58e-06,
+        "hmin_effective_profile_m": 8.79e-07,
+        "pfluid_max_pa": 1.123,
+        "mu_solid_resisting": 3.79,
+        "mu_fluid_sliding_resisting": 4.447e-06,
+        "mu_fluid_pressure_resisting": 7.795e-07,
+        "mu_total_resisting": 3.7900052265
+      }
+    },
+    {
+      "speed_m_s": 1e-06,
+      "python": {
+        "speed_m_s": 1e-06,
+        "Ws_prime_n_m": 1.9981174083302884,
+        "Wf_prime_n_m": 0.0018825916698472264,
+        "Ar_over_B_m": 7.657317327473063e-06,
+        "hmin_effective_profile_m": 8.971111441629567e-07,
+        "pfluid_max_pa": 12.968406622889209,
+        "mu_solid_resisting": 3.828658663736272,
+        "mu_fluid_sliding_resisting": 5.2455098742886336e-05,
+        "mu_fluid_pressure_resisting": 7.791263029942062e-06,
+        "mu_total_resisting": 3.828718910098304
+      },
+      "fortran": {
+        "speed_m_s": 1e-06,
+        "Ws_prime_n_m": 1.998,
+        "Wf_prime_n_m": 0.001703,
+        "Ar_over_B_m": 7.574e-06,
+        "hmin_effective_profile_m": 8.793e-07,
+        "pfluid_max_pa": 11.23,
+        "mu_solid_resisting": 3.787,
+        "mu_fluid_sliding_resisting": 4.444e-05,
+        "mu_fluid_pressure_resisting": 7.793e-06,
+        "mu_total_resisting": 3.787052233
+      }
+    },
+    {
+      "speed_m_s": 1e-05,
+      "python": {
+        "speed_m_s": 1e-05,
+        "Ws_prime_n_m": 1.9812477643346138,
+        "Wf_prime_n_m": 0.01875223566538646,
+        "Ar_over_B_m": 7.5927156152476595e-06,
+        "hmin_effective_profile_m": 9.009437512936127e-07,
+        "pfluid_max_pa": 128.85549237644284,
+        "mu_solid_resisting": 3.796357807623829,
+        "mu_fluid_sliding_resisting": 0.000520787444211821,
+        "mu_fluid_pressure_resisting": 7.774314205648736e-05,
+        "mu_total_resisting": 3.7969563382100984
+      },
+      "fortran": {
+        "speed_m_s": 1e-05,
+        "Ws_prime_n_m": 1.983,
+        "Wf_prime_n_m": 0.01699,
+        "Ar_over_B_m": 7.516e-06,
+        "hmin_effective_profile_m": 8.825e-07,
+        "pfluid_max_pa": 111.8,
+        "mu_solid_resisting": 3.758,
+        "mu_fluid_sliding_resisting": 0.0004412,
+        "mu_fluid_pressure_resisting": 7.781e-05,
+        "mu_total_resisting": 3.75851901
+      }
+    },
+    {
+      "speed_m_s": 0.0001,
+      "python": {
+        "speed_m_s": 0.0001,
+        "Ws_prime_n_m": 1.8198771406874457,
+        "Wf_prime_n_m": 0.18012286026758076,
+        "Ar_over_B_m": 6.974696712597268e-06,
+        "hmin_effective_profile_m": 9.398459954629736e-07,
+        "pfluid_max_pa": 1208.8341183699008,
+        "mu_solid_resisting": 3.48734835463338,
+        "mu_fluid_sliding_resisting": 0.004850745526202936,
+        "mu_fluid_pressure_resisting": 0.0007604329233889606,
+        "mu_total_resisting": 3.4929595347509057
+      },
+      "fortran": {
+        "speed_m_s": 0.0001,
+        "Ws_prime_n_m": 1.837,
+        "Wf_prime_n_m": 0.1626,
+        "Ar_over_B_m": 6.966e-06,
+        "hmin_effective_profile_m": 9.141e-07,
+        "pfluid_max_pa": 1063.0,
+        "mu_solid_resisting": 3.483,
+        "mu_fluid_sliding_resisting": 0.004109,
+        "mu_fluid_pressure_resisting": 0.0007655,
+        "mu_total_resisting": 3.4878745
+      }
+    },
+    {
+      "speed_m_s": 0.001,
+      "python": {
+        "speed_m_s": 0.001,
+        "Ws_prime_n_m": 0.791746809792928,
+        "Wf_prime_n_m": 1.20825319023305,
+        "Ar_over_B_m": 3.035186920804862e-06,
+        "hmin_effective_profile_m": 1.3288245364730537e-06,
+        "pfluid_max_pa": 6880.553038477485,
+        "mu_solid_resisting": 1.5175934603827186,
+        "mu_fluid_sliding_resisting": 0.026408344605628933,
+        "mu_fluid_pressure_resisting": 0.0060374894688430495,
+        "mu_total_resisting": 1.550039294477324
+      },
+      "fortran": {
+        "speed_m_s": 0.001,
+        "Ws_prime_n_m": 0.8187,
+        "Wf_prime_n_m": 1.181,
+        "Ar_over_B_m": 3.106e-06,
+        "hmin_effective_profile_m": 1.26e-06,
+        "pfluid_max_pa": 6665.0,
+        "mu_solid_resisting": 1.553,
+        "mu_fluid_sliding_resisting": 0.02241,
+        "mu_fluid_pressure_resisting": 0.006298,
+        "mu_total_resisting": 1.581708
+      }
+    }
+  ]
+}

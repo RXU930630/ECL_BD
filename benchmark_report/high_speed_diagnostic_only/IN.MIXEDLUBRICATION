@@ -1,0 +1,16 @@
+1e-2
+1e-8
+0.
+0.
+1e6
+2.
+.005
+0 0
+0
+0
+1.
+0
+
+
+0.0        for cylinder different shapes are possible: shape index (use integer) =0 --> regular cylinder, >> 1 (e.g. 10) asymtotic rectangular
+0.0        tilt angle in degree

@@ -1,0 +1,22 @@
+{
+  "lower_friction_native.txt": {
+    "original_filename": "out.MSLUBE.LOW.WITH.FrictionFlowfactor.1time.2vel.3Fload.4FloadSolid.5FloadFluid.6relAreaSolid.7frictioncoefficientsolid.8frictioncoefficientFluidShear.9frictioncoefficientFluidCoette.10onUpperRigidRollingSolid.11onUpperRigidRollingFluid.12-16",
+    "sha256": "a5809c50352f8be4386207f9bda8289e7b9e2a8621b93938f789c10a485aab4e"
+  },
+  "loads_native.txt": {
+    "original_filename": "out.MSLUBE.1time.2vel.3Fload.4FloadSolid.5FloadFluid.6relAreaSolid.7frictioncoefficientsolid",
+    "sha256": "53c41114a9aa4adb3529bdfb53ebf736a61cbcb9f3cf23a3377cd8e0119e302f"
+  },
+  "hmin_native.txt": {
+    "original_filename": "out.MSLUBE.1time.2vel.3minimumSeparation.4x.at.minimumSeparation.5baruc.6uboundary",
+    "sha256": "59fbcfd903d80c238c72793477d2616bc10d4147610473ab57c0afac1a7a6f17"
+  },
+  "iteration_errors_native.txt": {
+    "original_filename": "CHECK.MixedLUBRICATION.1iteration.2errorbaru.3errorPfluid",
+    "sha256": "ae8f9ca0cbaabc214fe9db1fbd2f61f79fa20279e8149910ffe37ee01f7988c2"
+  },
+  "pressure_flow_table_native.txt": {
+    "original_filename": "WORK.1logpressure.2averageSeparation.3PressureFlowFactor.4Area",
+    "sha256": "5c5f6fadaf9e093d48e4e0058943f9217a35d98bf010b06c3fd2e7813fdf34e2"
+  }
+}

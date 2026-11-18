@@ -1,0 +1,46 @@
+{
+  "status": "Six pristine-source primary lower-plane outputs complete; auxiliary defects remain; no global convergence certification.",
+  "python_snapshot": "026c8951add03e4440a55234849f236a1bf303a9",
+  "python_runtime_byte_identical_to_frozen_snapshot": true,
+  "original_source_sha256": "99d3b2e2c47a663ffe8b65bbdb7415db5eeebb434debd0ef404006600e861854",
+  "pristine_binary_sha256": "23308c51ad72a0e8addd10f1db751c80bbca143eb545af658c6805478abacbff",
+  "diagnostic_source_sha256": "60d56888b85579d5806fab58007040767fed6659d2a5e1d6f11dd32a0ff4124c",
+  "diagnostic_only_change": "DERF1 real wrapper calls intrinsic ERF(x); no diagnostic print cast or physical-equation changes.",
+  "compile_flags": [
+    "-mcmodel=large",
+    "-ffree-line-length-none",
+    "-std=legacy",
+    "-fallow-argument-mismatch",
+    "-O3"
+  ],
+  "compiler": "GNU Fortran 14.2.0",
+  "first_pristine_attempt": {
+    "Nx": 129,
+    "vmin_m_s": 1e-05,
+    "exitcode": 0,
+    "status": "STOP: negative load renormalization; no mixed rows"
+  },
+  "caveats": [
+    "Selected moving lower-plane primary quantities only.",
+    "Native auxiliary NaNs and invalid hmin export retained.",
+    "Convergence/physical validity not certified by output agreement.",
+    "Coarse inputs use same finite domain; widened-domain sensitivity is separate."
+  ],
+  "pristine_execution": {
+    "exitcode": 0,
+    "rows": 6,
+    "primary_columns_1_to_8_all_finite": true,
+    "nonempty_error_files": [],
+    "auxiliary_nonfinite_columns": [
+      9,
+      10,
+      11,
+      12
+    ],
+    "native_hmin_file_reports_zero": true,
+    "pristine_primary_columns_exactly_equal_to_real_erf_diagnostic_at_native_output_precision": true,
+    "pressure_flow_table_byte_identical_to_real_erf_diagnostic": true,
+    "full_solver_mesh_domain_convergence_certified": false,
+    "scope": "same coarse inputs, first eight native printed columns only"
+  }
+}

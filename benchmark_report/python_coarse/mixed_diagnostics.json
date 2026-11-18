@@ -1,0 +1,513 @@
+{
+  "workflow_status": "complete",
+  "scope": "Steady 1D isothermal constant-Newtonian no-slip cylinder/plane elastic mixed lubrication; connected liquid-mobility branch.",
+  "reference_frame": "Cylinder-following; upper elastic cylinder velocity=0, lower rigid plane velocity specified; signed flux in this frame.",
+  "pressure_convention": "Gauge Pa, cavitation pressure=0; fully flooded reservoirs at boundary inflow. No negative-pressure clipping.",
+  "normal_equations": "h=h0+g(x)+C(pc+pf); pc=Persson(h); integral(pc+pf)dx=Wprime; g(x) is the selected geometry profile.",
+  "geometry": {
+    "type": "cylinder_plane",
+    "radius_m": 0.005,
+    "profile": "parabolic x^2/(2R)",
+    "surface_interval_m": [
+      -0.0006770275002573076,
+      0.0006770275002573076
+    ],
+    "boundary_interpretation": "numerical far-field truncation",
+    "elastic_approximation": "plane-strain half-space"
+  },
+  "far_field_edge_pressure_check_applied": true,
+  "boundary_note": "Reservoir pressure is imposed at boundary faces, not adjacent cell centres. Edge-cell pressure is diagnostic; physical pad edges need not resemble a far field.",
+  "cavitation": "Conservative finite-volume pressure/saturation complementarity p>=0, 0<=theta<=1, p(1-theta)=0; harmonic mobility and upwind theta.",
+  "cavitation_friction": "Explicit approximation: sliding traction multiplied by liquid saturation; not a microscopically validated cavitation shear theory.",
+  "reported_body": "Moving lower plane: lower_resisting_friction_coefficient includes solid and averaged fluid wall traction. Its macroscopic slope is zero.",
+  "force_scope": "Sum of modelled solid contact and continuum fluid contributions; boundary-film shear below minimum_shear_gap_m is not included.",
+  "upper_force_note": "Upper wall traction includes the roughness-scale form drag assigned by the interpolation. Macroscopic fluid pressure projection is exported separately; upper solid normal-pressure slope force is not included in a total upper drag.",
+  "transport": {
+    "pressure_flow": "conservative PDF Bruggeman, physical zero; no spc plateau",
+    "shear_flow": "existing isotropic Persson interpolation",
+    "friction_inverse_gap": "conservative magnification-scale sum(-Delta A/u1)",
+    "minimum_shear_gap_m": 1e-09,
+    "near_contact_shear_policy": "Exclude scale samples u1<minimum_shear_gap_m from liquid friction only; no reassignment to solid contact, slip or modification of geometry/mobility. Boundary-film shear below the cutoff is unmodelled.",
+    "friction_kernel": "September-2026 archive no-slip phi_f, phi_fs, phi_fp interpolation",
+    "large_gap_closure": "smoothstep at 3..4 hrms to second-order isotropic K and inverse-gap asymptotes",
+    "large_gap_blend_m": [
+      2.9999999999999975e-06,
+      3.9999999999999964e-06
+    ],
+    "percolation_mean_gap_m": 6.666227164470783e-08,
+    "rough_surface": "upper",
+    "table_points": 43,
+    "table_gap_range_m": [
+      3.333113582235392e-08,
+      3.9999999999999964e-06
+    ],
+    "missing_probability_policy": "No normalization; raw PDF local upper bound and scale omitted mass exported. Local bounds do not bound the coupled solution.",
+    "friction_difference_from_archive": "No phi_f>=1 clamp, pressure-index extrapolation, shear thinning, slip or pressure-threshold deletion of all cavitated sliding shear."
+  },
+  "solid_friction": {
+    "model": "constant_shear_strength",
+    "shear_strength_pa": 1000000.0,
+    "stress_basis": "real_contact_area"
+  },
+  "transverse_width_m": 0.01,
+  "target_normal_force_n": 0.02,
+  "target_line_load_n_m": 2.0,
+  "psd_sha256": "7a442e27a66ad810f7cdf934cc219e18180fc5df9cd2ca7ef36f2fe92ec041e1",
+  "far_tail_fixed_gap_load_bound_n_m": 1.354055000514615e-103,
+  "limitations": [
+    "No viscoelastic hysteresis, heating, non-Newtonian fluid, slip, transient motion or starvation.",
+    "No disconnected trapped-pocket solution; physical-zero mobility is never replaced by an spc plateau.",
+    "Scale-inverse-gap and large-gap interpolation are constitutive approximations; numerical convergence does not validate them.",
+    "Local unknown-PDF conductivity bounds do not bound the nonlinear coupled pressure or friction.",
+    "Only mean deformed geometry is reconstructed, not individual roughness phases."
+  ],
+  "cases": [
+    {
+      "case_index": 0,
+      "lower_wall_velocity_m_s": 1e-08,
+      "upper_wall_velocity_m_s": 0.0,
+      "relative_velocity_m_s": -1e-08,
+      "contact_line_load_n_m": 1.9999811660849909,
+      "fluid_line_load_n_m": 1.8834012045858366e-05,
+      "fluid_load_fraction": 9.417006022929183e-06,
+      "real_contact_area_per_width_m": 7.664454453491899e-06,
+      "minimum_mean_gap_m": 8.966903214409171e-07,
+      "maximum_fluid_pressure_pa": 0.12977553426540173,
+      "minimum_saturation": 0.009579641951985685,
+      "cavitated_cells": 60,
+      "flux_per_width_m2_s": 2.1563559112863885e-15,
+      "flow_rate_m3_s": 2.1563559112863887e-17,
+      "lower_solid_force_n_m": -7.664454453491901,
+      "lower_fluid_force_n_m": -1.2057968649593984e-06,
+      "lower_fluid_sliding_force_n_m": -1.0499343445195454e-06,
+      "lower_fluid_pressure_flow_force_n_m": -1.558625204398528e-07,
+      "lower_total_force_n_m": -7.664455659288766,
+      "lower_total_force_n": -0.07664455659288766,
+      "lower_resisting_friction_coefficient": 3.832227829644383,
+      "upper_solid_force_n_m": 7.664454453491901,
+      "upper_fluid_wall_force_n_m": 9.048967670935503e-07,
+      "upper_macroscopic_fluid_pressure_force_n_m": 3.009109789962343e-07,
+      "load_relative_error": 4.8518300488353816e-11,
+      "geometry_relative_residual": 5.878493357239575e-11,
+      "mass_relative_residual": 1.9224835278825035e-10,
+      "solver_residual": 5.878497688627249e-11,
+      "complementarity_max_pa": 0.0,
+      "edge_pressure_ratio": 1.1656027326827328e-09,
+      "iterations": 2,
+      "continuation_states": 1,
+      "profile_file": "mixed_profile_000.csv"
+    },
+    {
+      "case_index": 1,
+      "lower_wall_velocity_m_s": 1e-07,
+      "upper_wall_velocity_m_s": 0.0,
+      "relative_velocity_m_s": -1e-07,
+      "contact_line_load_n_m": 1.999811667238106,
+      "fluid_line_load_n_m": 0.00018833276189480456,
+      "fluid_load_fraction": 9.416638094740228e-05,
+      "real_contact_area_per_width_m": 7.663805370442146e-06,
+      "minimum_mean_gap_m": 8.96728571708513e-07,
+      "maximum_fluid_pressure_pa": 1.2976721636043067,
+      "minimum_saturation": 0.009580584583607,
+      "cavitated_cells": 60,
+      "flux_per_width_m2_s": 2.156570523113774e-14,
+      "flow_rate_m3_s": 2.1565705231137742e-16,
+      "lower_solid_force_n_m": -7.663805370442147,
+      "lower_fluid_force_n_m": -1.2057177719060991e-05,
+      "lower_fluid_sliding_force_n_m": -1.0498586384807793e-05,
+      "lower_fluid_pressure_flow_force_n_m": -1.5585913342531973e-06,
+      "lower_total_force_n_m": -7.6638174276198665,
+      "lower_total_force_n": -0.07663817427619866,
+      "lower_resisting_friction_coefficient": 3.8319087138099333,
+      "upper_solid_force_n_m": 7.663805370442147,
+      "upper_fluid_wall_force_n_m": 9.048257082467694e-06,
+      "upper_macroscopic_fluid_pressure_force_n_m": 3.0090294475108143e-06,
+      "load_relative_error": 4.440892098500626e-16,
+      "geometry_relative_residual": 7.676236084492103e-15,
+      "mass_relative_residual": 1.5006339662403069e-12,
+      "solver_residual": 3.3306690738754696e-15,
+      "complementarity_max_pa": 0.0,
+      "edge_pressure_ratio": 1.1656361571256898e-08,
+      "iterations": 3,
+      "continuation_states": 1,
+      "profile_file": "mixed_profile_001.csv"
+    },
+    {
+      "case_index": 2,
+      "lower_wall_velocity_m_s": 1e-06,
+      "upper_wall_velocity_m_s": 0.0,
+      "relative_velocity_m_s": -1e-06,
+      "contact_line_load_n_m": 1.9981174083302884,
+      "fluid_line_load_n_m": 0.0018825916698472264,
+      "fluid_load_fraction": 0.0009412958349236132,
+      "real_contact_area_per_width_m": 7.657317327473063e-06,
+      "minimum_mean_gap_m": 8.971111441629567e-07,
+      "maximum_fluid_pressure_pa": 12.968406622889209,
+      "minimum_saturation": 0.009590013426900246,
+      "cavitated_cells": 60,
+      "flux_per_width_m2_s": 2.1587172371375185e-13,
+      "flow_rate_m3_s": 2.1587172371375186e-15,
+      "lower_solid_force_n_m": -7.657317327473063,
+      "lower_fluid_force_n_m": -0.00012049272354566496,
+      "lower_fluid_sliding_force_n_m": -0.00010491019748577977,
+      "lower_fluid_pressure_flow_force_n_m": -1.5582526059885178e-05,
+      "lower_total_force_n_m": -7.657437820196608,
+      "lower_total_force_n": -0.07657437820196608,
+      "lower_resisting_friction_coefficient": 3.828718910098304,
+      "upper_solid_force_n_m": 7.657317327473063,
+      "upper_fluid_wall_force_n_m": 9.04115502770997e-05,
+      "upper_macroscopic_fluid_pressure_force_n_m": 3.0082261339104956e-05,
+      "load_relative_error": 6.794564910705958e-14,
+      "geometry_relative_residual": 8.809142651444731e-14,
+      "mass_relative_residual": 1.5010895073492542e-09,
+      "solver_residual": 2.4719143922264274e-12,
+      "complementarity_max_pa": 0.0,
+      "edge_pressure_ratio": 1.1659702275495747e-07,
+      "iterations": 3,
+      "continuation_states": 1,
+      "profile_file": "mixed_profile_002.csv"
+    },
+    {
+      "case_index": 3,
+      "lower_wall_velocity_m_s": 1e-05,
+      "upper_wall_velocity_m_s": 0.0,
+      "relative_velocity_m_s": -1e-05,
+      "contact_line_load_n_m": 1.9812477643346138,
+      "fluid_line_load_n_m": 0.01875223566538646,
+      "fluid_load_fraction": 0.00937611783269323,
+      "real_contact_area_per_width_m": 7.5927156152476595e-06,
+      "minimum_mean_gap_m": 9.009437512936127e-07,
+      "maximum_fluid_pressure_pa": 128.85549237644284,
+      "minimum_saturation": 0.009684552443328887,
+      "cavitated_cells": 60,
+      "flux_per_width_m2_s": 2.180243452499574e-12,
+      "flow_rate_m3_s": 2.1802434524995742e-14,
+      "lower_solid_force_n_m": -7.59271561524766,
+      "lower_fluid_force_n_m": -0.0011970611725366166,
+      "lower_fluid_sliding_force_n_m": -0.0010415748884236421,
+      "lower_fluid_pressure_flow_force_n_m": -0.00015548628411297475,
+      "lower_total_force_n_m": -7.593912676420197,
+      "lower_total_force_n": -0.07593912676420198,
+      "lower_resisting_friction_coefficient": 3.7969563382100984,
+      "upper_solid_force_n_m": 7.59271561524766,
+      "upper_fluid_wall_force_n_m": 0.0008970516073877259,
+      "upper_macroscopic_fluid_pressure_force_n_m": 0.0003000204419896577,
+      "load_relative_error": 0.0,
+      "geometry_relative_residual": 7.940933880509072e-15,
+      "mass_relative_residual": 3.319734936729148e-13,
+      "solver_residual": 3.3861802251067274e-15,
+      "complementarity_max_pa": 0.0,
+      "edge_pressure_ratio": 1.1692936436470615e-06,
+      "iterations": 4,
+      "continuation_states": 1,
+      "profile_file": "mixed_profile_003.csv"
+    },
+    {
+      "case_index": 4,
+      "lower_wall_velocity_m_s": 0.0001,
+      "upper_wall_velocity_m_s": 0.0,
+      "relative_velocity_m_s": -0.0001,
+      "contact_line_load_n_m": 1.8198771406874457,
+      "fluid_line_load_n_m": 0.18012286026758076,
+      "fluid_load_fraction": 0.09006143013379038,
+      "real_contact_area_per_width_m": 6.974696712597268e-06,
+      "minimum_mean_gap_m": 9.398459954629736e-07,
+      "maximum_fluid_pressure_pa": 1208.8341183699008,
+      "minimum_saturation": 0.010652396035884193,
+      "cavitated_cells": 60,
+      "flux_per_width_m2_s": 2.4008299561556465e-11,
+      "flow_rate_m3_s": 2.4008299561556464e-13,
+      "lower_solid_force_n_m": -6.974696712597269,
+      "lower_fluid_force_n_m": -0.011222356904542617,
+      "lower_fluid_sliding_force_n_m": -0.009701491057038462,
+      "lower_fluid_pressure_flow_force_n_m": -0.0015208658475041547,
+      "lower_total_force_n_m": -6.985919069501811,
+      "lower_total_force_n": -0.06985919069501811,
+      "lower_resisting_friction_coefficient": 3.4929595347509057,
+      "upper_solid_force_n_m": 6.974696712597269,
+      "upper_fluid_wall_force_n_m": 0.008301106276463589,
+      "upper_macroscopic_fluid_pressure_force_n_m": 0.002921359009487012,
+      "load_relative_error": 4.775133621848227e-10,
+      "geometry_relative_residual": 6.051711594953079e-10,
+      "mass_relative_residual": 6.685149572334851e-08,
+      "solver_residual": 6.051716905375315e-10,
+      "complementarity_max_pa": 0.0,
+      "edge_pressure_ratio": 1.2009780094364815e-05,
+      "iterations": 4,
+      "continuation_states": 1,
+      "profile_file": "mixed_profile_004.csv"
+    },
+    {
+      "case_index": 5,
+      "lower_wall_velocity_m_s": 0.001,
+      "upper_wall_velocity_m_s": 0.0,
+      "relative_velocity_m_s": -0.001,
+      "contact_line_load_n_m": 0.791746809792928,
+      "fluid_line_load_n_m": 1.20825319023305,
+      "fluid_load_fraction": 0.604126595116525,
+      "real_contact_area_per_width_m": 3.035186920804862e-06,
+      "minimum_mean_gap_m": 1.3288245364730537e-06,
+      "maximum_fluid_pressure_pa": 6880.553038477485,
+      "minimum_saturation": 0.021442606407232057,
+      "cavitated_cells": 59,
+      "flux_per_width_m2_s": 4.885259321297242e-10,
+      "flow_rate_m3_s": 4.885259321297242e-12,
+      "lower_solid_force_n_m": -3.035186920804861,
+      "lower_fluid_force_n_m": -0.06489166814978684,
+      "lower_fluid_sliding_force_n_m": -0.0528166892119439,
+      "lower_fluid_pressure_flow_force_n_m": -0.01207497893784294,
+      "lower_total_force_n_m": -3.100078588954648,
+      "lower_total_force_n": -0.03100078588954648,
+      "lower_resisting_friction_coefficient": 1.550039294477324,
+      "upper_solid_force_n_m": 3.035186920804861,
+      "upper_fluid_wall_force_n_m": 0.04210216352927193,
+      "upper_macroscopic_fluid_pressure_force_n_m": 0.0227905510175057,
+      "load_relative_error": 1.2988943254299556e-11,
+      "geometry_relative_residual": 1.5431881507789297e-11,
+      "mass_relative_residual": 1.9458179304118712e-10,
+      "solver_residual": 1.5431655953079826e-11,
+      "complementarity_max_pa": 0.0,
+      "edge_pressure_ratio": 0.0001348026050030367,
+      "iterations": 10,
+      "continuation_states": 1,
+      "profile_file": "mixed_profile_005.csv"
+    }
+  ],
+  "parameters_snapshot": {
+    "description": "Synthetic paired benchmark candidate; refinement required.",
+    "material": {
+      "model": "elastic",
+      "young_modulus_pa": 3000000.0,
+      "poisson_ratio": 0.5
+    },
+    "psd": {
+      "path": "/workspace/work/full_mixed_compare/candidate/benchmark_psd.dat",
+      "scale_c": 1.0,
+      "tail_is_extrapolated": true
+    },
+    "macro_contact": {
+      "geometry": "cylinder_plane",
+      "geometry_parameters": {
+        "cylinder_plane": {
+          "radius_m": 0.005
+        },
+        "finite_cylindrical_pad": {
+          "outer_radius_m": 0.17,
+          "axial_length_m": 0.1,
+          "sliding_length_m": 0.03,
+          "length_definition": "projected",
+          "rubber_thickness_m": 0.02
+        }
+      },
+      "elastic_model": "half_space_plane_strain",
+      "body_representation": "upper_elastic_lower_rigid",
+      "contact_model": "persson",
+      "line_load_n_m": 2.0,
+      "domain_half_width_m": 0.0006770275002573076,
+      "reference_length_m": null,
+      "solver": {
+        "cells": 129,
+        "relative_tolerance": 1e-09,
+        "max_iterations": 80,
+        "edge_pressure_ratio_tolerance": 0.005
+      },
+      "contact_table": {
+        "minimum_pressure_pa": 1e-100,
+        "maximum_pressure_pa": 200000.0,
+        "points": 601
+      }
+    },
+    "leakage": {
+      "mode": "spatial",
+      "fluid": "liquid",
+      "compute_equivalent_gas": true,
+      "geometry": "oring_hertz",
+      "geometry_parameters": {
+        "oring_hertz": {
+          "cross_section_diameter_m": 0.003,
+          "peak_pressure_pa": 100000.0
+        },
+        "square_ring": {
+          "length_m": 0.001,
+          "reference_contact_pressure_pa": 100000.0
+        },
+        "prescribed_profile": {
+          "pressure_file": "examples/data/seal_pressure_profile.csv",
+          "file_format": "csv",
+          "interpolation": "pchip"
+        },
+        "gaussian": {
+          "length_m": 0.001,
+          "peak_pressure_pa": 100000.0,
+          "sigma_m": 0.0002
+        }
+      },
+      "seal_width_m": 0.01,
+      "inlet_pressures_pa": [
+        0.0,
+        10000.0,
+        20000.0,
+        50000.0
+      ],
+      "outlet_pressure_pa": 0.0,
+      "coupling": "local_unloading",
+      "conductance_model": "effective_medium",
+      "percolation_policy": "legacy_spc_plateau",
+      "spc": 0.8,
+      "gas": {
+        "temperature_c": 25.0,
+        "mean_molecular_speed_m_s": 471.0,
+        "viscosity_pa_s": 1.82e-05,
+        "ambient_pressure_pa": 100000.0,
+        "reference_pressure_pa": 100000.0
+      },
+      "database_interpolation": "log_pchip",
+      "compute_upper_bound": true,
+      "solver": {
+        "nodes": 201,
+        "output_points": 1001,
+        "tolerance": 1e-05,
+        "max_nodes": 20001
+      }
+    },
+    "mixed_friction": {
+      "lower_wall_velocities_m_s": [
+        1e-08,
+        1e-07,
+        1e-06,
+        1e-05,
+        0.0001,
+        0.001
+      ],
+      "rough_surface": "upper",
+      "inlet_pressure_pa": 0.0,
+      "outlet_pressure_pa": 0.0,
+      "cavitation_model": "mass_conserving",
+      "cavitation_friction": "uniform_wetted_fraction",
+      "transport_points": 41,
+      "relative_tolerance": 1e-08,
+      "max_iterations": 100
+    },
+    "shear_strength_fit": {
+      "model": "constant_shear_strength",
+      "experiment_file": "inputs/experiment.xlsx",
+      "source": "simulate",
+      "source_parameters": {
+        "simulate": {},
+        "saved_forward": {
+          "directories": [
+            "results/my_forward"
+          ]
+        }
+      },
+      "reference_strength_pa": 1000000.0,
+      "sliding_direction": 1,
+      "weighting": "equal",
+      "speed_range_m_s": [
+        null,
+        null
+      ],
+      "minimum_solid_coefficient_at_1mpa": 1e-05
+    },
+    "fluid_friction": {
+      "model": "persson_scale_u1",
+      "minimum_shear_gap_m": 1e-09
+    },
+    "contact_friction": {
+      "model": "constant_shear_strength",
+      "model_parameters": {
+        "constant_shear_strength": {
+          "shear_strength_pa": 1000000.0
+        },
+        "gaussian_log_velocity": {
+          "baseline_pa": null,
+          "amplitude_pa": null,
+          "peak_velocity_m_s": null,
+          "width_decades": null
+        },
+        "custom": {
+          "module_file": "examples/contact_shear_model.py",
+          "function": "shear_strength",
+          "parameters": {
+            "shear_strength_pa": null
+          }
+        }
+      },
+      "relative_velocities_m_s": [
+        0.0,
+        1e-06,
+        0.0001,
+        0.01,
+        -0.01
+      ],
+      "temperature_k": 298.15,
+      "transverse_width_m": 0.01
+    },
+    "shear_flow": {
+      "model": "persson_interpolation",
+      "rough_surface": "lower",
+      "lower_wall_velocity_m_s": 0.0,
+      "upper_wall_velocity_m_s": 0.01,
+      "pressure_gradient_pa_m": 0.0,
+      "pressure_floor_pa": 0.0
+    },
+    "interface": {
+      "rheology": "newtonian",
+      "rheology_parameters": {
+        "newtonian": {
+          "viscosity_pa_s": 0.1
+        }
+      },
+      "wall_slip": "no_slip",
+      "slip_parameters": {
+        "no_slip": {},
+        "navier": {
+          "lower_slip_length_m": 1e-08,
+          "upper_slip_length_m": 1e-08
+        }
+      }
+    },
+    "contact_pressure": {
+      "reference_pa": 100000.0,
+      "upper_factor": 2.0,
+      "number_of_points": 110
+    },
+    "options": {
+      "gamma": 0.4,
+      "pdf_afact": 1.0,
+      "critical_relative_contact_area": 0.42,
+      "critical_area_tolerance": 0.005,
+      "n_q": 128,
+      "pdf_scale_method": "conservative",
+      "pdf_log_step": 0.1,
+      "pdf_max_relative_contact_area": 0.999,
+      "pdf_min_relative_contact_area": 0.0001,
+      "pdf_min_u1_m": 1e-12,
+      "n_gap": 600
+    },
+    "pressure_flow": {
+      "closure": "fortran_isotropic_bruggeman",
+      "gap_points": 2049,
+      "quadrature_relative_tolerance": 0.002,
+      "max_gap_refinements": 4,
+      "unresolved_flow_policy": "zero_conductance_with_upper_bound"
+    },
+    "output_directory": "/workspace/work/full_mixed_compare/candidate/python_results"
+  },
+  "outputs": [
+    "mixed_cases.csv",
+    "mixed_boundaries.csv",
+    "mixed_transport_table.csv",
+    "mixed_contact_table.csv",
+    "mixed_diagnostics.json",
+    "mixed_profile_000.csv",
+    "mixed_profile_001.csv",
+    "mixed_profile_002.csv",
+    "mixed_profile_003.csv",
+    "mixed_profile_004.csv",
+    "mixed_profile_005.csv",
+    "mixed_profiles.png",
+    "mixed_friction.png",
+    "mixed_geometry.png"
+  ]
+}

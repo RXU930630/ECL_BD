@@ -1,0 +1,11 @@
+comparison,quantity,max_abs_relative_change
+python_results -> python_refined,real_contact_area_per_width_m,0.004784397976519417
+python_results -> python_refined,fluid_line_load_n_m,0.01244311578951851
+python_results -> python_refined,minimum_mean_gap_m,0.0021155731145194867
+python_results -> python_refined,lower_fluid_force_n_m,0.006591462109801327
+python_results -> python_refined,lower_resisting_friction_coefficient,0.004604267119401095
+python_refined -> python_wide_domain,real_contact_area_per_width_m,0.03273110232283771
+python_refined -> python_wide_domain,fluid_line_load_n_m,0.02591913995687789
+python_refined -> python_wide_domain,minimum_mean_gap_m,0.011628357846475534
+python_refined -> python_wide_domain,lower_fluid_force_n_m,0.025501102853937363
+python_refined -> python_wide_domain,lower_resisting_friction_coefficient,0.03152239312374738
