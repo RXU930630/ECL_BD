@@ -3,13 +3,13 @@
   "version": "0.2.0rc4",
   "channel": "local-trial-release-candidate",
   "source_base_commit": "6bb2285fa0807c40058dcd40c4283b3733e59e43",
-  "configuration_preset": "silicone_cylinder",
-  "status": "Numerically checked candidate; first local experimental trial pending.",
-  "scope": "Runtime source and input templates only; no historical calculation results or experimental data.",
+  "configuration_preset": "silicone_cylinder_with_user_experiment",
+  "status": "Prepared for user local trial; no experimentally validated strength is supplied.",
+  "scope": "Runtime and user-provided silicone experiment/parameters; no historical/test outputs.",
   "files": {
     "README.md": {
-      "sha256": "92d713f1d46aff08cc0df44fdd4459829c5abe6387eb6615ebdad3e767334598",
-      "bytes": 5174
+      "sha256": "4146be41295c5aa9dbb953c2b971d57867ef85c56abf1756de9d0632ed966350",
+      "bytes": 1832
     },
     "docs/finite_geometry.md": {
       "sha256": "880375e8a9a5ba8950e9de3e7d3cffb952f6a752f4f041270e57d27448b57628",
@@ -47,6 +47,10 @@
       "sha256": "0f08bac54aac9a59701e7e9e063cc089fce85a3daa5f4b41e28ad04d2f4d4a07",
       "bytes": 867
     },
+    "inputs/experiment.xlsx": {
+      "sha256": "ed412cbcafb0dba8ef2b9e55ef66c1098d30fcb29cab465d8e552270db4899c3",
+      "bytes": 9787
+    },
     "inputs/experiment_template.csv": {
       "sha256": "1fe8443f0f9230cd6251de0305557dedcfbdb304e44cb567bee798f4fea1911d",
       "bytes": 128
@@ -60,8 +64,8 @@
       "bytes": 3109
     },
     "parameters.py": {
-      "sha256": "082abadd08c02ebc95f8cc973dc3ebc4365093710a48321262fba0bf279a3c2a",
-      "bytes": 17056
+      "sha256": "22365f015f0cb64c68b67c21abdeb4db66d8b72cf9f9d6ebfe239d2b69daeba1",
+      "bytes": 16956
     },
     "pyproject.toml": {
       "sha256": "b35e9896f29b7c5fd368b28d23291b05592df5419636595625d66d4fefc4cb6c",
@@ -231,5 +235,6 @@
       "sha256": "cb406a9d0c611b3adf6bc492699281f19fbbe5f4b8ccf4156b85291e9d46ebbf",
       "bytes": 11162
     }
-  }
+  },
+  "includes_experimental_data": true
 }
