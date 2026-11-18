@@ -107,7 +107,7 @@ class ExcelExperimentTests(unittest.TestCase):
         result=run_project(p,base_directory=self.root,run_shear_strength_fit=True,save_plots=False)
         self.assertAlmostEqual(result['fit']['fitted_shear_strength_pa'],known)
         book=load_workbook(self.root/'fit/fit_results.xlsx',data_only=True)
-        self.assertEqual(book.sheetnames,['拟合概况','各实验点','正向响应','所用实验'])
+        self.assertEqual(book.sheetnames,['拟合概况','各载荷独立诊断','各实验点','正向响应','所用实验'])
         self.assertAlmostEqual(book['拟合概况']['B2'].value,known)
         self.assertAlmostEqual(book['拟合概况']['B3'].value,known/1e6)
         self.assertEqual(book['各实验点'].max_row,4);book.close()

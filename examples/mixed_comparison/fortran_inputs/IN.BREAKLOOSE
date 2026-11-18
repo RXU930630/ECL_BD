@@ -1,0 +1,3 @@
+0            iBreakloose  =0 do nothing, =1 do breakloose with pressure pB below, =2 do breakloose using input "SQUEEZE.OUT.1time.2pcont.Phi=1.3pcont.EffectiveMedium.4relArea"
+0.65E+06     pB = pressure used when iBreakloose = 1
+36           ivelB = use breakloose velocity from "out.FRICTION.FLOWFACTORS.1velocity.2pressure.3av..." with this index if iBreakloose  = 2. Note: first run SQUEEZE-OUT then run to get FRICTION-FACTOR

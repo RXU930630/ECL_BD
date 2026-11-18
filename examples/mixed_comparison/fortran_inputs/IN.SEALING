@@ -1,0 +1,16 @@
+1.0E+05     PressureDrop: difference in fluid pressure (in Pa) between inside and outside; applied (maximum) pressure from IN.sigma...
+150         Np: number of pressure points in output
+0.12        width (in cm) of rectangular seal in fluid flow direction, or diameter (in cm) of O-ring: only used if iflag008=4, 5, 40 or 50 
+0           irepeat: if = 1 and iflag008=4 or 5 or 40 or 50 --> deformation of seal done fast; assumes iflag008=1 or 2 done to prepare input data
+
+0.8         spc: when contact area percolate replace sigmaeff(p) in percolated region (p>pc) with sigmaeff(spc*pc) for O-ring 
+10000       Nx: integer number of x-values fot p(x),u(x): must be large to get converged resuly, Nx ~ 10^4 (or more) for O-ring (iflag008=4 or 5)        
+3000000     Npa: integer number of fluid pressures: must be large to get converged resuly, Npa ~ 3x10^6 (or more) for O-ring (iflag008=4 or 5)         
+0.99        old: mix old and new to get converged result for O-ring (iflag008=4 or 5)
+
+
+0.1E+05     gas pressure (in Pa) on high pressure side (for gas leakage) (1 atm is added)
+0.0         gas pressure (in Pa) on low pressure side (for gas leakage) (1 atm is added)
+1.76E-05    gas viscosity (in Pas) (for gas leakage; for liquid leakage it is in IN.FLUID...); He: 1.96E-05 Pas, N2: 1.76E-05 Pas at T=20C
+471.0       barv=average speed of gas molecule (for gas leakage) barv=sqrt(8*kB*T/pi*m); He: 1255 m/s; N2: 471 m/s at T=20C
+20.0        temperature in Celsius (for gas leakage)

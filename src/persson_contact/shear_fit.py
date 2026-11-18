@@ -87,7 +87,7 @@ def read_experiments(path,*,default_line_load_n_m,transverse_width_m=None):
 
 def fit_constant_strength(experiments,area_over_load_pa_inv,fluid_coefficients,*,
                           reference_strength_pa=1e6,weighting='equal',minimum_solid_coefficient_at_1mpa=1e-5,
-                          speed_range_m_s=(None,None)):
+                          speed_range_m_s=(None,None),diagnostics=None):
     """Nonnegative weighted least squares, one slope and no fitted intercept.
 
     Reference strength only scales the design variable; physical tau is
@@ -98,6 +98,13 @@ def fit_constant_strength(experiments,area_over_load_pa_inv,fluid_coefficients,*
     threshold=finite(minimum_solid_coefficient_at_1mpa,'minimum_solid_coefficient_at_1mpa',minimum=0)
     if weighting not in ('equal','standard_uncertainty_mu'):raise ValueError('weighting must be equal or standard_uncertainty_mu')
     if not isinstance(speed_range_m_s,(list,tuple)) or len(speed_range_m_s)!=2:raise ValueError('speed_range_m_s must contain [minimum,maximum], either may be None')
+    limits={'maximum_relative_rmse':.1,'maximum_tau_ratio_across_loads':2.,'maximum_reduced_chi_square':4.}
+    diagnostics={} if diagnostics is None else diagnostics
+    if not isinstance(diagnostics,dict) or set(diagnostics)-set(limits):raise ValueError('Unknown fit diagnostics settings')
+    limits.update(diagnostics)
+    for key,value in limits.items():
+        if (isinstance(value,bool) or not isinstance(value,(int,float,np.integer,np.floating))
+                or not np.isfinite(value) or value<=0):raise ValueError('Invalid fit diagnostic limit: '+key)
     lo,hi=(None if v is None else finite(v,'fit speed bound',minimum=0,strict=True) for v in speed_range_m_s)
     if lo is not None and hi is not None and lo>hi:raise ValueError('Invalid fit speed range')
     n=len(experiments);c=np.asarray(area_over_load_pa_inv,float);fluid=np.asarray(fluid_coefficients,float)
@@ -145,10 +152,55 @@ def fit_constant_strength(experiments,area_over_load_pa_inv,fluid_coefficients,*
     if count<2:warnings.append('Only one training point; no residual-based estimate of repeatability or fit consistency.')
     if not np.any(~selected):warnings.append('No held-out points; transferability has not been checked.')
     warnings.append('Statistical standard error is conditional on exact area and fluid/background predictions; it excludes shear-cutoff, elasticity, PSD, cavitation and hysteresis model errors.')
+    rmse=float(np.sqrt(np.mean(residual[selected]**2)))
+    measured_rms=float(np.sqrt(np.mean(measured[selected]**2)))
+    relative_rmse=None if measured_rms==0 else rmse/measured_rms
+    issues=[];groups=[];seen=[]
+    for load in sorted(set(e.line_load_n_m for e in experiments)):
+        if any(np.isclose(load,v,rtol=1e-9,atol=0.) for v in seen):continue
+        seen.append(load)
+        mask=selected & np.array([np.isclose(e.line_load_n_m,load,rtol=1e-9,atol=0.) for e in experiments])
+        count_group=int(np.sum(mask))
+        if count_group:
+            norm=float(max(x[mask]));design=x[mask]/norm
+            with np.errstate(over='ignore',invalid='ignore'):
+                group_tau=max(0.,float(np.sum(w[mask]*design*y[mask])/np.sum(w[mask]*design**2))/norm)*reference
+            group_tau=group_tau if np.isfinite(group_tau) else None
+            local_residual=None if group_tau is None else y[mask]-group_tau*c[mask]
+            groups.append({'line_load_n_m':float(load),'training_points':count_group,
+                'separately_fitted_strength_pa':group_tau,
+                'global_fit_rmse_mu':float(np.sqrt(np.mean(residual[mask]**2))),
+                'separate_fit_rmse_mu':None if local_residual is None else float(np.sqrt(np.mean(local_residual**2))),
+                'mean_global_residual_mu':float(np.mean(residual[mask]))})
+    eligible=[g['separately_fitted_strength_pa'] for g in groups if g['training_points']>=2 and g['separately_fitted_strength_pa'] is not None]
+    tau_ratio=None if len(eligible)<2 or min(eligible)==0 else max(eligible)/min(eligible)
+    if relative_rmse is not None and relative_rmse>limits['maximum_relative_rmse']:
+        issues.append('整体残差偏大：当前常数tau与面积/流体预测不能充分解释实验；请勿直接将拟合值当作已验证界面属性。')
+    if len(eligible)>=2 and ((min(eligible)==0<max(eligible)) or (tau_ratio is not None and tau_ratio>limits['maximum_tau_ratio_across_loads'])):
+        issues.append('不同载荷分别拟合的tau差异偏大：需要检查工况、接触面积和常数剪切强度假设。')
+    reduced_chi=None
+    if weighting=='standard_uncertainty_mu' and dof>0:
+        with np.errstate(over='ignore'):
+            sigma=np.array([e.standard_uncertainty_mu for i,e in enumerate(experiments) if selected[i]])
+            chi=float(np.sum((residual[selected]/sigma)**2)/dof)
+        if np.isfinite(chi):reduced_chi=chi
+        if not np.isfinite(chi) or chi>limits['maximum_reduced_chi_square']:
+            issues.append('残差超过给定测量不确定度所能解释的水平；还需考虑模型或实验系统误差。')
+    leverage=np.zeros(n);leverage[selected]=w[selected]*z[selected]**2/denominator
+    if count>=3 and max(leverage)>.8:
+        warnings.append('拟合主要由单个实验点决定（权重/接触灵敏度）；请检查tau的代表性。')
+    if any(v=='insufficient_solid_contact_sensitivity' for v in reasons):
+        warnings.append('部分点对固体剪切强度不敏感，未参与拟合；这些点的流体摩擦失配不能靠调整tau修正。')
+    warnings.extend(issues)
     records=[]
     for i,e in enumerate(experiments):
+        with np.errstate(over='ignore',invalid='ignore',divide='ignore'):
+            implied=float(y[i]/c[i]) if selected[i] else None
+        if implied is not None and not np.isfinite(implied):implied=None
         records.append({**asdict(e),'used_for_fit':bool(selected[i]),'exclusion_reason':reasons[i],
             'area_over_total_load_pa_inv':float(c[i]),'reference_solid_coefficient':float(x[i]),
+            'tau_sensitivity_mu_per_mpa':float(c[i]*1e6),'fit_leverage':float(leverage[i]),
+            'pointwise_implied_strength_pa':implied,
             'fluid_coefficient':float(fluid[i]),'fitted_solid_coefficient':float(alpha*x[i]),
             'predicted_total_coefficient':float(predicted[i]),'residual_experiment_minus_model':float(residual[i])})
     summary={'model':'constant_shear_strength','fitted_shear_strength_pa':tau,
@@ -156,7 +208,11 @@ def fit_constant_strength(experiments,area_over_load_pa_inv,fluid_coefficients,*
         'unconstrained_shear_strength_pa':unconstrained*reference,'nonnegative_boundary_active':alpha==0,
         'conditional_standard_error_pa':stderr,'weighting':weighting,
         'training_points':count,'held_out_or_excluded_points':n-count,'residual_degrees_of_freedom':dof,
-        'training_rmse_mu':float(np.sqrt(np.mean(residual[selected]**2))),
+        'training_rmse_mu':rmse,'relative_training_rmse':relative_rmse,
+        'fit_consistency_status':'needs_attention' if issues else 'no_diagnostic_threshold_exceeded',
+        'diagnostic_limits':limits,'reduced_chi_square':reduced_chi,
+        'per_load_diagnostics':groups,'separate_tau_max_min_ratio':tau_ratio,
+        'interpretation':'Candidate conditional estimate, not a physically validated material property. Diagnostic thresholds are screening criteria, not proof of validity.',
         'held_out_or_excluded_rmse_mu':None if np.all(selected) else float(np.sqrt(np.mean(residual[~selected]**2))),
         'minimum_solid_coefficient_at_1mpa':threshold,'speed_range_m_s':[lo,hi],
         'force_convention':'All coefficients are signed resisting coefficients on the moving lower plane, divided by TOTAL imposed normal load.',

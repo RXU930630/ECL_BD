@@ -1,0 +1,7 @@
+0         iHertz =0 --> no HERTZ, =1 --> sphere, =2 --> cylinder
+Name of system
+3         iForce =0 --> normal force F or F/L given, =1 --> penetration d given, =2 --> width w of contact, =3 --> pav 
+0.12E+06 0.91E-03 0.7E-03       give F in N (sphere) or N/m (cylinder), or d (in meter), or w (in meter), or pav (in Pa) 
+3.5E-03   Radius R of cylinder or sphere (m) 
+0.67E+06   Youngs modulus E (Pa)
+0.0       Poisson ratio nu  (1-nu^2)/E = (1-nu1^2)/E1+(1-nu2^2)/E2

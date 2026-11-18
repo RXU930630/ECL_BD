@@ -1,0 +1,28 @@
+0.1 1.0E-30  halffactor, defines radius r0 of contact area r(zeta); G(r0)=factor*G(0); G(r) stress-stress correlation function, PUT 1.0E-30 for full G(r)
+1000        Nstress: number of data points for rr-calculation (for radius of contact region and velocities for Flash Temperature) (iflag016=1) and for wear (iflag016=2)
+
+1002        Nradiuscut
+1.0         betaWEAR: parameter sigmac = (betaWEAR/mu) (2E* wcohesive/r0)**0.5
+0.95        friction coefficient mu; shear stress = mu*p(zeta); p(zeta) contact pressure at magnification zeta; for wear
+20.0E-04    A0: nominal contact area in m^2
+
+23           iread: =0 read Dx, Twear below, =1 table, =2 Dx=Awear*(wcohesive-T0wear) RUBBER, =23 combine 2 and 3, =3 (use m,Bwear) and 4 (use Dxa,Dxb to calculate m,Bwear), =5 PMMA
+1.0         Dx: distance moved by crack in one contact; used when iread=0, if Dx<0 code use Ncont=1
+7.0         Twear = tearing energy gamma = coheasive crack G (J/m^2) to remove particle (wear); used only when iread=0
+
+60.0        T0wear  (J/m^2); used in iread=2 and =3; Dx=Awear*(Twear-T0wear) and in Dx=Bwear*(Twear-T0wear)^m
+1.0E-10     Awear in m/(J/m^2); used in iread=2; Dx=Awear*(Twear-T0wear), Dx=0 if Twear<T0wear
+2000.0      TwearMax (J/m^2); max tearing energy in iread=2; Dx=Awear*(Twear-T0wear)
+
+4.0         m: used in iread=3; Dx=Bwear*(Twear-T0wear)^m, or use two points below
+1.4E-18     Bwear in m/(J/m^2); used in iread=3; Dx=Bwear*Twear^m, Dx = 0 for Twear<T0wear, or use two points below
+3.0E-10  200.0    Dxa, Tweara: used in iread=4; first point on relation Dx=Bwear*Twear^m
+4.0E-08  1000.0   Dxb, Twearb: used in iread=4; second point on relation Dx=Bwear*Twear^m 
+
+
+2.0  55.0    scale factor, to scale Dx
+1.0E-06, 1.0E-05, 1.0E-04, 1.0E-03  plot integrand in pressure integral for these 4 wear particle radius
+1.0E-05     rCut: separate wear rate in two parts with radius r<rCut and r>rCut
+100.0       NcontactCut: limit the number of contact with wear asperities to below this value
+
+0           ielpl: =0 elastic contact, =1 elastoplastic contact 

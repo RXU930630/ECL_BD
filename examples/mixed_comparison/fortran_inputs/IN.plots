@@ -1,0 +1,63 @@
+#!/bin/sh
+
+#==============
+# PLOT SETTINGS
+#==============
+
+#
+# DEFAULTS
+#
+
+stribeckrange="-4.0:1.0"
+
+breakloosetimeframe="12.0:12.5"
+relevanttimeframe="0.0:*"
+
+flowfactornormalizersep="1.0E-00"
+flowfactornormalizersepref="1.0E-00"
+
+timeoffset="0.0"
+
+#
+# 1. SINUS VELOCITY PROFILE CASE
+#
+# RELEVANT TIMEFRAME FOR THE SINUS VELOCITY PROFILE
+#relevanttimeframe="0.75:1.8"
+
+
+#
+# 2. NORMAL RAMPING CASE
+#
+# RELEVANT TIMEFRAME FOR THE RAMPING CASES
+#relevanttimeframe="10:17.5"
+# BREAKLOOSE TIMEFRAME FOR THE NORMAL RAMPING CASE
+#breakloosetimeframe="12.075:12.225"
+
+
+
+#
+# 3. QUICK RAMPING CASE
+#
+# BREAKLOOSE TIMEFRAME FOR THE QUICK RAMPING CASE
+#breakloosetimeframe="12.025:12.125"
+# RELEVANT TIMEFRAME FOR THE RAMPING CASES
+#relevanttimeframe="10:17.5"
+# TIME OFFSET FOR THE COMPARISON TIME SHEET
+# 0.05-0.002
+#timeoffset="0.048"
+
+
+#
+# OTHER CUSTOM PARAMETERS
+#
+#flowfactornormalizersep="3.0E-06"
+#flowfactornormalizersepref="1.0E-06"
+
+#
+# CUSTOM PLOT PARAMETER
+#
+#timeoffset2="0.048"
+
+#=====================
+# END OF PLOT SETTINGS
+#=====================

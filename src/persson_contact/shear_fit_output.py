@@ -74,7 +74,8 @@ def read_forward_run(directory):
     provenance={'directory':str(directory.resolve()),'diagnostics_sha256':hashlib.sha256(diagnostic.read_bytes()).hexdigest(),
         'cases_sha256':hashlib.sha256(table.read_bytes()).hexdigest(),'psd_sha256':diag.get('psd_sha256'),
         'synthetic_demo':bool(diag.get('synthetic_demo',False)),
-        'parameters_snapshot':diag.get('parameters_snapshot'),'limitations':diag.get('limitations',[])}
+        'parameters_snapshot':diag.get('parameters_snapshot'),'limitations':diag.get('limitations',[]),
+        'numerical_validation_status':diag.get('numerical_validation',{}).get('status','not_checked')}
     return rows,provenance,_signature(diag)
 
 
@@ -84,7 +85,7 @@ def prepare_fit(parameters,base):
     import openpyxl
     raw=parameters.get('shear_strength_fit',{})
     _keys(raw,{'model','experiment_file','source','source_parameters','reference_strength_pa',
-        'sliding_direction','weighting','speed_range_m_s','minimum_solid_coefficient_at_1mpa'},'shear_strength_fit')
+        'sliding_direction','weighting','speed_range_m_s','minimum_solid_coefficient_at_1mpa','diagnostics'},'shear_strength_fit')
     if raw.get('model','constant_shear_strength')!='constant_shear_strength':raise NotImplementedError('Only constant shear-strength fitting is implemented')
     source=raw.get('source','simulate')
     if source not in ('simulate','saved_forward'):raise ValueError('fit source must be simulate or saved_forward')
@@ -111,7 +112,7 @@ def prepare_fit(parameters,base):
     # Validate membership and measurement uncertainties before expensive work.
     fit_constant_strength(experiments,np.ones(len(experiments))/ref,np.zeros(len(experiments)),
         reference_strength_pa=ref,weighting=weighting,speed_range_m_s=speed_range,
-        minimum_solid_coefficient_at_1mpa=0.)
+        minimum_solid_coefficient_at_1mpa=0.,diagnostics=raw.get('diagnostics'))
     directories=[];jobs=[]
     if source=='saved_forward':
         names=active.get('directories')
@@ -179,7 +180,7 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
     try:
         summary,records=fit_constant_strength(experiments,[r['area_over_total_load_pa_inv'] for r in matched],
             [r['fluid_coefficient'] for r in matched],reference_strength_pa=ref,weighting=weighting,
-            minimum_solid_coefficient_at_1mpa=threshold,speed_range_m_s=speed_range)
+            minimum_solid_coefficient_at_1mpa=threshold,speed_range_m_s=speed_range,diagnostics=raw.get('diagnostics'))
     except Exception as exc:
         if source=='simulate':
             (out/'fit_diagnostics.json').write_text(json.dumps({'workflow_status':'fit_failed','error':str(exc),
@@ -190,6 +191,9 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
         record.update(real_contact_area_per_width_m=response['real_contact_area_per_width_m'],
             real_contact_area_m2=None if width is None else response['real_contact_area_per_width_m']*width,
             total_normal_force_n=None if width is None else record['line_load_n_m']*width)
+    summary['forward_numerical_validation']=[{'directory':p['directory'],'status':p['numerical_validation_status']} for p in provenance]
+    if any(p['numerical_validation_status']!='passed_at_selected_cases' for p in provenance):
+        summary['warnings'].append('正向解的数值核查未全部通过或未执行；tau仍是待核查的条件估计。请查看各正向目录的数值核查记录。')
     snippet={'model':'constant_shear_strength','model_parameters':{'constant_shear_strength':{'shear_strength_pa':summary['fitted_shear_strength_pa']}}}
     outputs=['fit_results.xlsx','fit_cases.csv','fit_summary.json','fit_diagnostics.json','fitted_contact_friction.json','forward_response.csv','experiment_used.csv']
     if save_plots:outputs.append('shear_strength_fit.png')
@@ -210,6 +214,8 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
         (out/name).write_text(json.dumps(data,indent=2,ensure_ascii=False,allow_nan=False)+'\n')
     if save_plots:plot_fit(out,records)
     print(f'拟合完成：tau={summary["fitted_shear_strength_pa"]:.8g} Pa ({summary["fitted_shear_strength_pa"]/1e6:.6g} MPa)，{summary["training_points"]}个参与点。输出：{out}',flush=True)
+    print(f'拟合一致性诊断：{summary["fit_consistency_status"]}。',flush=True)
+    for message in summary['warnings']:print('提示：'+message,flush=True)
     if summary['nonnegative_boundary_active']:
         print('提示：最优解落在非负边界0；流体/背景可能高于实验，请检查分项。这不表示真实剪切强度已精确确定为0。',flush=True)
     return diagnostic

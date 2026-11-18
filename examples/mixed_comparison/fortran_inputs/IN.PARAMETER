@@ -1,0 +1,1 @@
+      PARAMETER (Nur=10000,Npr=400,nCMax=1000000,nnMax=10000,nEmax=10000,nTempMax=10000,nq0h0Max1=20,nFMax=100000,ntMax=1000000)

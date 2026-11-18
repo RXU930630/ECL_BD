@@ -1,6 +1,6 @@
 # 本地运行与候选版本范围
 
-本包版本0.2.0rc4，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。有限圆柱曲面的尺寸、自动载荷换算和物理边缘见[几何说明](finite_geometry.md)。
+本包版本0.2.0rc5，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。有限圆柱曲面的尺寸、自动载荷换算和物理边缘见[几何说明](finite_geometry.md)。
 
 ## 任务选择
 
@@ -48,3 +48,5 @@ macro_contact用于圆柱接触、混合润滑及拟合；leakage.geometry用于
 不包含历史结果或测试夹具。PACKAGE_MANIFEST.json记录每个运行文件的SHA256；纯净ZIP旁的.sha256用于校验传输。脚本build_local_package.py使用明确的文件清单，即使项目中已产生results、用户实验或缓存，再次打包也不会把它们带入。
 
 数值检查与历史基准保留在开发仓库中。本地试运行时请先核对模型假设，再保存自己的输入、正向结果、拟合诊断和程序版本；候选版本名称本身不构成实验精度保证。
+
+正向混合摩擦的精度核查、Excel输出和shear flow开关说明见[数值核查说明](mixed_numerical_checks.md)。

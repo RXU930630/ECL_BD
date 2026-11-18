@@ -1,0 +1,5 @@
+1.0       HeatconductivitySolid: (combined) heat conductivity of solid  
+2.0E+06   EMRadiativeAlpha0: Radiative heat transfer coefficient
+0.02      HeatconductivityFluid: heat conductivity of gas or fluid in the non-contact region 
+65.0E-09  meanfreepath: mean free path of gas or fluid in the non-contact region
+3.0E-10   ShortDisctance.cut.off.uc: no fluid in region with separation less than this number

@@ -1,0 +1,22 @@
+.1
+3.
+0
+.42
+12
+1e-12
+40000     nMontestep: number of MonteCarlo steps in fitting E to time serie
+30        nterm: number of relaxation time terms in fitting E to time series
+.4
+1
+2.0       ony used if iuber=0 or if iflag003=20 or 30:    pfraction: sigmaMax=pfraction*x*rmsslopenl; us of order 2.0
+20.0      ony used if iuber=0 or if iflag003=20 or 30:    pm: delpmu=pm/(1.0*Np); use of order 20.0
+4000      ony used if iuber=0 or if iflag003=20 or 30:    Npu:  pmu=delpmu*i, i=1,..,Npu;  sigma=sigmaMax*exp(-pmu); use of order 4000
+128
+1.
+3.1415    scaleL = factor giving load on macroasperity for Finite Size u(p); A0=(scaleL/q0)**2.0, F=pnormal*A0; standard value = pi, best value??? = 1.8 according to study with Carbone
+0
+1.
+.9
+20000
+1.0 2.2   scaleK: the finite-size stiffness scale factor of order unity; choose scaleK so that separation for p=0 is height of highest asperity; only used when iflag003>0
+3.85      Ciavarella parameter about 3.85 (for H=0.9); 4.75 (H=0.7); 5.44 (H=0.5); 5.58 (H=0.3) 

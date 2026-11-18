@@ -134,6 +134,11 @@ CASE = {
         'weighting': 'equal',              # equal等权 / standard_uncertainty_mu使用实验表测量标准不确定度
         'speed_range_m_s': [None, None],   # 参与拟合速度的[min,max]；None不限；实验表中还可use_for_fit=false留出验证
         'minimum_solid_coefficient_at_1mpa': 1e-5, # 固定以1MPa评估接触敏感性，低于此值不参与拟合
+        'diagnostics': {                   # 失配筛查阈值，不是物理验证通过标准
+            'maximum_relative_rmse': 0.1,  # 训练RMSE / 实验mu的RMS
+            'maximum_tau_ratio_across_loads': 2., # 不同载荷分别拟合tau的最大/最小值
+            'maximum_reduced_chi_square': 4., # 仅提供测量标准不确定度并加权时计算
+        },
         # 可选实验表背景项background_friction_coefficient直接相加；省略表示假定0，不自动计算橡胶滞后/毛细项
         # 实验表可另给line_load_n_m，或normal_force_n（finite模式自动读取轴向长度B）
         # 两个载荷列都空时使用macro_contact的载荷；实验表所填载荷逐行覆盖默认值
@@ -208,6 +213,15 @@ NUMERICS = {
         'transport_points': 161,          # 独立输运/摩擦查表分辨率；可用321检查
         'relative_tolerance': 1e-8,
         'max_iterations': 100,
+        'numerical_checks': {            # 正向与simulate拟合均执行；额外计算，结果单独保存
+            'enabled': True,             # False只算输入工况，不代表数值精度已核查
+            'representative_cases': 3,    # 从实际速度中选低/中/高代表点；不改变主扫描
+            'relative_tolerance': 0.02,  # 加密前后允许相对变化2%，另加下方绝对容限
+            'absolute_mu_tolerance': 1e-4, # 小摩擦分项的绝对容限；面积按tau=1MPa的灵敏度换算
+            'absolute_load_fraction_tolerance': 0.001, # 流体承载比例的绝对容限
+            'check_domain': True,        # 仅无限圆柱扩大截断域；finite胶块绝不扩大物理尺寸
+            'maximum_cells': 1025,       # 核查所需网格超过上限会报告未完成，不冒充通过
+        },
     },
     'macro_contact': {
         'solver': {

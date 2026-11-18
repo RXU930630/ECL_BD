@@ -26,7 +26,7 @@ class LocalPackageTests(unittest.TestCase):
 
     def test_manifest_complete_runtime_clean_paths_and_deterministic_build(self):
         manifest=json.loads((self.project/'PACKAGE_MANIFEST.json').read_text())
-        self.assertEqual(manifest['version'],'0.2.0rc4')
+        self.assertEqual(manifest['version'],'0.2.0rc5')
         for name,data in manifest['files'].items():
             self.assertEqual(hashlib.sha256((self.project/name).read_bytes()).hexdigest(),data['sha256'])
             self.assertFalse(any(part in name.split('/') for part in ('tests','results','.git','__pycache__','.venv')))
@@ -88,6 +88,24 @@ class LocalPackageTests(unittest.TestCase):
         self.assertIn('RUN_SHEAR_STRENGTH_FIT = True',(project/'main.py').read_text())
         self.assertIn('RUN_LEAKAGE = False',(project/'main.py').read_text())
         self.assertFalse((project/'inputs/experiment.csv').exists())
+
+    def test_forward_benchmark_preset_matches_shared_fortran_inputs(self):
+        import runpy
+        target=self.workspace/'mixed_forward.zip'
+        builder.build_package(ROOT,target,preset='mixed_benchmark')
+        with zipfile.ZipFile(target) as z:z.extractall(self.workspace/'forward')
+        project=next((self.workspace/'forward').iterdir())
+        p=runpy.run_path(str(project/'parameters.py'))['PARAMETERS']
+        entry=runpy.run_path(str(project/'main.py'))
+        self.assertTrue(entry['RUN_MIXED_FRICTION'])
+        self.assertFalse(entry['RUN_LEAKAGE'])
+        self.assertFalse(entry['RUN_SHEAR_STRENGTH_FIT'])
+        self.assertFalse(entry['COMPUTE_SHEAR_FLOW'])
+        self.assertEqual(p['macro_contact']['line_load_n_m'],2.)
+        self.assertEqual(p['contact_friction']['model_parameters']['constant_shear_strength']['shear_strength_pa'],1e6)
+        self.assertTrue(p['mixed_friction']['numerical_checks']['enabled'])
+        shared=project/'examples/mixed_comparison/fortran_inputs/IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum'
+        self.assertEqual((project/p['psd']['path']).read_bytes(),shared.read_bytes())
 
 
 if __name__=='__main__':unittest.main()

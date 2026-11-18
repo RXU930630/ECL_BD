@@ -24,7 +24,10 @@ from .geometry import friction_parameters,geometry_metadata
 def prepare_mixed(parameters,base):
     raw=parameters.get('mixed_friction',{})
     _keys(raw,{'lower_wall_velocities_m_s','rough_surface','inlet_pressure_pa','outlet_pressure_pa',
-        'cavitation_model','cavitation_friction','transport_points','relative_tolerance','max_iterations'},'mixed_friction')
+        'cavitation_model','cavitation_friction','transport_points','relative_tolerance','max_iterations',
+        'numerical_checks'},'mixed_friction')
+    from .mixed_checks import check_settings
+    check_settings(raw.get('numerical_checks',{}))
     if raw.get('cavitation_model','mass_conserving')!='mass_conserving':
         raise NotImplementedError('Choose mass_conserving cavitation')
     if raw.get('cavitation_friction','uniform_wetted_fraction')!='uniform_wetted_fraction':
@@ -80,6 +83,25 @@ def make_contact_database(parameters,base,macro,solver,hertz,elastic,opts):
 
 
 def run_mixed_project(parameters,*,base_directory,save_plots=True):
+    """Keep the requested solution; independently audit representative states."""
+    from .mixed_checks import check_settings,run_checks,write_mixed_workbook
+    settings=check_settings(parameters.get('mixed_friction',{}).get('numerical_checks',{}))
+    cache={}
+    summary=_run_mixed_project(parameters,base_directory=base_directory,save_plots=save_plots,
+        _cache=cache,_defer_edge=settings['enabled'])
+    out=Path(parameters['output_directory'])
+    if not out.is_absolute():out=Path(base_directory).resolve()/out
+    summary['numerical_validation']=run_checks(parameters,base_directory,summary,cache,settings,
+        _run_mixed_project,out)
+    summary['outputs']+=['mixed_results.xlsx','mixed_numerical_checks.json']
+    if summary['numerical_validation']['comparisons']:
+        summary['outputs'].append('mixed_numerical_checks.csv')
+    write_mixed_workbook(out/'mixed_results.xlsx',summary)
+    (out/'mixed_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
+    return summary
+
+
+def _run_mixed_project(parameters,*,base_directory,save_plots=True,_cache=None,_defer_edge=False):
     base=Path(base_directory).resolve()
     (raw,speeds,pin,pout,tol,limit,points,rough,interface,macro,solver,hertz,
         elastic,friction,opts,flow_options)=prepare_mixed(parameters,base)
@@ -87,12 +109,16 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
     if not isinstance(name,str) or not name.strip():raise ValueError('Provide output_directory')
     out=Path(name);out=out if out.is_absolute() else base/out
     if out.exists() and (not out.is_dir() or any(out.iterdir())):raise FileExistsError(f'输出目录非空，请使用新的 output_directory: {out}')
-    model,table,psd_sha=make_contact_database(parameters,base,macro,solver,hertz,elastic,opts)
+    database=None if _cache is None else _cache.get('database')
+    model,table,psd_sha=database or make_contact_database(parameters,base,macro,solver,hertz,elastic,opts)
     law=RoughContactLaw(table)
     dry=solve_rough_contact(elastic,hertz,law,tolerance=solver['relative_tolerance'],max_iterations=solver['max_iterations'])
-    transport=MixedTransport(model,law,interface,flow_options,points=points,
-        percolation_relative_contact_area=opts.critical_relative_contact_area,rough_surface=rough,
-        minimum_shear_gap_m=parameters['fluid_friction']['minimum_shear_gap_m'])
+    transport=None if _cache is None else _cache.get('transport')
+    if transport is None:
+        transport=MixedTransport(model,law,interface,flow_options,points=points,
+            percolation_relative_contact_area=opts.critical_relative_contact_area,rough_surface=rough,
+            minimum_shear_gap_m=parameters['fluid_friction']['minimum_shear_gap_m'])
+    if _cache is not None:_cache.update(database=(model,table,psd_sha),transport=transport)
     cases=[];profiles=[];solutions=[];boundaries=[]
     dx=elastic.dx_m
     for index,speed in enumerate(speeds):
@@ -117,7 +143,7 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
         total=v.contact_pressure_pa+v.fluid_pressure_pa
         edge=float(max(total[0],total[-1])/max(total))
         # Positive imposed edge pressure need not decay to zero; check only zero-reservoir cases.
-        if not getattr(hertz,'physical_boundaries',False) and pin==pout==0 and edge>solver['edge_pressure_ratio_tolerance']:
+        if not _defer_edge and not getattr(hertz,'physical_boundaries',False) and pin==pout==0 and edge>solver['edge_pressure_ratio_tolerance']:
             raise ValueError('Mixed pressure remains significant at edges; enlarge macro domain')
         a=model.area(v.contact_pressure_pa)
         solid=evaluate_contact_friction(elastic.edges_m,a,v.contact_pressure_pa,v.mean_gap_m,-speed,
@@ -151,6 +177,10 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
             'lower_total_force_n_m':signed_lower,
             'lower_total_force_n':None if width is None else signed_lower*width,
             'lower_resisting_friction_coefficient':None if speed==0 else -np.sign(speed)*signed_lower/hertz.line_load_n_m,
+            'lower_resisting_solid_coefficient':None if speed==0 else float(-np.sign(speed)*lower_solid/hertz.line_load_n_m),
+            'lower_resisting_fluid_coefficient':None if speed==0 else float(-np.sign(speed)*lower_fluid/hertz.line_load_n_m),
+            'lower_resisting_fluid_sliding_coefficient':None if speed==0 else float(-np.sign(speed)*np.sum(tr['lower_sliding_pa'])*dx/hertz.line_load_n_m),
+            'lower_resisting_fluid_pressure_coefficient':None if speed==0 else float(-np.sign(speed)*np.sum(tr['lower_pressure_flow_pa'])*dx/hertz.line_load_n_m),
             'upper_solid_force_n_m':upper_solid,'upper_fluid_wall_force_n_m':upper_fluid,
             'upper_macroscopic_fluid_pressure_force_n_m':upper_macro_pressure,
             'load_relative_error':v.load_relative_error,'geometry_relative_residual':v.geometry_relative_residual,
@@ -179,7 +209,9 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
         profiles.append(rows)
         print(f'混合润滑 V_plane={speed:g} m/s：流体承载 {wf/hertz.line_load_n_m:.3%}，最小间隙 {min(v.mean_gap_m):.5g} m，空化单元 {case["cavitated_cells"]}',flush=True)
     outputs=['mixed_cases.csv','mixed_boundaries.csv','mixed_transport_table.csv','mixed_contact_table.csv','mixed_diagnostics.json',*[c['profile_file'] for c in cases]]
-    summary={'workflow_status':'complete','scope':'Steady 1D isothermal constant-Newtonian no-slip cylinder/plane elastic mixed lubrication; connected liquid-mobility branch.',
+    from . import __version__
+    summary={'workflow_status':'complete','program_version':__version__,
+        'scope':'Steady 1D isothermal constant-Newtonian no-slip cylinder/plane elastic mixed lubrication; connected liquid-mobility branch.',
         'reference_frame':'Cylinder-following; upper elastic cylinder velocity=0, lower rigid plane velocity specified; signed flux in this frame.',
         'pressure_convention':'Gauge Pa, cavitation pressure=0; fully flooded reservoirs at boundary inflow. No negative-pressure clipping.',
         'normal_equations':'h=h0+g(x)+C(pc+pf); pc=Persson(h); integral(pc+pf)dx=Wprime; g(x) is the selected geometry profile.',
@@ -192,6 +224,8 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
         'force_scope':'Sum of modelled solid contact and continuum fluid contributions; boundary-film shear below minimum_shear_gap_m is not included.',
         'upper_force_note':'Upper wall traction includes the roughness-scale form drag assigned by the interpolation. Macroscopic fluid pressure projection is exported separately; upper solid normal-pressure slope force is not included in a total upper drag.',
         'transport':transport.metadata,'solid_friction':friction.law.metadata,
+        'internal_flow_models':{'pressure_flow':'always used by mixed lubrication',
+            'shear_flow':'always used by mixed lubrication; independent COMPUTE_SHEAR_FLOW switch is unnecessary'},
         'transverse_width_m':friction.transverse_width_m,
         'target_normal_force_n':None if friction.transverse_width_m is None else hertz.line_load_n_m*friction.transverse_width_m,
         'target_line_load_n_m':hertz.line_load_n_m,'psd_sha256':psd_sha,

@@ -1,0 +1,9 @@
+1.0E+03         mass density; input for flash <T^2>; used if iflag16=1, put halffactor in "IN.ContactRadiusAndWear" small e.g. 1.0E-30
+0.1             thermal conductivity (W/Km)
+1000.0          thermal capacity (J/kgK)
+1.0             mu=friction coefficient
+0.01            minimum velocity for calculation of <T^2>
+10.0            maximum velocity for calculation of <T^2>
+
+0.25E-03       0.250749E-03    RadiusMacroAsp1: Radius of macroasperity contact region (m) for Greenwood flash temperature
+10.0    10.0 0.00001            vvIN: velocity in m/s for which <T(r,0)T(0,0)> is calculated

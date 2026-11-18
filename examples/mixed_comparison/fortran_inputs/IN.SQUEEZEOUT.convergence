@@ -1,0 +1,9 @@
+  0.100000000000000      FLUIDrelax:  see code at infoBO
+  1.000000000000000E-003 ELASTICrelax
+   0.050000000000000      U0relax
+      500000 skk_good
+           0 enable_skk_good
+  1.000000000000000E-010 FLUIDerror
+  1.000000000000000E-010 ELASTICerror
+  1.000000000000000E-010 U0error
+           0 activate_convergence_to_file (=0 write nothing, =1 to file)

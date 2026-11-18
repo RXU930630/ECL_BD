@@ -1,0 +1,19 @@
+0.0025 0.01  0.003      delzeta: step length in integration over magnification
+3.0       xjump (mathematical): the separation \bar u/h_{rms} where you switch to asymthotic pressure flow factor; us of order 3.0
+0         idonot (mathematical) =0 make flow factor continous at xjump, =1 do not make continous
+0.42      percolation: contact area percolate at the realative contact area A/A0 = percolation
+110       Np number of pressure points for flow factor in squeeze-out and mixed lubrication
+1.0E-12   u1min: smallest separation for which height distribution calculated; must be ~ 0.001 smaller than smallest relevant length scale (could be atomic dimension)
+40000     nMontestep: number of MonteCarlo steps in fitting E to time serie
+30        nterm: number of relaxation time terms in fitting E to time series
+0.4       UcorrectionFactor: =0.4 gives good elastic energy S=0.4+(1-0.4)*P^2
+1         iubar=1 method 1 calculate baru and u1 and P(u); =0 method 0 involving direct solution of p=-dUel/du, slow method
+2.0       ony used if iuber=0 or if iflag003=20 or 30:    pfraction: sigmaMax=pfraction*x*rmsslopenl; us of order 2.0
+20.0      ony used if iuber=0 or if iflag003=20 or 30:    pm: delpmu=pm/(1.0*Np); use of order 20.0
+4000      ony used if iuber=0 or if iflag003=20 or 30:    Npu:  pmu=delpmu*i, i=1,..,Npu;  sigma=sigmaMax*exp(-pmu); use of order 4000
+10000     nurange = number of data points used for interfacial separation probability distribution; max allowed 10000; if bigger needed increase Nur in IN.PARAMETER
+1.0       afact = factor in expression for P(u): hrms*hrms is replaced with 1/[hrms*hrms+afact*u1*u1] 
+3.1415    scaleL = factor giving load on macroasperity for Finite Size u(p); A0=(scaleL/q0)**2.0, F=pnormal*A0; standard value = pi, best value??? = 1.8 according to study with Carbone
+0         iTurnOnFinite=1 include finite sice effect when calculating integrals with P(u); if =1 the P(u) for p<pFiniteSize is for p=pFiniteSize, =2 readin pFiniteSize from IN.ELECTROADHESION, only used for ELECTROADHESION
+1.0       scaleC; scale the power spectrum with this facor
+0.25       halffactor: used to define radius of contact region via G(r)=0.5*G(0); G(r)=<sigma(x) sigma(0)> = stress correlation in real space 

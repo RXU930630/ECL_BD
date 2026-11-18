@@ -19,13 +19,14 @@ RUN_CONTACT_FRICTION = False
 RUN_LEAKAGE = True
 # 混合润滑：自动联立接触、宏观形变、牛顿流体和摩擦；开启时关闭上面三个独立任务
 # 读取macro_contact、mixed_friction、contact_friction和interface；不读取leakage的旧卸载/spc规则
+# 内部自动使用 pressure flow 和 shear flow；下方两个 COMPUTE 开关不控制混合润滑内部流动。
 RUN_MIXED_FRICTION = False
 # 独立实验反演：自动按实验Excel/CSV计算，或复用保存的混合润滑结果；无需预先知道tau
 # 开启时关闭RUN_LEAKAGE、RUN_MACRO_CONTACT、RUN_CONTACT_FRICTION、RUN_MIXED_FRICTION
 RUN_SHEAR_STRENGTH_FIT = False
 
-COMPUTE_PRESSURE_FLOW = True # 压力流动系数；泄漏开启时会自动计算
-COMPUTE_SHEAR_FLOW = False   # 剪切流动因子；速度与粗糙侧在parameters.py的shear_flow中
+COMPUTE_PRESSURE_FLOW = True # 独立压力流动任务；混合润滑/拟合会内部自动计算
+COMPUTE_SHEAR_FLOW = False   # 独立剪切流动任务；混合润滑/拟合无需打开此开关
 COMPUTE_GAP_PDF = True      # 是否导出微观间隙分布，不控制流动所需的内部计算
 SAVE_PLOTS = True           # 输出 PNG，需 matplotlib
 

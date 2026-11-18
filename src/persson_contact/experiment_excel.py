@@ -107,6 +107,8 @@ def write_fit_workbook(path,summary,records,responses,experiments):
         ('拟合剪切强度 tau [MPa]',summary['fitted_shear_strength_pa']/1e6)]
     top.extend((key,value(v)) for key,v in summary.items())
     _sheet(book,'拟合概况',('项目','数值'),top)
+    groups=summary.get('per_load_diagnostics',[])
+    if groups:_sheet(book,'各载荷独立诊断',list(groups[0]),[[row[key] for key in groups[0]] for row in groups])
     for name,rows in [('各实验点',records),('正向响应',responses),('所用实验',experiments)]:
         if rows:_sheet(book,name,tuple(rows[0]),[[value(row[key]) for key in rows[0]] for row in rows])
     for sheet in book:

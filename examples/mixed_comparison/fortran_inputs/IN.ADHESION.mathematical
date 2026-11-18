@@ -1,0 +1,8 @@
+40000  nq0h0: number of points along q0h0 axis
+0.05   fractionq0h0Start: the ratio q0h0Start/q0h0Max
+0.001  downto: sigma to downto*sigma
+0.9    xmix: during iteration mix in old gamma with factor xmix
+1.5    sigcorrection: factor enhancing adhesion pressure
+0.5    reducefhq: during iteration mix in old Area(i) with 1.0-reducefhq
+0.3    reducefP: during iteration mix in old Area(i) with 1.0-reducefP
+1      irubberrough: irubberrough=1 --> roughness on rubber side

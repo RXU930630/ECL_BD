@@ -1,0 +1,22 @@
+0.07       gammaliquid: surface tension of fluid
+2.99E-29   MolecularVolume: volume of fluid molecule
+300.0      TempK: temperature for Kelvin equation
+0.0        theta1: fluid contact angle on solid 1 
+0.0        theta2: fluid contact angle on solid 2
+300        nlimit: number of distance steps (pressure points) in integration of work-of-adhesion
+0.5        red: 
+0.1        difflimit:
+0.0        dK: Kelvin length; if dK=0.0 then use relpressure
+0.9        relpressure: relative humidity
+1.0E-04    reducefactor = the minimum pressure is p0min=reducefactor*(pLaplace+pVdWmax); use ~ 1.0E-04
+1          iflow=1 --> increase water film thickness (or relative humidity), =-1 --> decrease
+0          ichoose1 = 0 --> only capillarity, =1 with VdW attraction between non-contacting surfaces
+
+1          imethod = 0 --> use u1-metod for f1; =1 use P(u) for f1
+
+1.0E-09    dVdW: short distance cut-off distance (in m) in force law p ~ (1+z/dVdW)^{-n1}-pref*(1+z/dVdW)^{-n2}; typically = 4E-10
+0.1        gammaVdW: work of adhesion (J/m^2); if iflag001=4 gammaVdW=gamma from IN.sigma...  
+3.0        n1: exponent in force law attractive part = 3.0 for VdW interaction
+9.0        n2: exponent in force law repulsive part = 9.0 for VdW interaction
+1.0        pref: coefficient in front of repulsive part p ~ (1+z/dVdW)^{-n1}+pref*(1+z/dVdW)^{-n2}; sometimes we use pref=1 and sometimes =0 
+1.0E-09    zcutoff: adhesive contact area defined when the separation 0 < u < zcutoff; if zcutoff<0 calculated as in M.O. Robbins PNAS 
