@@ -1,0 +1,392 @@
+{
+  "project": "ECL_BD",
+  "version": "0.2.0rc6",
+  "channel": "stable-file-interface",
+  "source_base_commit": "6bb2285fa0807c40058dcd40c4283b3733e59e43",
+  "configuration_preset": "mixed_benchmark",
+  "status": "UTF-8 encoding fix; preserved rc5 calculation and result schemas. Physical validation remains ongoing.",
+  "scope": "Runtime source and input templates only; no historical calculation results or experimental data.",
+  "files": {
+    "README.md": {
+      "sha256": "b6e3ad1e42b77f960aa64f423bb2c973c4d4a655b3ffc77b7db19b2a1e7fda99",
+      "bytes": 5621
+    },
+    "docs/finite_geometry.md": {
+      "sha256": "880375e8a9a5ba8950e9de3e7d3cffb952f6a752f4f041270e57d27448b57628",
+      "bytes": 3758
+    },
+    "docs/local_run.md": {
+      "sha256": "77c17423b346bdb485cd4ba5a3378493f3647f0ddb065e425ce9b72ef533e0cb",
+      "bytes": 5026
+    },
+    "docs/mixed_numerical_checks.md": {
+      "sha256": "0c7e13b903916b0b02365d0638c277c67c14a5508c39cb0056da49f5624bb070",
+      "bytes": 5348
+    },
+    "docs/output_format.md": {
+      "sha256": "9a30f90355c446fc9f10fb1373cdfaa69ab4765097a55a9664fe81aaf14771a6",
+      "bytes": 4326
+    },
+    "docs/shear_strength_fit.md": {
+      "sha256": "2932ab238739707d9bb5a89922f6ae6eecd03322839538c58f8c0d0c838ec318",
+      "bytes": 8093
+    },
+    "examples/contact_shear_model.py": {
+      "sha256": "b74e858dad09afb56a91a781102e9489720b5df59ff2e3fd752173892cb0f5d8",
+      "bytes": 722
+    },
+    "examples/data/roughness_psd.dat": {
+      "sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+      "bytes": 1690
+    },
+    "examples/data/seal_pressure_profile.csv": {
+      "sha256": "d683e0493e207255f1c3e56a848ebe03c8ee0d4bb8b0aa7e72b35dc512127258",
+      "bytes": 160
+    },
+    "examples/dry_contact.json": {
+      "sha256": "41340f360dd9c4dfc50b25b257aa3a7b3ce4945f4871a8d341d6c3542a7e17a1",
+      "bytes": 510
+    },
+    "examples/fit_demo.py": {
+      "sha256": "d4435b9f5bb1dae67d3d1e0b779e71f54faf1474acd54fc798b40e661872163a",
+      "bytes": 3131
+    },
+    "examples/local_interface.py": {
+      "sha256": "0f08bac54aac9a59701e7e9e063cc089fce85a3daa5f4b41e28ad04d2f4d4a07",
+      "bytes": 867
+    },
+    "examples/mixed_comparison/README.md": {
+      "sha256": "0c78e261b2c0fd267bf0e9eee50a316a5929d16c8520a15ac145a2ec98f4da49",
+      "bytes": 3790
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": {
+      "sha256": "e0025930ac03467eb46fa6aaa293ab58f2596ebcfaa55c95a229d0edb43b22b4",
+      "bytes": 1143
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.ADHESION.mathematical": {
+      "sha256": "4c6f8dd92d2569887885ed327733d519611b43fe92fa801f8d741640795f8e46",
+      "bytes": 468
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.BLOCK.motion.1t.2vtop.3atop.4pressure.MPa": {
+      "sha256": "96e418463b2734562a508be5028349330e4cd252b2dcdec4107f0fb808bc7cc0",
+      "bytes": 93
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.BREAKLOOSE": {
+      "sha256": "01143e5723dc064c7be292f5fd5801d619c47b866374ea80f6d9b3bcb1863b39",
+      "bytes": 430
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.CAPILLARY": {
+      "sha256": "e841a476be59b2cdd4a813895e6ae2a937e32bfba672063993944cb722573057",
+      "bytes": 1520
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.ContactRadiusAndWear": {
+      "sha256": "ac39c53a016f5cc7cd8f1a819e026ce63b7ac2589dbb3d6ed2c487bb5c729a3b",
+      "bytes": 2050
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.ELECTROAdhesion": {
+      "sha256": "48d5f7516fee711e6a28cb18f0a6ee6df7de453d44a0a8cbd0cb89158d83a9e3",
+      "bytes": 2267
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.FLOWFACTORS": {
+      "sha256": "23cc3e16895b81bed4960e154ed9052f356127e0a8722288ae7dc3c39c0ee863",
+      "bytes": 596
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.FLUID.viscosity.and.TrippNumber": {
+      "sha256": "88ae5075fe3d2fc358052c69e46db331ce586a050c70a653a4f3a279d247e69f",
+      "bytes": 31
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.HEATTRANSFER": {
+      "sha256": "907adcd9980ba3cff53a5e86d19c16cd12a83b2613046df96997dfe0d3917a05",
+      "bytes": 407
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.HERTZ": {
+      "sha256": "01ad8d1b59cdd5130333527dc73f98ceb7467b7b4f05a93c504c659a1f4256d0",
+      "bytes": 468
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.LAYER": {
+      "sha256": "d3647cfd5d772989182cdbdc60b250d63e2abba400b75c9bf43b8e2d3f4e7ffe",
+      "bytes": 584
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.MIXEDLUBRICATION": {
+      "sha256": "619b3a593059ace53682cc214a0006e5693219fb81f2d590747f88e61a75ad9b",
+      "bytes": 218
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.MIXEDLUBRICATION.mathematical": {
+      "sha256": "93deb63d8351d8bc4ce4f17a5ff310001f2b97c573d8bd0c77b939e2692562ec",
+      "bytes": 47
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.PARAMETER": {
+      "sha256": "625ffda5e6404bcc73c5784ac8aeb86d6f41b19deee79f07defdb5b9f1c44539",
+      "bytes": 129
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.SEALING": {
+      "sha256": "39cba4d68ec82be4d3f8ad5ebcc7e3ed334d6031aa322c22bdd29c11b504a2d7",
+      "bytes": 1490
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.SQUEEZEOUT": {
+      "sha256": "c6eac90e47aad5bd61e12bc9a2eaa1cf6af729f5625d209181e39f0d3ae77063",
+      "bytes": 507
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.SQUEEZEOUT.convergence": {
+      "sha256": "943a423578de669db500e5fc1d73c15e6d8c5699905c139c2409749de9014bf7",
+      "bytes": 360
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.ThermalDataMeanSqureFlashTemperature": {
+      "sha256": "fbb504a498ed779c1b7e75301fd9c3897a9ec0e5d9d415f8829e19daf995fe1a",
+      "bytes": 593
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.addCq": {
+      "sha256": "d2a5eb96589c1541d335eb9c13504e651d87920376a4ada0f5f209d858c81e90",
+      "bytes": 140
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.flagparameters": {
+      "sha256": "14458c937052612431d9d3730b61ca766526e8759336e6890394fa76645c1edc",
+      "bytes": 107
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.mathematical": {
+      "sha256": "f48ad44f69dc4818f6f383e2510764e9c10d1997cc7ae668d679e313092f9877",
+      "bytes": 1006
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.mathematical.old": {
+      "sha256": "413b13e38ce2ee2a4e8d234c2d36ae06d5ad333bf43adaac5a0f72a76a0d5a7d",
+      "bytes": 2247
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.plots": {
+      "sha256": "f3e558b0ef4583b6f051f05a448ee1d30a8795eb9a20e79556531cda8678d953",
+      "bytes": 1053
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.sigma.gammabar.xnu.ElasticModul.yieldstress": {
+      "sha256": "29752fe11077f54f66adb8b7913250e688842b013d00c9b5b64ed360c2c04f9c",
+      "bytes": 19
+    },
+    "examples/mixed_comparison/fortran_inputs/IN.velocity.profile.transient.lubrication": {
+      "sha256": "77ed1f4bf1a948de41898d0904d2800e684835fcf42ed39f0ed68bf59da621f2",
+      "bytes": 1910
+    },
+    "examples/mixed_comparison/fortran_inputs/IN_ROADTYPE.q0.qr.q1.h0.H.1logWavevector.2logPowerSpectrum": {
+      "sha256": "7a442e27a66ad810f7cdf934cc219e18180fc5df9cd2ca7ef36f2fe92ec041e1",
+      "bytes": 7683
+    },
+    "examples/mixed_comparison/fortran_inputs/IN_TREADCOMPOUND.1frequency.Hz.2ReE.MPa.3ImE.MPa": {
+      "sha256": "a1f6eb96f9612e2bf2cd9f1637275bd7c948667814d0c1768671ea929e237281",
+      "bytes": 12978
+    },
+    "examples/mixed_comparison/fortran_inputs/IN_TREADCOMPOUND.1temperature.C.2aT.3bT": {
+      "sha256": "e7a2f099cba024b823e44f716a76e6550a80110646b41572c5e670f0afff8ded",
+      "bytes": 1532
+    },
+    "examples/mixed_comparison/fortran_inputs/IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": {
+      "sha256": "fdaa5715cfe70bb5283065abbc7315e7b8a0fae25e0b593d0af528a8ff1c92d5",
+      "bytes": 9086
+    },
+    "examples/mixed_comparison/fortran_inputs/IN_npolyCq.npolyab.npolyE": {
+      "sha256": "f456c1ffc6a33cd5dae1ca90cf499aadeabb167b9e687175a8fc62476833374c",
+      "bytes": 6
+    },
+    "examples/silicone_forward_parameters.py": {
+      "sha256": "c3aaac0d76dbd9dbf6813e9f16b2d1f025941e650afd41631b8649dd3eb30f09",
+      "bytes": 7798
+    },
+    "inputs/experiment_template.csv": {
+      "sha256": "1fe8443f0f9230cd6251de0305557dedcfbdb304e44cb567bee798f4fea1911d",
+      "bytes": 128
+    },
+    "inputs/experiment_template.xlsx": {
+      "sha256": "544f197099dbcc12e48b2a0ac5140a9e40e28bfe66c7a4848ad707b9ae60b335",
+      "bytes": 9412
+    },
+    "inputs/mixed_benchmark_psd.dat": {
+      "sha256": "7a442e27a66ad810f7cdf934cc219e18180fc5df9cd2ca7ef36f2fe92ec041e1",
+      "bytes": 7683
+    },
+    "main.py": {
+      "sha256": "05e8cbe09b60782a435bac7f900ab8ead73d46b6d3f4de2682348f19121dc6ff",
+      "bytes": 3238
+    },
+    "parameters.py": {
+      "sha256": "c437c8a442033d6d63b1c6f135cd53f7987e0f5ad1103e9f4aff3bc545528144",
+      "bytes": 18349
+    },
+    "pyproject.toml": {
+      "sha256": "427af83dab8632cae0d75a8c626190e8fbfd50bcede38c80a713d6e6090d534e",
+      "bytes": 503
+    },
+    "requirements.txt": {
+      "sha256": "d49438b7e781a0a348a74aec180d3707b5bde96856f9d954f3045ecd24d8a898",
+      "bytes": 128
+    },
+    "scripts/build_local_package.py": {
+      "sha256": "2ef45af24e208184d5570749cfd7b8e890deb33040fb92eff580be52972ef56f",
+      "bytes": 9466
+    },
+    "scripts/check_installation.py": {
+      "sha256": "e3489cf896595602b4f96ef7e9659c82984b48f5147297f5653c8da805b46c39",
+      "bytes": 1715
+    },
+    "scripts/create_experiment_workbook.py": {
+      "sha256": "e3eb346c7d241f9fea5f43967f877bb6bc52e1776995e21c73aef618287a33a6",
+      "bytes": 1760
+    },
+    "scripts/recover_fit.py": {
+      "sha256": "09d89c1984e3b8ebdd7365673be6712c6fc52919168f0948327cf9ca87c6e9e3",
+      "bytes": 3871
+    },
+    "scripts/update_runtime.py": {
+      "sha256": "76b2272b02e34b81b87f96fd2a56ead911a2bac3aeebc6cca8afbdc2eb77c029",
+      "bytes": 2771
+    },
+    "src/persson_contact/__init__.py": {
+      "sha256": "46baa11be26eebf9a7b05e6b2e9f7faaae88297dd8e9a6be4174d45174b0df7e",
+      "bytes": 249
+    },
+    "src/persson_contact/__main__.py": {
+      "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "bytes": 48
+    },
+    "src/persson_contact/applications.py": {
+      "sha256": "3ee081c27cad4338cc4737004ade8c5d328248f2a7bdae452e7b221177f9efb0",
+      "bytes": 2072
+    },
+    "src/persson_contact/ballistic.py": {
+      "sha256": "90e4fef18e0a0ccfa4119d3a3d707601f243e518bdfd2c844122c6328d03f930",
+      "bytes": 2022
+    },
+    "src/persson_contact/boundaries.py": {
+      "sha256": "69fc54618845cb3bffc762c69cf4f359a28b909a0a5d17d1e8c514ebb2d609fc",
+      "bytes": 1323
+    },
+    "src/persson_contact/cli.py": {
+      "sha256": "33c59d6d818bf8952a1d07c2a3a5a1d04c797a8659636b9b5d8701c125e3b1bb",
+      "bytes": 11277
+    },
+    "src/persson_contact/config.py": {
+      "sha256": "d24b6b1c4a0fba1cbe5cd0fb3b4652d741a85d7b9958cfe7f4dd86dfe5b22728",
+      "bytes": 8965
+    },
+    "src/persson_contact/contact_friction.py": {
+      "sha256": "c21fc35b8f96b0c99fc8286d95a8b6479c1d1667249405df53ee8c8aad0cb4a2",
+      "bytes": 11561
+    },
+    "src/persson_contact/contact_friction_output.py": {
+      "sha256": "bcb791905b562855a3fc4b825f2b280eaf97966c0192392445ee8d2b15663920",
+      "bytes": 6468
+    },
+    "src/persson_contact/core.py": {
+      "sha256": "232d6a7374441d3027e876ceda811ab587719677b7f35fd90aa10b3a5438826a",
+      "bytes": 29608
+    },
+    "src/persson_contact/dry_contact.py": {
+      "sha256": "eaeafffde4f7e9aab95438628a74d427a3865ffe18d60b99337d3b68676f010c",
+      "bytes": 4585
+    },
+    "src/persson_contact/experiment_excel.py": {
+      "sha256": "7fb2c0cfd74cc5fbbbfea252ccba945790edfc28a733496aa37d453c7c5b3b43",
+      "bytes": 6936
+    },
+    "src/persson_contact/flow.py": {
+      "sha256": "2ad7baf5e10636a80813035795fcaf209dd51ba7e977bbcb6414ae37a2034cf9",
+      "bytes": 11000
+    },
+    "src/persson_contact/flow_output.py": {
+      "sha256": "2b7b9aef32e277f6996f6a00f51be16cd5e3de7fc8332dbd9f30ca794427a242",
+      "bytes": 5047
+    },
+    "src/persson_contact/fluid_friction.py": {
+      "sha256": "f8f47381f0dcf20a0186c5d9c8ba98440db447929ebb94ca4c7af717eab40704",
+      "bytes": 5111
+    },
+    "src/persson_contact/gas.py": {
+      "sha256": "58f4da4f4fc3ea38e493f9ebec938bad1d3ecf773bbf9510f72f3a308541bbdd",
+      "bytes": 5145
+    },
+    "src/persson_contact/geometry.py": {
+      "sha256": "63b7db322d73395f5700ba61dd2d5eb45c25955780b90a41567b2cc50aa47ee0",
+      "bytes": 5461
+    },
+    "src/persson_contact/interface.py": {
+      "sha256": "4170558f5f404305adacf18652aca9cc58b9a3f03b7af6f7d915dd28d9f320e3",
+      "bytes": 8764
+    },
+    "src/persson_contact/leakage.py": {
+      "sha256": "94c1551da176a15e15344b706cc94bee570e47ed6f22cb5d7f7061ec32d56bfb",
+      "bytes": 24865
+    },
+    "src/persson_contact/macro_output.py": {
+      "sha256": "5596838e569165448be07e52a5fc031b9799c4b5669090789380ab294910abed",
+      "bytes": 17480
+    },
+    "src/persson_contact/macroscopic.py": {
+      "sha256": "45b4f6d11d2bb5c323bdf56877cbb6c38575aaec1068f8edd4c3b2e8862cf65a",
+      "bytes": 6791
+    },
+    "src/persson_contact/material.py": {
+      "sha256": "cce4cc1ca348ae8de1d7370a3657f7cfeeaf403b6c0c62028568ad32e1931403",
+      "bytes": 3588
+    },
+    "src/persson_contact/mechanics.py": {
+      "sha256": "65e737518b9726a1fd1a13bc3860cb642b3860766fd9c64ace93c595b014ca73",
+      "bytes": 7306
+    },
+    "src/persson_contact/mixed.py": {
+      "sha256": "616fa1e6c9693b26f7c1937f0b22f05d7c786a6da68cf7e13f36c401f04ecdf3",
+      "bytes": 11395
+    },
+    "src/persson_contact/mixed_checks.py": {
+      "sha256": "1e022a62a0ac34b11eab1936e13dacce16873fb4878c14a5033e734b5a7acdf3",
+      "bytes": 11111
+    },
+    "src/persson_contact/mixed_output.py": {
+      "sha256": "ff6bd68d53f1aa5a1b118ca19be93820b601552e6559b819cca2b6e32f8563bf",
+      "bytes": 22354
+    },
+    "src/persson_contact/mixed_transport.py": {
+      "sha256": "460c4d52a7c01837048b8f7f4d7fdb3fe99ada42bdf068e2ee1a8a72dbe0f2e2",
+      "bytes": 8127
+    },
+    "src/persson_contact/moving_flow.py": {
+      "sha256": "aa66bb5598eb3ab473bc9e51a36f6d820eecb98e413b6a073b93ead657b0e6aa",
+      "bytes": 3944
+    },
+    "src/persson_contact/profiles.py": {
+      "sha256": "2c4ef0d4a7208f5ee0a2e2336fd8da1904512926924d9b7c94fad5c23e623071",
+      "bytes": 3200
+    },
+    "src/persson_contact/psd.py": {
+      "sha256": "2074d0001af7deddb4cbcbb09a9f45429702ee933604016aa69b3295c0a7e366",
+      "bytes": 11946
+    },
+    "src/persson_contact/shear.py": {
+      "sha256": "c2be7c8df218a1550ffc50f1e4a87054be5c6d0d91eccab5c68ad0ad355c1e21",
+      "bytes": 3993
+    },
+    "src/persson_contact/shear_fit.py": {
+      "sha256": "ebef97a873a78d9929855aa37d538efdcde4243bf50bf5d3497cf44c624a47f4",
+      "bytes": 15609
+    },
+    "src/persson_contact/shear_fit_output.py": {
+      "sha256": "3beeaea598c3daa4746d8076daf690ed99f7e576e448d52f496149dd43853a19",
+      "bytes": 17250
+    },
+    "src/persson_contact/shear_output.py": {
+      "sha256": "0c77888ab04c829fee1db364ad051651f8e92d946af78fbff0ccd804cb72171e",
+      "bytes": 3062
+    },
+    "src/persson_contact/steady.py": {
+      "sha256": "e802062c4377961ceab24a981fe331edf32ce82762a04ba058aea28095edf8c2",
+      "bytes": 7394
+    },
+    "src/persson_contact/table.py": {
+      "sha256": "aea65c6a4cc291c1cef273e3c0a0ef4fe9b3a93a4903633256727e6bf06396ef",
+      "bytes": 3864
+    },
+    "src/persson_contact/transport_table.py": {
+      "sha256": "ecf404412f52ea5be53ab2809b692b6f4a05d121432e9c264baa5d3d291493d9",
+      "bytes": 5927
+    },
+    "src/persson_contact/workflow.py": {
+      "sha256": "570cd128a0aabd621d366d5db4b51ad472e36ffcd584d6e0b5d24a476fe5045f",
+      "bytes": 11216
+    }
+  },
+  "runtime_source_commit": "91d5e2376dd7728f7ef761c901bd50c65c41f059"
+}
