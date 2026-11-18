@@ -1,6 +1,6 @@
 # 本地运行与候选版本范围
 
-本包版本0.2.0rc2，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。有限圆柱曲面的尺寸、自动载荷换算和物理边缘见[几何说明](finite_geometry.md)。
+本包版本0.2.0rc3，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。有限圆柱曲面的尺寸、自动载荷换算和物理边缘见[几何说明](finite_geometry.md)。
 
 ## 任务选择
 
@@ -32,9 +32,9 @@ macro_contact用于圆柱接触、混合润滑及拟合；leakage.geometry用于
 
 ## 常见问题
 
-- 缺numpy/scipy/matplotlib：用运行程序的同一个Python执行`-m pip install -r requirements.txt`。
+- 缺numpy/scipy/matplotlib/openpyxl：用运行程序的同一个Python执行`-m pip install -r requirements.txt`。
 - 输出目录非空：换一个新的OUTPUT_DIRECTORY，避免覆盖前次结果。
-- 实验CSV没有数据：空白模板只有表头，必须填入恒速段测量值。
+- 实验表没有数据：请用Excel打开inputs/experiment_template.xlsx填写后另存为experiment.xlsx，空白模板没有测量值，必须填入恒速段测量值。
 - reference tau与实验tau：1MPa只是拟合参考，不是最后结果；普通正向计算则需要给定真实或明确假设的tau。
 - normal_force_n报缺宽度：有限曲面模式填写geometry_parameters.finite_cylindrical_pad.axial_length_m；旧圆柱模式在contact_friction.transverse_width_m填写横向宽度，单位m。
 - 缓存缺少对应速度／载荷：选择simulate按实验点计算；不自动插值。

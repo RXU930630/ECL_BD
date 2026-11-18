@@ -121,22 +121,22 @@ CASE = {
     # 独立拟合任务：main.py打开RUN_SHEAR_STRENGTH_FIT；无需填写未知的接触剪切强度
     'shear_strength_fit': {
         'model': 'constant_shear_strength', # 首版拟合一个非负常数tau；不拟合速度函数或额外截距
-        'experiment_file': 'inputs/experiment.csv', # 将experiment_template.csv复制并填写后另存
+        'experiment_file': 'inputs/experiment.xlsx', # 用Excel打开experiment_template.xlsx，填写并另存；也兼容.csv
         'source': 'simulate',              # simulate重新计算 / saved_forward复用已完成的正向结果
         'source_parameters': {             # 仅读取选中来源；切换权重或拟合范围可直接复用结果
-            'simulate': {},                # 使用共用材料/PSD/几何/流体，按CSV的速度和载荷计算
+            'simulate': {},                # 使用共用材料/PSD/几何/流体，按实验表的速度和载荷计算
             'saved_forward': {
                 'directories': ['results/my_forward'], # 含mixed_cases.csv和mixed_diagnostics.json
             },
         },
         'reference_strength_pa': 1e6,      # 1MPa仅作参考倍率；不作为真实剪切强度假设
-        'sliding_direction': 1,            # +1/-1：下平面在圆柱坐标系内的运动方向；CSV只填正速度
-        'weighting': 'equal',              # equal等权 / standard_uncertainty_mu使用CSV测量标准不确定度
-        'speed_range_m_s': [None, None],   # 参与拟合速度的[min,max]；None不限；CSV中还可use_for_fit=false留出验证
+        'sliding_direction': 1,            # +1/-1：下平面在圆柱坐标系内的运动方向；实验表只填正速度
+        'weighting': 'equal',              # equal等权 / standard_uncertainty_mu使用实验表测量标准不确定度
+        'speed_range_m_s': [None, None],   # 参与拟合速度的[min,max]；None不限；实验表中还可use_for_fit=false留出验证
         'minimum_solid_coefficient_at_1mpa': 1e-5, # 固定以1MPa评估接触敏感性，低于此值不参与拟合
-        # 可选CSV背景项background_friction_coefficient直接相加；省略表示假定0，不自动计算橡胶滞后/毛细项
-        # CSV可另给line_load_n_m，或normal_force_n（finite模式自动读取轴向长度B）
-        # 两个载荷列都空时使用macro_contact的载荷；CSV所填载荷逐行覆盖默认值
+        # 可选实验表背景项background_friction_coefficient直接相加；省略表示假定0，不自动计算橡胶滞后/毛细项
+        # 实验表可另给line_load_n_m，或normal_force_n（finite模式自动读取轴向长度B）
+        # 两个载荷列都空时使用macro_contact的载荷；实验表所填载荷逐行覆盖默认值
         # 同时填两列时必须满足normal_force_n=B*line_load_n_m；mu始终以总法向载荷归一化
     },
     'fluid_friction': {

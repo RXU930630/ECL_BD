@@ -4,4 +4,4 @@ The first release exposes separate input, physical model and lookup-table layers
 See the README for the validation limits of the gap-distribution approximation.
 """
 
-__version__ = "0.2.0rc2"
+__version__ = "0.2.0rc3"

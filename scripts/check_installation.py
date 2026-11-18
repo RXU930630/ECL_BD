@@ -15,6 +15,7 @@ def main():
         import numpy as np
         import scipy
         import matplotlib
+        import openpyxl
         import persson_contact
         from persson_contact.interface import NewtonianNoSlip
         from persson_contact.shear_fit import Experiment,fit_constant_strength
@@ -27,7 +28,7 @@ def main():
     except ModuleNotFoundError as exc:
         print(f'缺少依赖：{exc.name}。请执行 "{sys.executable}" -m pip install -r "{ROOT / "requirements.txt"}"');return 2
     print(f'ECL_BD {persson_contact.__version__}; Python {sys.version.split()[0]}')
-    print(f'numpy {np.__version__}; scipy {scipy.__version__}; matplotlib {matplotlib.__version__}')
+    print(f'numpy {np.__version__}; scipy {scipy.__version__}; matplotlib {matplotlib.__version__}; openpyxl {openpyxl.__version__}')
     print('运行模块、光滑流动及剪切强度拟合自检通过。此检查不替代实验验证。')
     return 0
 

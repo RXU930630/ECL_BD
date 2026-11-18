@@ -17,7 +17,8 @@ import zipfile
 def package_files(root):
     root=Path(root)
     names=['main.py','parameters.py','pyproject.toml','requirements.txt',
-        'docs/local_run.md','docs/shear_strength_fit.md','docs/finite_geometry.md','inputs/experiment_template.csv',
+        'docs/local_run.md','docs/shear_strength_fit.md','docs/finite_geometry.md',
+        'inputs/experiment_template.xlsx','inputs/experiment_template.csv','scripts/create_experiment_workbook.py',
         'examples/data/roughness_psd.dat','examples/data/seal_pressure_profile.csv',
         'examples/local_interface.py','examples/contact_shear_model.py','examples/dry_contact.json',
         'examples/fit_demo.py','scripts/check_installation.py','scripts/build_local_package.py']
@@ -42,7 +43,7 @@ def trial_preset(files,preset):
         ("'domain_half_width_m': 1.2e-3","'domain_half_width_m': None"),
         ("'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2]","'lower_wall_velocities_m_s': [1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2]"),
         ("'viscosity_pa_s': 0.1","'viscosity_pa_s': 1.0"),
-        ("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/silicone_fit_01'")]
+        ("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/silicone_fit_excel_01'")]
     for before,after in changes:
         if text.count(before)!=1:raise ValueError(f'Cannot apply trial configuration: {before}')
         text=text.replace(before,after)
@@ -52,7 +53,7 @@ def trial_preset(files,preset):
         'RUN_SHEAR_STRENGTH_FIT = False','RUN_SHEAR_STRENGTH_FIT = True')
     compile(text,'parameters.py','exec');compile(entry,'main.py','exec')
     files['parameters.py']=text.encode();files['main.py']=entry.encode()
-    files['README.md']=("本包已预填本次硅油实验几何、材料与黏度，并开启独立拟合。请填写 inputs/experiment.csv 后运行；"
+    files['README.md']=("本包已预填本次硅油实验几何、材料与黏度，并开启独立拟合。请用Excel填写 inputs/experiment.xlsx 后运行；"
         "该文件不含你的实测摩擦数据。默认100N仅用于CSV未给载荷的行。详见 docs/finite_geometry.md。\n\n".encode()+files['README.md'])
     return files
 

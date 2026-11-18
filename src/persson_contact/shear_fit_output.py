@@ -79,6 +79,9 @@ def read_forward_run(directory):
 
 
 def prepare_fit(parameters,base):
+    # Both input and the Excel result workbook need this dependency. Check
+    # before any expensive forward solve, including when input is legacy CSV.
+    import openpyxl
     raw=parameters.get('shear_strength_fit',{})
     _keys(raw,{'model','experiment_file','source','source_parameters','reference_strength_pa',
         'sliding_direction','weighting','speed_range_m_s','minimum_solid_coefficient_at_1mpa'},'shear_strength_fit')
@@ -188,7 +191,7 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
             real_contact_area_m2=None if width is None else response['real_contact_area_per_width_m']*width,
             total_normal_force_n=None if width is None else record['line_load_n_m']*width)
     snippet={'model':'constant_shear_strength','model_parameters':{'constant_shear_strength':{'shear_strength_pa':summary['fitted_shear_strength_pa']}}}
-    outputs=['fit_cases.csv','fit_summary.json','fit_diagnostics.json','fitted_contact_friction.json','forward_response.csv','experiment_used.csv']
+    outputs=['fit_results.xlsx','fit_cases.csv','fit_summary.json','fit_diagnostics.json','fitted_contact_friction.json','forward_response.csv','experiment_used.csv']
     if save_plots:outputs.append('shear_strength_fit.png')
     diagnostic={'workflow_status':'complete','task':'constant_interface_shear_strength_fit',
         'equation':'mu = mu_fluid + mu_background + tau * (A_real / TOTAL normal load)',
@@ -200,6 +203,9 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
     out.mkdir(parents=True,exist_ok=True)
     _csv(out/'fit_cases.csv',records);_csv(out/'forward_response.csv',responses)
     _csv(out/'experiment_used.csv',[{k:v for k,v in asdict(e).items() if k!='row_number'} for e in experiments])
+    from .experiment_excel import write_fit_workbook
+    write_fit_workbook(out/'fit_results.xlsx',summary,records,responses,
+        [{k:v for k,v in asdict(e).items() if k!='row_number'} for e in experiments])
     for name,data in [('fit_summary.json',summary),('fitted_contact_friction.json',snippet),('fit_diagnostics.json',diagnostic)]:
         (out/name).write_text(json.dumps(data,indent=2,ensure_ascii=False,allow_nan=False)+'\n')
     if save_plots:plot_fit(out,records)

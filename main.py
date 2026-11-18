@@ -20,7 +20,7 @@ RUN_LEAKAGE = True
 # 混合润滑：自动联立接触、宏观形变、牛顿流体和摩擦；开启时关闭上面三个独立任务
 # 读取macro_contact、mixed_friction、contact_friction和interface；不读取leakage的旧卸载/spc规则
 RUN_MIXED_FRICTION = False
-# 独立实验反演：自动按实验CSV计算，或复用保存的混合润滑结果；无需预先知道tau
+# 独立实验反演：自动按实验Excel/CSV计算，或复用保存的混合润滑结果；无需预先知道tau
 # 开启时关闭RUN_LEAKAGE、RUN_MACRO_CONTACT、RUN_CONTACT_FRICTION、RUN_MIXED_FRICTION
 RUN_SHEAR_STRENGTH_FIT = False
 
@@ -46,7 +46,7 @@ def main():
                     run_contact_friction=RUN_CONTACT_FRICTION,
                     run_shear_strength_fit=RUN_SHEAR_STRENGTH_FIT)
     except ModuleNotFoundError as exc:
-        if exc.name not in {'numpy', 'scipy', 'matplotlib'}:
+        if exc.name not in {'numpy', 'scipy', 'matplotlib', 'openpyxl'}:
             raise
         print(f'当前 Python 缺少依赖 {exc.name}。请在项目目录执行：')
         print(f'"{sys.executable}" -m pip install -r requirements.txt')

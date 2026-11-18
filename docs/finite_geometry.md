@@ -38,7 +38,7 @@ speed_m_s,friction_coefficient,normal_force_n
 0.000001,填写实验mu,160
 ```
 
-上面是列格式说明，含占位文字，不能直接计算。正式文件复制`inputs/experiment_template.csv`后填写；`line_load_n_m`可留空。CSV逐行的载荷覆盖默认100N。拟合以CSV速度为准，无需同步修改`mixed_friction.lower_wall_velocities_m_s`。
+上面是列格式说明，含占位文字，不能直接计算。正式文件用Excel打开`inputs/experiment_template.xlsx`后填写并另存；`line_load_n_m`可留空。CSV逐行的载荷覆盖默认100N。拟合以CSV速度为准，无需同步修改`mixed_friction.lower_wall_velocities_m_s`。
 
 ## 物理边缘与输出
 
@@ -50,6 +50,6 @@ speed_m_s,friction_coefficient,normal_force_n
 
 ## 本次试运行包
 
-带`silicone_cylinder`预设的0.2.0rc2包已填写上述几何、E=1.8MPa、ν=0.5、η=1Pa·s，启用独立拟合，接触剪切强度保持未知。1000cSt是运动黏度；1Pa·s是本次采用的动力黏度近似，之后可据油品密度修正。
+带`silicone_cylinder`预设的0.2.0rc3包已填写上述几何、E=1.8MPa、ν=0.5、η=1Pa·s，启用独立拟合，接触剪切强度保持未知。1000cSt是运动黏度；1Pa·s是本次采用的动力黏度近似，之后可据油品密度修正。
 
-包内不含实测摩擦数据或已计算结果。填写`inputs/experiment.csv`后运行`python main.py`。无需先单独运行混合润滑；拟合任务会按CSV中的各载荷和速度计算。
+包内不含实测摩擦数据或已计算结果。填写`inputs/experiment.xlsx`后运行`python main.py`。无需先单独运行混合润滑；拟合任务会按CSV中的各载荷和速度计算。

@@ -26,7 +26,7 @@ class LocalPackageTests(unittest.TestCase):
 
     def test_manifest_complete_runtime_clean_paths_and_deterministic_build(self):
         manifest=json.loads((self.project/'PACKAGE_MANIFEST.json').read_text())
-        self.assertEqual(manifest['version'],'0.2.0rc2')
+        self.assertEqual(manifest['version'],'0.2.0rc3')
         for name,data in manifest['files'].items():
             self.assertEqual(hashlib.sha256((self.project/name).read_bytes()).hexdigest(),data['sha256'])
             self.assertFalse(any(part in name.split('/') for part in ('tests','results','.git','__pycache__','.venv')))
@@ -35,6 +35,8 @@ class LocalPackageTests(unittest.TestCase):
             self.assertEqual((self.project/'src/persson_contact'/source.name).read_bytes(),source.read_bytes())
         self.assertFalse((self.project/'inputs/experiment.csv').exists())
         self.assertEqual(len((self.project/'inputs/experiment_template.csv').read_text().splitlines()),1)
+        self.assertTrue((self.project/'inputs/experiment_template.xlsx').is_file())
+        self.assertFalse((self.project/'inputs/experiment.xlsx').exists())
         second=self.workspace/'same_again.zip';builder.build_package(ROOT,second)
         self.assertEqual(second.read_bytes(),self.zip.read_bytes())
         with self.assertRaises(FileExistsError):builder.build_package(ROOT,self.zip)

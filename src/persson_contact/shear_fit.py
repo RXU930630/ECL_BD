@@ -35,7 +35,7 @@ class Experiment:
 
 
 def read_experiments(path,*,default_line_load_n_m,transverse_width_m=None):
-    """UTF-8/BOM CSV; speeds are positive magnitudes, mu is resisting signed mu.
+    """Excel .xlsx or UTF-8/BOM CSV; same units and validation for both.
 
     Optional load columns: line_load_n_m OR normal_force_n (requires width).
     If both are given they must agree. Blank load uses the common macro load.
@@ -45,36 +45,43 @@ def read_experiments(path,*,default_line_load_n_m,transverse_width_m=None):
     width=None if transverse_width_m is None else finite(transverse_width_m,'width',minimum=0,strict=True)
     required={'speed_m_s','friction_coefficient'}
     allowed=required|{'line_load_n_m','normal_force_n','background_friction_coefficient','standard_uncertainty_mu','use_for_fit'}
-    rows=[]
-    with Path(path).open(encoding='utf-8-sig',newline='') as stream:
-        reader=csv.DictReader(stream)
-        if (reader.fieldnames is None or len(set(reader.fieldnames))!=len(reader.fieldnames)
-                or not required<=set(reader.fieldnames) or set(reader.fieldnames)-allowed):
-            raise ValueError('实验CSV必须包含speed_m_s,friction_coefficient；请按模板使用列名，不允许重复列名。')
-        for number,row in enumerate(reader,2):
-            if None in row or any(v is None for v in row.values()):raise ValueError(f'实验CSV第{number}行列数不匹配')
-            if not any(v.strip() for v in row.values()):continue
-            def optional(key,*,positive=False):
-                value=row.get(key,'').strip()
-                return None if not value else finite(value,f'CSV row {number}: {key}',minimum=0 if positive else None,strict=positive)
-            try:
-                speed=finite(row['speed_m_s'],f'CSV row {number}: speed_m_s',minimum=0,strict=True)
-                mu=finite(row['friction_coefficient'],f'CSV row {number}: friction_coefficient')
-                load=optional('line_load_n_m',positive=True);force=optional('normal_force_n',positive=True)
-                if force is not None:
-                    if width is None:raise ValueError('normal_force_n需要在contact_friction中填写transverse_width_m')
-                    converted=force/width
-                    if load is not None and not math.isclose(load,converted,rel_tol=1e-8):
-                        raise ValueError('normal_force_n与line_load_n_m、横向宽度不一致')
-                    load=converted
-                flag=row.get('use_for_fit','').strip().lower()
-                if flag not in ('','true','false','1','0'):raise ValueError('use_for_fit只能为true/false或1/0')
-                background=optional('background_friction_coefficient')
-                uncertainty=optional('standard_uncertainty_mu',positive=True)
-                rows.append(Experiment(number,speed,default if load is None else load,mu,
-                    0. if background is None else background,uncertainty,flag not in ('false','0')))
-            except (ValueError,TypeError) as exc:raise ValueError(f'实验CSV第{number}行：{exc}') from exc
-    if not rows:raise ValueError('实验CSV没有数据；模板只有表头，请填写恒速段数据。')
+    rows=[];path=Path(path)
+    if path.suffix.lower()=='.xlsx':
+        from .experiment_excel import read_excel_table
+        header,table=read_excel_table(path)
+    elif path.suffix.lower()=='.csv':
+        with path.open(encoding='utf-8-sig',newline='') as stream:
+            reader=csv.reader(stream);header=next(reader,[])
+            table=[(number,row) for number,row in enumerate(reader,2) if row]
+    else:raise ValueError('实验文件请选择.xlsx（Excel工作簿）或.csv；旧.xls文件请在Excel中另存为.xlsx。')
+    header=['' if v is None else str(v).strip() for v in header]
+    if (len(set(header))!=len(header) or not required<=set(header) or set(header)-allowed):
+        raise ValueError('实验表必须包含speed_m_s,friction_coefficient；请按模板使用列名，不允许重复列名。')
+    for number,cells in table:
+        if len(cells)!=len(header):raise ValueError(f'实验表第{number}行列数不匹配')
+        row={key:'' if value is None else str(value).strip() for key,value in zip(header,cells)}
+        if not any(v.strip() for v in row.values()):continue
+        def optional(key,*,positive=False):
+            value=row.get(key,'').strip()
+            return None if not value else finite(value,f'实验表第{number}行: {key}',minimum=0 if positive else None,strict=positive)
+        try:
+            speed=finite(row['speed_m_s'],f'实验表第{number}行: speed_m_s',minimum=0,strict=True)
+            mu=finite(row['friction_coefficient'],f'实验表第{number}行: friction_coefficient')
+            load=optional('line_load_n_m',positive=True);force=optional('normal_force_n',positive=True)
+            if force is not None:
+                if width is None:raise ValueError('normal_force_n需要几何轴向长度或contact_friction.transverse_width_m')
+                converted=force/width
+                if load is not None and not math.isclose(load,converted,rel_tol=1e-8):
+                    raise ValueError('normal_force_n与line_load_n_m、横向宽度不一致')
+                load=converted
+            flag=row.get('use_for_fit','').strip().lower()
+            if flag not in ('','true','false','1','0'):raise ValueError('use_for_fit只能为true/false或1/0')
+            background=optional('background_friction_coefficient')
+            uncertainty=optional('standard_uncertainty_mu',positive=True)
+            rows.append(Experiment(number,speed,default if load is None else load,mu,
+                0. if background is None else background,uncertainty,flag not in ('false','0')))
+        except (ValueError,TypeError) as exc:raise ValueError(f'实验表第{number}行：{exc}') from exc
+    if not rows:raise ValueError('实验表没有数据；请在模板中填写恒速段数据。')
     return rows
 
 

@@ -18,9 +18,13 @@ F_N和Wprime均为总外加法向载荷，绝不只用固体接触承担的载�
 
 主系数针对运动下平面的阻力。若实验测的是圆柱受力，需要在稳态、惯性可忽略且端部／外部供油压力作用已一致处理的条件下对应其反作用力；起停惯性或未扣除的端部压力力不能直接拟合成界面剪切强度。
 
-## 实验CSV
+## 实验Excel（推荐）或CSV
 
-表头模板在inputs/experiment_template.csv。最小输入：
+推荐用Excel打开`inputs/experiment_template.xlsx`，填写后另存为`inputs/experiment.xlsx`；参数`experiment_file`默认指向此文件。读取名为`experiment`的工作表；没有这个名称时读取第一个工作表。所有载荷放在同一个数据工作表，每个速度/载荷组合一行。首行保留英文表头，中文解释在批注和`填写说明`页。
+
+Excel可以直接填写数字和TRUE/FALSE。公式使用Excel保存的计算值，程序不重算公式；没有保存的计算值或出现Excel错误值时，会提示单元格位置。旧`.xls`需在Excel中另存为`.xlsx`，不能只改扩展名。
+
+也兼容原逗号分隔UTF-8 CSV，模板在`inputs/experiment_template.csv`。两种格式最少需要下面两列：
 
 ```csv
 speed_m_s,friction_coefficient
@@ -40,7 +44,7 @@ speed_m_s,friction_coefficient
 
 两个载荷列均空时使用macro_contact的默认载荷（总力或线载荷）。两个载荷列同时给出时必须与宽度换算一致。有限曲面的输入和边界解释见[几何说明](finite_geometry.md)。摩擦系数不是摩擦力；不要把N、mm/s、MPa数值直接填入其他单位的列。
 
-CSV支持UTF-8 BOM、重复实验点和空行；拒绝NaN、Infinity、未知／重复列名和列数不匹配。重复实验使用同一个正向状态，但保留为多个测量点。滑动方向在shear_strength_fit.sliding_direction中选择+1或-1，表示圆柱随动坐标系下平面的运动方向，CSV始终填写正速度大小。
+两种格式均支持重复实验点和空行；拒绝NaN、Infinity、未知／重复列名和列数不匹配。CSV支持UTF-8 BOM。重复实验使用同一个正向状态，但保留为多个测量点。滑动方向在shear_strength_fit.sliding_direction中选择+1或-1，表示圆柱随动坐标系下平面的运动方向，实验表始终填写正速度大小。
 
 ## 参数与来源
 
@@ -49,7 +53,7 @@ CSV支持UTF-8 BOM、重复实验点和空行；拒绝NaN、Infinity、未知／
 | 参数 | 定义 |
 | --- | --- |
 | model | 当前只拟合constant_shear_strength |
-| experiment_file | 相对于项目根目录的实验CSV路径 |
+| experiment_file | 相对于项目根目录的.xlsx或.csv实验文件路径 |
 | source | simulate或saved_forward |
 | source_parameters.simulate | 当前无额外参数，使用共用物理输入 |
 | source_parameters.saved_forward.directories | 已完成混合润滑结果目录列表，每个目录含mixed_cases.csv与mixed_diagnostics.json |
@@ -69,6 +73,7 @@ saved_forward不读取当前PSD或重新计算材料，保存的物理工况是�
 
 | 文件 | 内容 |
 | --- | --- |
+| fit_results.xlsx | Excel结果：拟合概况（含Pa/MPa）、各实验点、正向响应及所用实验 |
 | fit_summary.json | tau（Pa）、参考倍率、参与／排除点数、RMSE、条件标准误差及诊断 |
 | fit_cases.csv | 每个实验点的面积、流体项、拟合固体项、显式背景项、合计、残差和是否参与拟合 |
 | forward_response.csv | 可复核的面积／总载荷灵敏度和流体系数，不是新的实验数据 |

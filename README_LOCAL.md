@@ -1,8 +1,8 @@
-# ECL_BD 0.2.0rc2 — 本地试运行版（候选稳定版）
+# ECL_BD 0.2.0rc3 — 本地试运行版（候选稳定版）
 
 这是完整的Python运行源码包，供首次本地计算和实验拟合使用。包含现有接触、泄漏、宏观形变、混合润滑和界面剪切强度拟合功能；不包含历史计算结果、原Fortran包、开发测试数据、缓存或实验数据。安装依赖需要联网；计算与拟合在本地运行，不需要云端服务。
 
-`rc2`表示候选版本，已有数值检查，尚待用户真实实验的首次本地试运行。新增直接输入有限圆柱曲面尺寸，说明见[几何与边界](docs/finite_geometry.md)。它不是已完成实验标定的正式稳定版。具体使用范围见[本地运行说明](docs/local_run.md)。
+`rc3`新增直接读取Excel实验工作簿与Excel拟合结果，继续支持有限圆柱曲面尺寸。已有数值检查，尚待用户真实实验的首次本地试运行，仍为候选版。几何说明见[几何与边界](docs/finite_geometry.md)，使用范围见[本地运行说明](docs/local_run.md)。
 
 ## 第一次安装
 
@@ -30,7 +30,7 @@ python3 -m venv .venv
 
 ## 使用自己的实验
 
-1. 复制`inputs/experiment_template.csv`为`inputs/experiment.csv`，填写恒速稳定段数据。最少两列是`speed_m_s,friction_coefficient`，速度单位m/s。CSV用UTF-8、逗号分隔保存，不使用分号或Excel工作簿格式。
+1. 用Excel打开`inputs/experiment_template.xlsx`，在`experiment`工作表填写数据，另存为`inputs/experiment.xlsx`。第1行英文表头保持不变；中文说明在表头批注与`填写说明`工作表中。每个速度/载荷组合填一行，速度单位m/s、总力单位N。无需另存为CSV。
 2. 在parameters.py填写实际材料、PSD、几何、总法向载荷或线载荷、硅油黏度与供油边界。默认物理参数只是示例，不是用户实验参数。
 3. 在main.py设置：
 
@@ -43,7 +43,7 @@ RUN_SHEAR_STRENGTH_FIT = True
 ```
 
 4. parameters.py中选择`shear_strength_fit.source='simulate'`，使用新的`OUTPUT_DIRECTORY='results/my_fit'`，运行`python main.py`（使用虚拟环境中的Python）。独立拟合自动计算正向解，RUN_CONTACT和COMPUTE开关无需额外打开。
-5. 查看fit_summary.json、fit_cases.csv和shear_strength_fit.png。拟合值位于`fitted_shear_strength_pa`，单位Pa；除以1e6得到MPa。
+5. 用Excel打开输出目录中的`fit_results.xlsx`，在`拟合概况`查看剪切强度Pa/MPa，在`各实验点`查看面积、固体/流体分项及残差；图片为`shear_strength_fit.png`。原CSV/JSON输出继续保留。
 
 无需在contact_friction中预先填写未知剪切强度：拟合任务会临时使用参考值1MPa，并从真实面积和流体摩擦求出结果。材料和流体参数不会自动反演。
 
@@ -63,7 +63,7 @@ RUN_SHEAR_STRENGTH_FIT = True
 
 多载荷时把所需load目录全部列出。输出目录换成新的空目录。复用时不重跑流固耦合，且以保存的物理工况为准；改动当前材料、PSD、硅油或剪切下限不会更新旧结果，须重新选择simulate计算。
 
-全部CSV列、拟合约定、物理限制和常见错误见[剪切强度拟合说明](docs/shear_strength_fit.md)。
+Excel和CSV使用相同的列名与SI单位。旧CSV仍可通过`experiment_file`选择；不用改文件扩展名来转换格式。全部列、拟合约定、物理限制和常见错误见[剪切强度拟合说明](docs/shear_strength_fit.md)。
 
 ## 包内容与版本
 
