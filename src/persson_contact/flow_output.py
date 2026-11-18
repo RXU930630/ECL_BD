@@ -49,7 +49,7 @@ def run_pressure_flow(model, pressures, interface, options, output, *, percolati
         'leakage_scope':'Uniform fixed contact; no fluid load feedback, cavitation or cylinder mechanics.' if leaks else None,
         'status_counts':{name:sum(row['status']==name for row in rows) for name in sorted({row['status'] for row in rows})},
         'results':rows,'leakage_results':leaks}
-    (output/'flow_diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+    (output/'flow_diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     if plot:
         _plot(output,results,leaks,ballistic=ballistic)
     return summary

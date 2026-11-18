@@ -97,7 +97,7 @@ def run_mixed_project(parameters,*,base_directory,save_plots=True):
     if summary['numerical_validation']['comparisons']:
         summary['outputs'].append('mixed_numerical_checks.csv')
     write_mixed_workbook(out/'mixed_results.xlsx',summary)
-    (out/'mixed_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
+    (out/'mixed_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     return summary
 
 
@@ -244,7 +244,7 @@ def _run_mixed_project(parameters,*,base_directory,save_plots=True,_cache=None,_
     if save_plots:
         plot_mixed(out,elastic,hertz,solutions,cases)
         outputs+=['mixed_profiles.png','mixed_friction.png','mixed_geometry.png']
-    (out/'mixed_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
+    (out/'mixed_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     return summary
 
 

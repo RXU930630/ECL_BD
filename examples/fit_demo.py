@@ -31,7 +31,7 @@ def write_demo_inputs(directory):
     diag={'workflow_status':'complete','synthetic_demo':True,'target_line_load_n_m':100.,'cases':cases,
         'parameters_snapshot':{'description':'Synthetic mathematical fit benchmark; NOT a mixed-lubrication prediction.'},
         'limitations':['Synthetic area/fluid data. No material, PSD, cavitation or fluid-solid calculation was performed.']}
-    (forward/'mixed_diagnostics.json').write_text(json.dumps(diag,indent=2)+'\n')
+    (forward/'mixed_diagnostics.json').write_text(json.dumps(diag,indent=2)+'\n', encoding='utf-8')
     return directory/'experiment.csv',forward
 
 

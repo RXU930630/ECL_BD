@@ -276,7 +276,7 @@ NUMERICS = {
 }
 
 # 三、输出：切换工况或流体后请换目录，已有非空目录不会覆盖
-OUTPUT_DIRECTORY = 'results/leakage'
+OUTPUT_DIRECTORY = 'results/run'  # 固定默认目录；不随任务或版本自动改名，已有结果不覆盖
 
 # 自动组装，兼容原有程序入口；上面两块的leakage字段合并
 PARAMETERS = {

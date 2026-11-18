@@ -31,7 +31,7 @@ def run_shear_flow(law,pressure_rows,output,*,plot=False):
         'table_flux_scope':'Each row is a uniform fixed contact state at the given test pressure gradient; not the spatial seal solution.',
         'blocked_state_scope':'A nonzero motion source in a pressure-blocked state is not evidence of through-seal leakage; spatial moving flow requires positive mobility.',
         'uncertainty_scope':'Shear interpolation does not supply PDF-derived confidence intervals. Pressure PDF bounds do not bound the combined moving-wall flux.'}
-    (output/'shear_diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+    (output/'shear_diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     if plot:
         import matplotlib
         matplotlib.use('Agg')

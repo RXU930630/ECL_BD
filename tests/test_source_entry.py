@@ -39,7 +39,7 @@ except SystemExit as exc:
         result = subprocess.run([sys.executable, '-I', '-c', driver, str(self.project / 'main.py')],
                                 cwd=self.temp.name, capture_output=True, text=True, timeout=60)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.project / 'results' / 'leakage' / 'contact_table.csv').is_file())
+        self.assertTrue((self.project / 'results' / 'run' / 'contact_table.csv').is_file())
 
     def test_downloaded_spatial_leakage_entry_and_automatic_dependencies(self):
         import json
@@ -52,7 +52,7 @@ except SystemExit as exc:
         result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
                               capture_output=True,text=True,timeout=60)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
-        output=self.project/'results/leakage'
+        output=self.project/'results/run'
         self.assertTrue((output/'leakage_cases.csv').is_file())
         saved=json.loads((output/'diagnostics.json').read_text())
         self.assertEqual(saved['workflow_status'],'complete')
@@ -83,7 +83,7 @@ runpy.run_path(str(entry), run_name='__main__')
         config=self.project/'parameters.py'
         config.write_text(config.read_text().replace("'cells': 257","'cells': 65")
             .replace("'points': 1201","'points': 601")
-            .replace("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/macro'"))
+            .replace("OUTPUT_DIRECTORY = 'results/run'","OUTPUT_DIRECTORY = 'results/macro'"))
         driver="import runpy,sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(p.parent)); runpy.run_path(str(p),run_name='__main__')"
         result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
                               capture_output=True,text=True,timeout=60)
@@ -103,7 +103,7 @@ runpy.run_path(str(entry), run_name='__main__')
         config.write_text(config.read_text().replace("'cells': 257","'cells': 65")
             .replace("'points': 1201","'points': 601")
             .replace("'shear_strength_pa': None","'shear_strength_pa': 1e5",1)
-            .replace("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/contact_friction'"))
+            .replace("OUTPUT_DIRECTORY = 'results/run'","OUTPUT_DIRECTORY = 'results/contact_friction'"))
         driver="import runpy,sys,pathlib; p=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(p.parent)); runpy.run_path(str(p),run_name='__main__')"
         result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
                               capture_output=True,text=True,timeout=60)
@@ -131,7 +131,7 @@ runpy.run_path(str(entry), run_name='__main__')
         result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
                               capture_output=True,text=True,timeout=60)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
-        output=self.project/'results/leakage'
+        output=self.project/'results/run'
         self.assertTrue((output/'shear_flow_table.csv').exists())
         saved=json.loads((output/'leakage_diagnostics.json').read_text())
         self.assertTrue(saved['motion_transport_enabled'])
@@ -150,7 +150,7 @@ runpy.run_path(str(entry), run_name='__main__')
         result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
                               capture_output=True,text=True,timeout=60)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
-        saved=json.loads((self.project/'results/leakage/leakage_diagnostics.json').read_text())
+        saved=json.loads((self.project/'results/run/leakage_diagnostics.json').read_text())
         self.assertEqual(saved['liquid_interface']['wall_slip'],'navier')
         self.assertEqual(saved['liquid_interface']['lower_slip_length_m'],1e-8)
         self.assertGreater(saved['cases'][1]['flow_rate_m3_s'],0)
@@ -167,7 +167,7 @@ runpy.run_path(str(entry), run_name='__main__')
         result=subprocess.run([sys.executable,'-I','-c',driver,str(entry)],cwd=self.temp.name,
                               capture_output=True,text=True,timeout=60)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
-        output=self.project/'results/leakage'
+        output=self.project/'results/run'
         saved=json.loads((output/'leakage_diagnostics.json').read_text())
         self.assertEqual(saved['fortran_mode'],5000)
         self.assertEqual(saved['fluid'],'gas')

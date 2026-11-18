@@ -1,6 +1,6 @@
 # 本地运行与候选版本范围
 
-本包版本0.2.0rc5，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。有限圆柱曲面的尺寸、自动载荷换算和物理边缘见[几何说明](finite_geometry.md)。
+本包版本0.2.0rc6，推荐Python3.12；启动方式与安装命令见根目录README.md。所有计算都在本地完成。src中的源代码、main.py、parameters.py和必要输入必须保留在同一解压目录结构内。有限圆柱曲面的尺寸、自动载荷换算和物理边缘见[几何说明](finite_geometry.md)。
 
 ## 任务选择
 

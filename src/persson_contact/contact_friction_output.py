@@ -64,7 +64,7 @@ def write_contact_friction(out,plan,results,*,save_plots=True):
     if save_plots:
         plot_contact_friction(out,results)
         diagnostics['outputs'].append('contact_friction.png')
-    (out/'contact_friction_diagnostics.json').write_text(json.dumps(diagnostics,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
+    (out/'contact_friction_diagnostics.json').write_text(json.dumps(diagnostics,ensure_ascii=False,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     print(f'固体接触摩擦已计算：{len(cases)} 个相对速度工况；剪切模型 {plan.law.metadata["model"]}。')
     return diagnostics
 

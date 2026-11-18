@@ -17,11 +17,12 @@ import zipfile
 def package_files(root):
     root=Path(root)
     names=['main.py','parameters.py','pyproject.toml','requirements.txt',
-        'docs/local_run.md','docs/shear_strength_fit.md','docs/finite_geometry.md','docs/mixed_numerical_checks.md',
+        'docs/local_run.md','docs/shear_strength_fit.md','docs/finite_geometry.md','docs/mixed_numerical_checks.md','docs/output_format.md',
         'inputs/experiment_template.xlsx','inputs/experiment_template.csv','scripts/create_experiment_workbook.py',
         'examples/data/roughness_psd.dat','examples/data/seal_pressure_profile.csv',
         'examples/local_interface.py','examples/contact_shear_model.py','examples/dry_contact.json',
-        'examples/fit_demo.py','scripts/check_installation.py','scripts/build_local_package.py']
+        'examples/fit_demo.py','scripts/check_installation.py','scripts/build_local_package.py',
+        'scripts/update_runtime.py','scripts/recover_fit.py']
     names+=['inputs/mixed_benchmark_psd.dat','examples/mixed_comparison/README.md',
             'examples/silicone_forward_parameters.py']
     names+=sorted(str(p.relative_to(root)).replace('\\','/') for p in
@@ -48,7 +49,7 @@ def trial_preset(files,preset):
         ("'domain_half_width_m': 1.2e-3","'domain_half_width_m': None"),
         ("'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2]","'lower_wall_velocities_m_s': [1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2]"),
         ("'viscosity_pa_s': 0.1","'viscosity_pa_s': 1.0"),
-        ("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/silicone_fit_excel_02'")]
+        ]
     for before,after in changes:
         if text.count(before)!=1:raise ValueError(f'Cannot apply trial configuration: {before}')
         text=text.replace(before,after)
@@ -84,7 +85,7 @@ def mixed_benchmark_preset(files):
         ("'points': 1201","'points': 601"),
         ("'n_q': 256","'n_q': 128"),
         ("'pdf_log_step': 0.01","'pdf_log_step': 0.1"),
-        ("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/mixed_benchmark_rc5'")]
+        ]
     for before,after in changes:
         if text.count(before)!=1:raise ValueError('Cannot apply benchmark preset: '+before)
         text=text.replace(before,after)
@@ -103,8 +104,8 @@ def mixed_benchmark_preset(files):
 def build_package(root,output,*,preset=None):
     root=Path(root).resolve();output=Path(output).resolve()
     if output.exists():raise FileExistsError(f'不覆盖已有包：{output}')
-    version=tomllib.loads((root/'pyproject.toml').read_text())['project']['version']
-    runtime=re.search(r'__version__\s*=\s*"([^"]+)"',(root/'src/persson_contact/__init__.py').read_text())
+    version=tomllib.loads((root/'pyproject.toml').read_text(encoding='utf-8'))['project']['version']
+    runtime=re.search(r'__version__\s*=\s*"([^"]+)"',(root/'src/persson_contact/__init__.py').read_text(encoding='utf-8'))
     if runtime is None or runtime[1]!=version:raise ValueError('Runtime/project versions differ')
     files=trial_preset(package_files(root),preset)
     try:commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,stderr=subprocess.DEVNULL).decode().strip()
@@ -115,7 +116,7 @@ def build_package(root,output,*,preset=None):
         'scope':'Runtime source and input templates only; no historical calculation results or experimental data.',
         'files':{name:{'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)} for name,data in sorted(files.items())}}
     files['PACKAGE_MANIFEST.json']=(json.dumps(metadata,indent=2,ensure_ascii=False)+'\n').encode()
-    prefix=f'ECL_BD-{version}/'
+    prefix='ECL_BD/'
     output.parent.mkdir(parents=True,exist_ok=True)
     with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
         for name,data in sorted(files.items()):
@@ -127,7 +128,7 @@ def build_package(root,output,*,preset=None):
         for name,entry in metadata['files'].items():
             if hashlib.sha256(archive.read(prefix+name)).hexdigest()!=entry['sha256']:raise ValueError('Package hash mismatch')
     checksum=hashlib.sha256(output.read_bytes()).hexdigest()
-    output.with_suffix(output.suffix+'.sha256').write_text(checksum+'  '+output.name+'\n')
+    output.with_suffix(output.suffix+'.sha256').write_text(checksum+'  '+output.name+'\n', encoding='utf-8')
     return {'path':str(output),'sha256':checksum,'version':version,'files':len(files),'bytes':output.stat().st_size}
 
 

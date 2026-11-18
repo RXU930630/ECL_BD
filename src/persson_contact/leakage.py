@@ -337,7 +337,7 @@ def run_spatial_leakage(plan,table,output,*,plot=False):
         equivalent_gas_estimates_enabled=plan.compute_equivalent_gas,
         gas_estimate_scope='500 auxiliary estimates do not solve compressible or ballistic gas pressure redistribution.' if plan.compute_equivalent_gas else None,
         ballistic_scope='Free-molecular wall-collision limit; no viscous/Knudsen transition interpolation. Gas pressure is solved independently using K2, not inferred from liquid K3.' if ballistic else None)
-    (output/'leakage_diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+    (output/'leakage_diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     if plot:_plot(output,rows,profiles)
     return summary
 

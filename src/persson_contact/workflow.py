@@ -143,7 +143,7 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
             if spatial:
                 phase='leakage'
                 summary['workflow_status']='flow_complete_leakage_pending'
-                (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+                (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n', encoding='utf-8')
                 table=make_transport(plan,model,interface,flow['results'],options.critical_relative_contact_area,
                                      options.critical_area_tolerance,shear_law=shear)
                 leakage_result=run_spatial_leakage(plan,table,output,plot=save_plots)
@@ -152,11 +152,11 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
         except Exception as exc:
             summary['workflow_status']=phase+'_failed'
             summary[phase+'_error']=str(exc)
-            (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+            (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n', encoding='utf-8')
             raise
         summary['workflow_status']='complete'
         summary['pressure_flow']={'file':flow['table_file'],'diagnostics_file':'flow_diagnostics.json',
             'status_counts':flow['status_counts'],'leakage_file':('leakage_cases.csv' if spatial else 'leakage_table.csv') if run_leakage else None}
-        (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
+        (output/'diagnostics.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n', encoding='utf-8')
         print(f'压力流动结果已保存到 {output.resolve()}')
     return summary

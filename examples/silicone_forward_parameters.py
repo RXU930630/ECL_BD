@@ -126,4 +126,4 @@ PARAMETERS = {'description': 'Finite cylindrical silicone-oil experiment; forwar
                    'quadrature_relative_tolerance': 0.002,
                    'max_gap_refinements': 4,
                    'unresolved_flow_policy': 'zero_conductance_with_upper_bound'},
- 'output_directory': 'results/silicone_forward_rc5'}
+ 'output_directory': 'results/run'}

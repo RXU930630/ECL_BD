@@ -175,7 +175,7 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
         except Exception as exc:
             (out/'fit_diagnostics.json').write_text(json.dumps({'workflow_status':'forward_failed','error':str(exc),
                 'completed_forward_directories':[p['directory'] for p in provenance],
-                'note':'No fitted material parameter was produced. Successful forward runs may be reused with source=saved_forward.'},indent=2,ensure_ascii=False)+'\n')
+                'note':'No fitted material parameter was produced. Successful forward runs may be reused with source=saved_forward.'},indent=2,ensure_ascii=False)+'\n', encoding='utf-8')
             raise
     try:
         summary,records=fit_constant_strength(experiments,[r['area_over_total_load_pa_inv'] for r in matched],
@@ -185,7 +185,7 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
         if source=='simulate':
             (out/'fit_diagnostics.json').write_text(json.dumps({'workflow_status':'fit_failed','error':str(exc),
                 'completed_forward_directories':[p['directory'] for p in provenance],
-                'note':'No fitted material parameter was produced; successful forward runs may be reused.'},indent=2,ensure_ascii=False)+'\n')
+                'note':'No fitted material parameter was produced; successful forward runs may be reused.'},indent=2,ensure_ascii=False)+'\n', encoding='utf-8')
         raise
     for record,response in zip(records,matched):
         record.update(real_contact_area_per_width_m=response['real_contact_area_per_width_m'],
@@ -211,7 +211,7 @@ def run_shear_fit_project(parameters,*,base_directory,save_plots=True):
     write_fit_workbook(out/'fit_results.xlsx',summary,records,responses,
         [{k:v for k,v in asdict(e).items() if k!='row_number'} for e in experiments])
     for name,data in [('fit_summary.json',summary),('fitted_contact_friction.json',snippet),('fit_diagnostics.json',diagnostic)]:
-        (out/name).write_text(json.dumps(data,indent=2,ensure_ascii=False,allow_nan=False)+'\n')
+        (out/name).write_text(json.dumps(data,indent=2,ensure_ascii=False,allow_nan=False)+'\n', encoding='utf-8')
     if save_plots:plot_fit(out,records)
     print(f'拟合完成：tau={summary["fitted_shear_strength_pa"]:.8g} Pa ({summary["fitted_shear_strength_pa"]/1e6:.6g} MPa)，{summary["training_points"]}个参与点。输出：{out}',flush=True)
     print(f'拟合一致性诊断：{summary["fit_consistency_status"]}。',flush=True)

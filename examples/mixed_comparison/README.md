@@ -1,6 +1,6 @@
 # 正向混合摩擦：统一谱与原版输入
 
-下载的 mixed-forward rc5 包默认开启 `RUN_MIXED_FRICTION=True`，关闭泄漏、独立干接触和拟合。直接在项目根目录运行 `python main.py`。独立 `COMPUTE_SHEAR_FLOW=False` 正确，混合润滑内部一直使用剪切流动。
+固定发布包的基准配置默认开启 `RUN_MIXED_FRICTION=True`，关闭泄漏、独立干接触和拟合。直接在项目根目录运行 `python main.py`。独立 `COMPUTE_SHEAR_FLOW=False` 正确，混合润滑内部一直使用剪切流动。
 
 ## 统一基准
 
@@ -29,7 +29,7 @@ gfortran -O3 -mcmodel=large -ffree-line-length-none -std=legacy -fallow-argument
 
 ## 正向输出与实验工况
 
-`results/mixed_benchmark_rc5/mixed_results.xlsx` 含全部速度的固体、流体滑动剪切、流体压力剪切、总mu、承载、面积与膜厚，以及数值核查。CSV、空间剖面和PNG也保留。`numerical_checks` 中是辅助解，主结果不自动替换。
+`results/run/mixed_results.xlsx` 含全部速度的固体、流体滑动剪切、流体压力剪切、总mu、承载、面积与膜厚，以及数值核查。CSV、空间剖面和PNG也保留。`numerical_checks` 中是辅助解，主结果不自动替换。
 
 要使用用户的17 cm曲率半径、10 cm轴向、3 cm滑动方向、2 cm厚的胶块与1 Pa·s硅油，可将 `examples/silicone_forward_parameters.py` 的内容复制到根目录 `parameters.py`。该示例采用40N（400N/m）和仓库原有PSD，tau仍是1MPa的明确假设；请按本次与原版对照的实际载荷和剪切强度修改。有限物理尺寸不会被程序扩大。
 

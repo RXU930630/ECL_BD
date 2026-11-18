@@ -187,7 +187,7 @@ def run_macro_project(parameters,*,base_directory,save_plots=True,compute_contac
             'case_count':len(friction_results),'file':'contact_friction_diagnostics.json',
             'scope':friction_summary['scope']}
         summary['outputs']+=friction_summary['outputs']
-    (out/'macro_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
+    (out/'macro_diagnostics.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     print(f'宏观干接触已保存到 {out.resolve()}；载荷误差 {result.load_relative_error:.3g}，最小平均间隙 {result.minimum_gap_m:.6g} m。')
     return summary
 

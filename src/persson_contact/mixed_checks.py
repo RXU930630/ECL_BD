@@ -142,7 +142,7 @@ def run_checks(parameters,base_directory,summary,cache,settings,runner,out):
         if physical:report['warnings'].append('有限胶块只验证固定物理边界内的数值精度；这不验证边界条件本身是否符合实验。')
         print(f'数值核查状态：{report["status"]}。详见 mixed_numerical_checks.json / mixed_results.xlsx。',flush=True)
         for message in report['warnings']:print('提示：'+message,flush=True)
-    (out/'mixed_numerical_checks.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False)+'\n')
+    (out/'mixed_numerical_checks.json').write_text(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False)+'\n', encoding='utf-8')
     if report['comparisons']:_csv(out/'mixed_numerical_checks.csv',report['comparisons'])
     return report
 

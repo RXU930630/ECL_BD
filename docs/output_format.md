@@ -1,0 +1,41 @@
+# 固定发布入口与输出格式
+
+从本次编码修复起，GitHub 的 `stable` 分支作为固定的纯净下载入口，下载和解压目录名不再按当次任务更换。版本记录在 `PACKAGE_MANIFEST.json` 与程序内部；“stable”表示固定的发布入口与文件接口，不代表物理模型已完成全部实验验证。
+
+程序仍由 main.py 选择任务，parameters.py 指定工况及 OUTPUT_DIRECTORY。修复不会自动切换你的任务、几何、PSD、载荷、速度或输出目录。正向与拟合是不同任务，各自的文件名称和字段固定；今后的兼容修复不重命名已有文件、列或工作表。格式若确实必须不兼容变更，需要先说明并提供迁移方法。
+
+## 固定结果
+
+正向：`mixed_results.xlsx`、`mixed_cases.csv`、`mixed_boundaries.csv`、`mixed_contact_table.csv`、`mixed_transport_table.csv`、`mixed_diagnostics.json`、`mixed_profile_000.csv`等按速度编号的剖面。绘图开启时输出 `mixed_friction.png`、`mixed_profiles.png`、`mixed_geometry.png`。
+
+数值核查：`mixed_numerical_checks.json`，实际执行比较时另有 `mixed_numerical_checks.csv`；辅助解固定在 `numerical_checks/mesh`、`tables_and_spectral_quadrature`、`domain`。原有 Excel 工作表保持“计算概况”“正向摩擦与面积”“数值核查差异”“核查执行情况”，其中差异页仅在实际比较时存在。
+
+拟合：`fit_results.xlsx`、`fit_cases.csv`、`fit_summary.json`、`fit_diagnostics.json`、`fitted_contact_friction.json`、`forward_response.csv`、`experiment_used.csv`；绘图开启时输出 `shear_strength_fit.png`。正向参考解固定在 `forward/load_000`等按载荷编号的子目录。
+
+拟合 Excel 工作表保持“拟合概况”“各载荷独立诊断”“各实验点”“正向响应”“所用实验”。字段、单位、正负号及计算公式与rc5相同。所有程序文本输出明确采用UTF-8；CSV继续保持原有UTF-8，Excel保持.xlsx，不通过删除中文或修改数据来规避Windows编码问题。
+
+## 更新现有程序，保留自己的设置
+
+先解压新的完整包。在**新包目录**打开终端，执行：
+
+```text
+python scripts/update_runtime.py "C:\你的旧项目目录"
+```
+
+目标路径必须是包含 main.py、parameters.py、src 的旧项目根目录。脚本先备份旧模块到旧项目的 `runtime_backup`，再仅更新运行模块。不会覆盖你的 main.py、parameters.py、输入文件、实验表和已有结果。备份目录已存在时会停止，避免覆盖备份。以后仍在原项目目录运行 `python main.py`。
+
+## rc5编码错误后的已完成计算
+
+截图中的 `needs_attention` 表示精度核查需要注意，不是拟合失败。最后的 `'charmap' codec can't encode...` 是写中文JSON时使用Windows默认编码导致的程序错误，现已改为明确UTF-8。
+
+更新旧项目的运行模块后，可在新包目录运行：
+
+```text
+python scripts/recover_fit.py "C:\你的旧项目目录"
+```
+
+脚本读取旧项目现有参数，检查其记录确为失败状态，再复用完整正向解，在临时目录完成拟合。只有全部所需速度和载荷都能匹配且输出成功后，才将固定名称的拟合文件保存回**原输出目录**；旧失败文件备份在 `runtime_backup/fit_before_recovery`。原 main.py、parameters.py、正向解及输入文件不改写。已完成的拟合不会覆盖；恢复失败也不替换原结果。原精度核查失败或缺失时仍明确提示，不把恢复拟合当作通过精度核查。
+
+如果希望手动复用：原输出目录的 `forward/load_000` 等目录中 `mixed_cases.csv` 完整且 `mixed_diagnostics.json` 的 `workflow_status` 为 `complete` 时，将 `shear_strength_fit.source` 设为 `saved_forward`，在对应 `directories` 中填写原正向目录；全部所需载荷、速度都必须有成功解。手动调用普通任务时仍需选择空输出目录，输出文件名和格式保持相同。
+
+编码失败可能留下空的 `mixed_numerical_checks.json`，不能把它视为通过或已完成核查。复用旧解时没有完整数值核查记录，会明确标记未核查。若主 `mixed_diagnostics.json` 也不完整，则不能直接复用，需要更新后重算相应正向工况。
