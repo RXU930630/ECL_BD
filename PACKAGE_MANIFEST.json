@@ -1,0 +1,235 @@
+{
+  "project": "ECL_BD",
+  "version": "0.2.0rc3",
+  "channel": "local-trial-release-candidate",
+  "source_base_commit": "23c0cb59941c9ddd741bc669b96119427c895939",
+  "configuration_preset": "silicone_cylinder",
+  "status": "Numerically checked candidate; first local experimental trial pending.",
+  "scope": "Runtime source and input templates only; no historical calculation results or experimental data.",
+  "files": {
+    "README.md": {
+      "sha256": "ab0d04dae621bdeace87b09ddd50241ec2dac346f4bbe9a53d0d21fd6c987b64",
+      "bytes": 5129
+    },
+    "docs/finite_geometry.md": {
+      "sha256": "f53cc0ce72029cdb87c56ac33e6decce3f56663fc968e338a4e92357171cc18a",
+      "bytes": 3758
+    },
+    "docs/local_run.md": {
+      "sha256": "bd7af8dee7576f81e80391bbb9ad541820a137f5d87b1df2108a646a744164ff",
+      "bytes": 4604
+    },
+    "docs/shear_strength_fit.md": {
+      "sha256": "2932ab238739707d9bb5a89922f6ae6eecd03322839538c58f8c0d0c838ec318",
+      "bytes": 8093
+    },
+    "examples/contact_shear_model.py": {
+      "sha256": "b74e858dad09afb56a91a781102e9489720b5df59ff2e3fd752173892cb0f5d8",
+      "bytes": 722
+    },
+    "examples/data/roughness_psd.dat": {
+      "sha256": "c5e41d8e8b1bd8f15b222620794c4a3268cafdc52a21ffae4cb3579967c0e884",
+      "bytes": 1690
+    },
+    "examples/data/seal_pressure_profile.csv": {
+      "sha256": "d683e0493e207255f1c3e56a848ebe03c8ee0d4bb8b0aa7e72b35dc512127258",
+      "bytes": 160
+    },
+    "examples/dry_contact.json": {
+      "sha256": "41340f360dd9c4dfc50b25b257aa3a7b3ce4945f4871a8d341d6c3542a7e17a1",
+      "bytes": 510
+    },
+    "examples/fit_demo.py": {
+      "sha256": "44de0ff3e70894df6c4f8f2202cf9b9db33e589154a549ae8783e0982249f18f",
+      "bytes": 3113
+    },
+    "examples/local_interface.py": {
+      "sha256": "0f08bac54aac9a59701e7e9e063cc089fce85a3daa5f4b41e28ad04d2f4d4a07",
+      "bytes": 867
+    },
+    "inputs/experiment_template.csv": {
+      "sha256": "1fe8443f0f9230cd6251de0305557dedcfbdb304e44cb567bee798f4fea1911d",
+      "bytes": 128
+    },
+    "inputs/experiment_template.xlsx": {
+      "sha256": "544f197099dbcc12e48b2a0ac5140a9e40e28bfe66c7a4848ad707b9ae60b335",
+      "bytes": 9412
+    },
+    "main.py": {
+      "sha256": "b2e5a9acd1ef4db636f6b825ad29a02d2adf8d35332519c943eab3dcabbb2184",
+      "bytes": 3109
+    },
+    "parameters.py": {
+      "sha256": "76378a7a2a92cd52a8288e36829ec2760c6842cf0b748e2cab5c258914c088ea",
+      "bytes": 16975
+    },
+    "pyproject.toml": {
+      "sha256": "4b532f4d42f50add1d0119fa79f2aa4bebdb078fb43476f78fa3677fe463af77",
+      "bytes": 503
+    },
+    "requirements.txt": {
+      "sha256": "d49438b7e781a0a348a74aec180d3707b5bde96856f9d954f3045ecd24d8a898",
+      "bytes": 128
+    },
+    "scripts/build_local_package.py": {
+      "sha256": "641d2b2471247ca50b782a3d2a0f924c82838204b3ea6a0d0e5fe81c696930fe",
+      "bytes": 6412
+    },
+    "scripts/check_installation.py": {
+      "sha256": "e3489cf896595602b4f96ef7e9659c82984b48f5147297f5653c8da805b46c39",
+      "bytes": 1715
+    },
+    "scripts/create_experiment_workbook.py": {
+      "sha256": "e3eb346c7d241f9fea5f43967f877bb6bc52e1776995e21c73aef618287a33a6",
+      "bytes": 1760
+    },
+    "src/persson_contact/__init__.py": {
+      "sha256": "f9bb01df5fbdcac4a072b456024e6c6042de13abc2983ed233e6eed80e368959",
+      "bytes": 249
+    },
+    "src/persson_contact/__main__.py": {
+      "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "bytes": 48
+    },
+    "src/persson_contact/applications.py": {
+      "sha256": "3ee081c27cad4338cc4737004ade8c5d328248f2a7bdae452e7b221177f9efb0",
+      "bytes": 2072
+    },
+    "src/persson_contact/ballistic.py": {
+      "sha256": "90e4fef18e0a0ccfa4119d3a3d707601f243e518bdfd2c844122c6328d03f930",
+      "bytes": 2022
+    },
+    "src/persson_contact/boundaries.py": {
+      "sha256": "69fc54618845cb3bffc762c69cf4f359a28b909a0a5d17d1e8c514ebb2d609fc",
+      "bytes": 1323
+    },
+    "src/persson_contact/cli.py": {
+      "sha256": "33c59d6d818bf8952a1d07c2a3a5a1d04c797a8659636b9b5d8701c125e3b1bb",
+      "bytes": 11277
+    },
+    "src/persson_contact/config.py": {
+      "sha256": "d24b6b1c4a0fba1cbe5cd0fb3b4652d741a85d7b9958cfe7f4dd86dfe5b22728",
+      "bytes": 8965
+    },
+    "src/persson_contact/contact_friction.py": {
+      "sha256": "c21fc35b8f96b0c99fc8286d95a8b6479c1d1667249405df53ee8c8aad0cb4a2",
+      "bytes": 11561
+    },
+    "src/persson_contact/contact_friction_output.py": {
+      "sha256": "e0334e75db0c369ae42e0ce2cfcf8a1ec2eba0ebb223c44d3b1070c94120ea5e",
+      "bytes": 6450
+    },
+    "src/persson_contact/core.py": {
+      "sha256": "232d6a7374441d3027e876ceda811ab587719677b7f35fd90aa10b3a5438826a",
+      "bytes": 29608
+    },
+    "src/persson_contact/dry_contact.py": {
+      "sha256": "eaeafffde4f7e9aab95438628a74d427a3865ffe18d60b99337d3b68676f010c",
+      "bytes": 4585
+    },
+    "src/persson_contact/experiment_excel.py": {
+      "sha256": "33ed732c8886c14d7e88da44e9f9a5f497d857ca5acd97047e68e035e78eaa8a",
+      "bytes": 6767
+    },
+    "src/persson_contact/flow.py": {
+      "sha256": "b86561d41b4adf47ffa2199fc5e6422162c1853871555c0dbcccab4d0adea16a",
+      "bytes": 10747
+    },
+    "src/persson_contact/flow_output.py": {
+      "sha256": "2399d9eeccba511a1b7a1078968b2b1bb4fc86ba819e86d8b8886d81aa21b8a2",
+      "bytes": 5029
+    },
+    "src/persson_contact/fluid_friction.py": {
+      "sha256": "f8f47381f0dcf20a0186c5d9c8ba98440db447929ebb94ca4c7af717eab40704",
+      "bytes": 5111
+    },
+    "src/persson_contact/gas.py": {
+      "sha256": "58f4da4f4fc3ea38e493f9ebec938bad1d3ecf773bbf9510f72f3a308541bbdd",
+      "bytes": 5145
+    },
+    "src/persson_contact/geometry.py": {
+      "sha256": "63b7db322d73395f5700ba61dd2d5eb45c25955780b90a41567b2cc50aa47ee0",
+      "bytes": 5461
+    },
+    "src/persson_contact/interface.py": {
+      "sha256": "4170558f5f404305adacf18652aca9cc58b9a3f03b7af6f7d915dd28d9f320e3",
+      "bytes": 8764
+    },
+    "src/persson_contact/leakage.py": {
+      "sha256": "02d98b32347f59dc3176f451755cb38177a76c64c4501675d4c9cab0db1a881b",
+      "bytes": 24847
+    },
+    "src/persson_contact/macro_output.py": {
+      "sha256": "9539c5e9d9c738f496b92ea0cd36f2b21fe6a25e3a6af1eb496306d8e76160db",
+      "bytes": 17462
+    },
+    "src/persson_contact/macroscopic.py": {
+      "sha256": "45b4f6d11d2bb5c323bdf56877cbb6c38575aaec1068f8edd4c3b2e8862cf65a",
+      "bytes": 6791
+    },
+    "src/persson_contact/material.py": {
+      "sha256": "cce4cc1ca348ae8de1d7370a3657f7cfeeaf403b6c0c62028568ad32e1931403",
+      "bytes": 3588
+    },
+    "src/persson_contact/mechanics.py": {
+      "sha256": "65e737518b9726a1fd1a13bc3860cb642b3860766fd9c64ace93c595b014ca73",
+      "bytes": 7306
+    },
+    "src/persson_contact/mixed.py": {
+      "sha256": "616fa1e6c9693b26f7c1937f0b22f05d7c786a6da68cf7e13f36c401f04ecdf3",
+      "bytes": 11395
+    },
+    "src/persson_contact/mixed_output.py": {
+      "sha256": "c2454a70a170ab53d909fd54fe4df64e3a63a464a6265f05478b31087b00bdad",
+      "bytes": 19916
+    },
+    "src/persson_contact/mixed_transport.py": {
+      "sha256": "7b2ca5b3ec1eabfe87681267e5625bc28e55807fd0e46b069581b30f8480711e",
+      "bytes": 7890
+    },
+    "src/persson_contact/moving_flow.py": {
+      "sha256": "aa66bb5598eb3ab473bc9e51a36f6d820eecb98e413b6a073b93ead657b0e6aa",
+      "bytes": 3944
+    },
+    "src/persson_contact/profiles.py": {
+      "sha256": "2c4ef0d4a7208f5ee0a2e2336fd8da1904512926924d9b7c94fad5c23e623071",
+      "bytes": 3200
+    },
+    "src/persson_contact/psd.py": {
+      "sha256": "2074d0001af7deddb4cbcbb09a9f45429702ee933604016aa69b3295c0a7e366",
+      "bytes": 11946
+    },
+    "src/persson_contact/shear.py": {
+      "sha256": "c2be7c8df218a1550ffc50f1e4a87054be5c6d0d91eccab5c68ad0ad355c1e21",
+      "bytes": 3993
+    },
+    "src/persson_contact/shear_fit.py": {
+      "sha256": "75b49f7b8aa3a4da6e7246e3a03e03d19a0972573f0f9c22b1e581c4036f6836",
+      "bytes": 11098
+    },
+    "src/persson_contact/shear_fit_output.py": {
+      "sha256": "8ac6c680fb23754f454f7554ae3512000001a384c50d8877cb100d980ab3a612",
+      "bytes": 16436
+    },
+    "src/persson_contact/shear_output.py": {
+      "sha256": "c4025269b513f7537fa6729288ed8c9b47559a58fe7fb8dd85ad1537b0cf76de",
+      "bytes": 3044
+    },
+    "src/persson_contact/steady.py": {
+      "sha256": "e802062c4377961ceab24a981fe331edf32ce82762a04ba058aea28095edf8c2",
+      "bytes": 7394
+    },
+    "src/persson_contact/table.py": {
+      "sha256": "aea65c6a4cc291c1cef273e3c0a0ef4fe9b3a93a4903633256727e6bf06396ef",
+      "bytes": 3864
+    },
+    "src/persson_contact/transport_table.py": {
+      "sha256": "ecf404412f52ea5be53ab2809b692b6f4a05d121432e9c264baa5d3d291493d9",
+      "bytes": 5927
+    },
+    "src/persson_contact/workflow.py": {
+      "sha256": "cb406a9d0c611b3adf6bc492699281f19fbbe5f4b8ccf4156b85291e9d46ebbf",
+      "bytes": 11162
+    }
+  }
+}

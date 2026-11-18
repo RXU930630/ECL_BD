@@ -1,15 +1,15 @@
 """日常配置：先改工况，必要时再改数值设置。全部使用SI单位。
 
-当前为Hertz示例；功能开关在 main.py。
+当前为有限圆柱曲面硅油实验工况；拟合已在 main.py 开启。
 路径相对于项目目录；末尾自动组装程序读取的 PARAMETERS，无需手改。
 """
 
 # 一、工况：材料、粗糙度、流体、几何与压力
 CASE = {
-    'description': 'Hertz example.',
+    'description': 'Finite cylindrical rubber pad, silicone oil; local trial.',
     'material': {
         'model': 'elastic',
-        'young_modulus_pa': 3.0e6,
+        'young_modulus_pa': 1.8e6,
         'poisson_ratio': 0.5,
     },
     'psd': {
@@ -21,7 +21,7 @@ CASE = {
     'macro_contact': {
         # cylinder_plane：无限长圆柱的局部抛物线，数值域须自行检查远场收敛
         # finite_cylindrical_pad：直接给定实际曲面尺寸，自动生成物理边界和横向宽度
-        'geometry': 'cylinder_plane',
+        'geometry': 'finite_cylindrical_pad',
         'geometry_parameters': {
             'cylinder_plane': {
                 'radius_m': 5e-3,     # 接触截面曲率半径；不是塞子的整体周向半径
@@ -39,8 +39,8 @@ CASE = {
         # relative_only：material给合并E*，只确定相对变形；显示的上轮廓为等效轮廓
         'body_representation': 'upper_elastic_lower_rigid',
         'contact_model': 'persson',    # persson：模块2+6粗糙干接触；smooth：光滑Hertz检验
-        'line_load_n_m': 100.,         # N/m；可用'normal_force_n':100.替换本行（不能同时给），程序自动除以B
-        'domain_half_width_m': 1.2e-3, # 仅cylinder_plane读取；finite模式从实际长度自动生成，无需估计
+        'normal_force_n': 100.,        # 默认总力N；CSV逐行的40/100/160N覆盖此值，自动除以轴向长度B
+        'domain_half_width_m': None, # 仅cylinder_plane读取；finite模式从实际长度自动生成，无需估计
         'reference_length_m': None,   # 2D位移参考长度；None取全域长度，只影响绝对位移与刚体偏移
     },
     'leakage': {
@@ -109,7 +109,7 @@ CASE = {
     # 几何、载荷和弹性仍使用macro_contact；固体剪切强度仍在contact_friction填写
     'mixed_friction': {
         # 坐标随上部圆柱移动：圆柱速度为0，下部平面沿+x移动；V_relative=-U_plane
-        'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2],
+        'lower_wall_velocities_m_s': [1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2],
         'rough_surface': 'upper',          # upper弹性圆柱粗糙 / lower刚性平面粗糙；另一侧光滑
         'inlet_pressure_pa': 0.,           # 小坐标端储液边界，表压Pa，必须>=0
         'outlet_pressure_pa': 0.,          # 大坐标端储液边界；允许反向速度，流入端均为满液
@@ -185,7 +185,7 @@ CASE = {
         'rheology': 'newtonian',
         'rheology_parameters': {
             'newtonian': {
-                'viscosity_pa_s': 0.1, # 动力黏度，Pa·s
+                'viscosity_pa_s': 1.0, # 动力黏度，Pa·s
             },
         },
 
@@ -262,7 +262,7 @@ NUMERICS = {
 }
 
 # 三、输出：切换工况或流体后请换目录，已有非空目录不会覆盖
-OUTPUT_DIRECTORY = 'results/leakage'
+OUTPUT_DIRECTORY = 'results/silicone_fit_excel_01'
 
 # 自动组装，兼容原有程序入口；上面两块的leakage字段合并
 PARAMETERS = {
