@@ -1,0 +1,29 @@
+2          idonot1=0 no electroadhesion, =1 notuse, =2 do slow accurate, =3 do frequencydependency, =4 do Robotpad, =5 do Robot, fix bar u (fast)          
+0.0 1.0E-06    h0=INPUT for insulating case, effective thickness of insulating layer h0=d1/epsi1+d2/epsi2 
+1.0E-08    h1=cut-off length for conducting layer 
+1.0E-03    d=INPUT for conducting case, effective thickness of conducting layer d=(cond1*d2+cond2*d1)/(cond1+cond2)
+
+1          imetod=0 u1-used, =1 P(u) used for function integral
+1          iubar=1 to get fast calculation
+2          iconduct =0 --> insulating, =1 --> conducting, =2 --> general (but put data directly in code at: HERE.data)
+-2.0       prange: the range of pressures is proportional to this; if prange<0 then use pressures from p0 to |prange|*p0 (p0 applied pressure) 
+-100       Npressure = number of pressure values; if Npressure < 0 use linear pressure scale with |Npressure| pressure points
+1.0E+04    pFINITEstart1: if iTurnOnFinite=2 in IN.mathematical then take into account finite size effect with P(u) calculated for pFINITEstart1
+
+1155.0     [IF idonot1=1-3 THIS AND INFO BELOW NOT USED] Applied potential amplitude V0; if metallic strips with V=+Vm,-Vm then V0=Vm*sqrt(4/3)
+1.57E+03   qe=wavenumber (in 1/m) of V(x)=V_0 cos (qe*x)  (this and below used only for Robotpad, idonot1=4) 
+1.0E+11    rhoe1=resistivity (in Ohm m) for substrate  
+4.1        eps1=dielectric constant for substrate; epsilon1=eps1+i/(omega*rhoe1*e0); e0= electric constant 
+2.3        eps2=dielectric constant for pad, epsilon2=eps2+i/(omega*rhoe2*e0); e0= electric constant
+50.0E-06   ed=distance (in m) of conducting sheets from pad surface
+120.0      time=time for electroadhesion with V(t)=0 for t<0 and V(t)=V0 for t>0
+
+12.0E-06   [THIS ONLY USED IF idonot1=5] =ubar; soft pad with this fixed average separation used in calculation
+
+1.0E-06    d1=thickness bottom layer d1 (in meter). THIS AND DATA BELOW ONLY USED WHEN idonot1=2 AND iconduct=2
+200.0E-06  d2=thickness top layer (in meter)
+1.0E+11    rho1=electric resistance bottom layer  (in Ohm meter)
+1.0E+05    rho2=electric resistance top layer (in Ohm meter)
+5.0        eps01=dielectric constant bottom layer
+1.0E+04    eps02=dielectric constant top layer
+100.0      freq0=frequency (Hz)

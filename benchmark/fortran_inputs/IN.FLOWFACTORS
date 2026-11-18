@@ -1,0 +1,7 @@
+100         NvF = number of velocities for friction flow factors Phif and Phifs (Phifp does not depend on the shear rate); give shearthinning data in IN.FLUID.viscosity.and.TrippNumber 
+1.0         vmaxF = highest velocity for flow factor (in m/s)
+1.0E-06     vminF = lowest velocity for flow factors (in m/s)
+200         Np = number of pressure points (max 1000)
+1.5E+06     pmaxF = maximum nominal contact pressure
+100         Npadd = added data points for large separation (Np+Npadd max 1000)
+3.0         addp = added number of decades in separation using asympthotic relation for flowfactors

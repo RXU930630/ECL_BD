@@ -1,0 +1,7 @@
+1.0E-03  w (denoted wRadius): width of the infinite recangular block; also for circular disk with Radius=w*sqrt(2.0/3.0)
+1.0E-04  initialSeparation: the initial separation between the surfaces; contact pressure given in IN.sigma...
+1.0E+06  runTime: total squeeze-out time
+0.01     turnOnTime: the squeezing force is turned on linearly during this time interval
+
+0        iporo=1 --> include poroelasticity, =0 do not; only long-time theory implemented
+1.0      poroL = thickness in cm of poroelastic solid

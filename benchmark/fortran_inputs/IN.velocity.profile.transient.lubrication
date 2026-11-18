@@ -1,0 +1,35 @@
+ivprofile:	kind of velocity profile
+ivprofile=	1 sinus variation; total simulation time is given by Nv*period 
+ivprofile=	2 ramp + steady; total simulation time is given by (time ramp + time steady)
+ivprofile=	3 ramp + steady + ramp_down + stop_some_time; total simulation time is given by Nv*(time ramp + time steady + ramp_down + stop_some_time)
+ivprofile=	4 ramp + steady + ramp_down + stop_some_time; total simulation time is given by Nv*(time ramp + time steady + ramp_down + stop_some_time) - top-speeds following to first defined as +-increments
+
+0			input-type =0 start, =1 restart
+4			number of processors
+3			ivprofile =1, 2, 3 or 4; 1=sinus, 2=ramp+steady, 3=ramp+stready+ramp_down+stop, 4=ramp+stready+ramp_down+stop
+0.01		initial time step [s]
+
+2			if ivprofile =1: number of periods Nv
+1.E-01		if ivprofile =1: stroke length [m]
+1.E-01		if ivprofile =1: period of the sinusoidal velocity variation [s]
+
+1.E-00		if ivprofile =2: max velocity [m/s]
+1.E-01		if ivprofile =2: period of the ramp variation [s]
+2.E-00		if ivprofile =2: simulation time in the zero velocity regime
+
+2			if ivprofile =3: number of periods Nv
+2.8E-02		if ivprofile =3: max velocity [m/s]
+7.5E+00		if ivprofile =3: period of the ramp variation [s]
+1.E-03		if ivprofile =3: simulation time in the steady velocity regime [s]
+7.5E+00		if ivprofile =3: period of the ramp variation during speed decrease [s]
+17.5E-00		if ivprofile =3: simulation time in the zero velocity regime [s]
+
+2			if ivprofile =4: number of periods Nv
+1.8E-02		if ivprofile =4: max velocity [m/s]
+5.5E+00		if ivprofile =4: period of the ramp variation [s]
+1.E-03		if ivprofile =4: simulation time in the steady velocity regime [s]
+5.5E+00		if ivprofile =4: period of the ramp variation during speed decrease [s]
+17.5E-00		if ivprofile =4: simulation time in the zero velocity regime [s]
+0.E-02		2nd increment
+1.E-02		3rd increment
+1.E-02		N.. increment

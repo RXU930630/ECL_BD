@@ -1,0 +1,7 @@
+10.0E-06   ThicknessTopLayer = d: Thickness top layer in meter 
+0.3        BelowPoissonRatio nu1: Poisson number of layer below top layer
+1.0E+11    BelowElasticModulus E1: Youngs elastic modulus of layer below top layer in Pa
+
+0.05       xlayer: give stress for position dinbetween z=xlayer*d (use xlayer >0); this info and below used only when iflag005=1 
+0.999      feedback: mathematical convergence factor (mix-in of old solution) (do not change unless result diverge)
+400        Nit: mathematical convergence number (number of iterations) (do not change unless result diverge) 
