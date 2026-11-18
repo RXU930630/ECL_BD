@@ -17,7 +17,8 @@ from .macro_output import prepare_macro,_keys,_csv
 from .mixed import MixedSolution,solve_mixed_continuation
 from .mixed_transport import MixedTransport
 from .psd import read_psd
-from .table import build_contact_table
+from .table import build_contact_table,ContactTable
+from .table_cache import TableCache
 from .geometry import friction_parameters,geometry_metadata
 
 
@@ -77,9 +78,28 @@ def make_contact_database(parameters,base,macro,solver,hertz,elastic,opts):
         raise ValueError('Invalid mixed contact-table range or points')
     if low*np.ptp(elastic.edges_m)/hertz.line_load_n_m>solver['relative_tolerance']:
         raise ValueError('Lower contact-table minimum pressure to control omitted far-tail load')
-    focus=max(low,min(high,hertz.peak_pressure_pa*1e-3))
+    # A load-independent grid lets different loads share an identical table.
+    focus=max(low,min(high,high*1e-3))
     pressures=np.unique(np.r_[np.geomspace(low,focus,n//3),np.geomspace(focus,high,n-n//3+1)])
-    return model,build_contact_table(model,pressures),hashlib.sha256(path.read_bytes()).hexdigest()
+    sha=hashlib.sha256(path.read_bytes()).hexdigest()
+    conditions={'psd_sha256':sha,'scale_c':psd_raw.get('scale_c',1.),
+        'material':parameters.get('material',{}),'q0_m_inv':psd.q0,'q1_m_inv':psd.q1,
+        'height_rms_m':psd.hrms,'effective_modulus_pa':hertz.effective_modulus_pa,'options':parameters.get('options',{})}
+    cache=TableCache(base,conditions)
+    cache.description={'psd_filename':path.name,'units':'SI; pressure Pa, gap m, geometric conductivity m^3'}
+    model._table_cache=cache
+    extra={'pressure_grid_pa':pressures.tolist()}
+    saved=cache.load('contact',extra)
+    try:
+        table=ContactTable(model,np.array(saved['pressures_pa']),np.array(saved['mean_gaps_m']),
+            np.array(saved['contact_fractions'])) if saved is not None else None
+    except (KeyError,TypeError,ValueError):table=None
+    cache.describe('contact',table is not None,extra)
+    if table is None:
+        table=build_contact_table(model,pressures)
+        cache.save('contact',{'pressures_pa':table.pressures_pa.tolist(),
+            'mean_gaps_m':table.mean_gaps_m.tolist(),'contact_fractions':table.contact_fractions.tolist()},extra)
+    return model,table,sha
 
 
 def run_mixed_project(parameters,*,base_directory,save_plots=True):

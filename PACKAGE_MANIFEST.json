@@ -1,15 +1,15 @@
 {
   "project": "ECL_BD",
-  "version": "0.2.0rc6",
+  "version": "0.2.0rc7",
   "channel": "stable-file-interface",
   "source_base_commit": "6bb2285fa0807c40058dcd40c4283b3733e59e43",
   "configuration_preset": "mixed_benchmark",
-  "status": "UTF-8 encoding fix; preserved rc5 calculation and result schemas. Physical validation remains ongoing.",
+  "status": "Automatic validated table caching; physical validation remains ongoing.",
   "scope": "Runtime source and input templates only; no historical calculation results or experimental data.",
   "files": {
     "README.md": {
-      "sha256": "b6e3ad1e42b77f960aa64f423bb2c973c4d4a655b3ffc77b7db19b2a1e7fda99",
-      "bytes": 5621
+      "sha256": "67a2babd76e8a43a6c1cda0cc6c982a04d7bb62086f3978c00eeab4c4ee64835",
+      "bytes": 5823
     },
     "docs/finite_geometry.md": {
       "sha256": "880375e8a9a5ba8950e9de3e7d3cffb952f6a752f4f041270e57d27448b57628",
@@ -24,8 +24,8 @@
       "bytes": 5348
     },
     "docs/output_format.md": {
-      "sha256": "9a30f90355c446fc9f10fb1373cdfaa69ab4765097a55a9664fe81aaf14771a6",
-      "bytes": 4326
+      "sha256": "2b22efe2c493415ccf11b8094da2e7a6644110949ab66210b19ff9a098128030",
+      "bytes": 6150
     },
     "docs/shear_strength_fit.md": {
       "sha256": "2932ab238739707d9bb5a89922f6ae6eecd03322839538c58f8c0d0c838ec318",
@@ -208,7 +208,7 @@
       "bytes": 18349
     },
     "pyproject.toml": {
-      "sha256": "427af83dab8632cae0d75a8c626190e8fbfd50bcede38c80a713d6e6090d534e",
+      "sha256": "11ee73d7dfff9a78a00b579ca1c56838179672e9d335fe4429d9ad54173d4f2e",
       "bytes": 503
     },
     "requirements.txt": {
@@ -236,7 +236,7 @@
       "bytes": 2771
     },
     "src/persson_contact/__init__.py": {
-      "sha256": "46baa11be26eebf9a7b05e6b2e9f7faaae88297dd8e9a6be4174d45174b0df7e",
+      "sha256": "19b56003d8bba536714075b51994d3297145a2555f19589c108bd25ecc9074b9",
       "bytes": 249
     },
     "src/persson_contact/__main__.py": {
@@ -272,8 +272,8 @@
       "bytes": 6468
     },
     "src/persson_contact/core.py": {
-      "sha256": "232d6a7374441d3027e876ceda811ab587719677b7f35fd90aa10b3a5438826a",
-      "bytes": 29608
+      "sha256": "01cd0e6d4170e96b101bc696e45989361f0f9907d394a0696845894dc2fdd08c",
+      "bytes": 31076
     },
     "src/persson_contact/dry_contact.py": {
       "sha256": "eaeafffde4f7e9aab95438628a74d427a3865ffe18d60b99337d3b68676f010c",
@@ -336,12 +336,12 @@
       "bytes": 11111
     },
     "src/persson_contact/mixed_output.py": {
-      "sha256": "ff6bd68d53f1aa5a1b118ca19be93820b601552e6559b819cca2b6e32f8563bf",
-      "bytes": 22354
+      "sha256": "30e2c6c478a712ba37bd4c20d56b051f9645c004a1bb520b47d0f0123e6573bf",
+      "bytes": 23542
     },
     "src/persson_contact/mixed_transport.py": {
-      "sha256": "460c4d52a7c01837048b8f7f4d7fdb3fe99ada42bdf068e2ee1a8a72dbe0f2e2",
-      "bytes": 8127
+      "sha256": "f84c672fd8a38844e980c9b02bbdd4f14f9c2aa90ae324e2a7b858ce07f9ad83",
+      "bytes": 9432
     },
     "src/persson_contact/moving_flow.py": {
       "sha256": "aa66bb5598eb3ab473bc9e51a36f6d820eecb98e413b6a073b93ead657b0e6aa",
@@ -379,6 +379,10 @@
       "sha256": "aea65c6a4cc291c1cef273e3c0a0ef4fe9b3a93a4903633256727e6bf06396ef",
       "bytes": 3864
     },
+    "src/persson_contact/table_cache.py": {
+      "sha256": "4455d020bcf5df0fb0189b8cb5b64afc011a28f711af044f17f3093441991604",
+      "bytes": 3464
+    },
     "src/persson_contact/transport_table.py": {
       "sha256": "ecf404412f52ea5be53ab2809b692b6f4a05d121432e9c264baa5d3d291493d9",
       "bytes": 5927
@@ -388,5 +392,5 @@
       "bytes": 11216
     }
   },
-  "runtime_source_commit": "91d5e2376dd7728f7ef761c901bd50c65c41f059"
+  "runtime_source_base_commit": "0461725ee87980578f5a64ce676778c5d28bb98e"
 }

@@ -354,6 +354,30 @@ class PerssonModel:
             fine if resolved else None, difference)
 
     def _conservative_pdf_scales(self, p):
+        cache=getattr(self,'_table_cache',None)
+        if cache is None:return self._compute_conservative_pdf_scales(p)
+        extra={'pressure_pa':float(p)}
+        saved=cache.load('gap_scales',extra)
+        if saved is not None:
+            try:
+                arrays=tuple(np.asarray(saved[k],float) for k in ('u1_m','probability','variance_m2'))
+                missing=tuple(float(saved[k]) for k in ('excluded_high_area','excluded_low_area','excluded_small_u1'))
+                if (any(a.ndim!=1 or not np.all(np.isfinite(a)) for a in arrays)
+                    or len({len(a) for a in arrays})!=1 or np.any(arrays[0]<=0)
+                    or any(np.any(a<0) for a in arrays[1:])
+                    or not all(np.isfinite(v) and v>=0 for v in missing)):
+                    raise ValueError('Invalid cached scale samples')
+                return (*arrays,*missing)
+            except (KeyError,TypeError,ValueError):pass
+        result=self._compute_conservative_pdf_scales(p)
+        # Do not preserve a grossly unresolved scale quadrature as reusable data.
+        if sum(result[3:])<.1 or self.area(p)>=self.pdf_max_relative_contact_area:
+            cache.save('gap_scales',dict(zip(
+                ('u1_m','probability','variance_m2','excluded_high_area','excluded_low_area','excluded_small_u1'),
+                [a.tolist() for a in result[:3]]+list(result[3:]))),extra)
+        return result
+
+    def _compute_conservative_pdf_scales(self, p):
         """Exact area cells and local PSD moments; same reflected-mixture model.
 
         Locate area cutoffs rather than rounding them to a scale grid. ubar is

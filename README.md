@@ -83,3 +83,5 @@ Excel和CSV使用相同的列名与SI单位。旧CSV仍可通过`experiment_file
 正向混合摩擦的精度核查、Excel输出和shear flow开关说明见[数值核查说明](docs/mixed_numerical_checks.md)。
 
 固定下载入口、输出文件约定、保留现有设置的更新和失败拟合恢复见[固定格式说明](docs/output_format.md)。
+
+自动查表缓存：混合润滑及拟合任务自动复用 `.cache/tables/`；每份表的条件见 CONDITIONS.txt，完整数据见 table.json。无需配置开关。详见 docs/output_format.md。
