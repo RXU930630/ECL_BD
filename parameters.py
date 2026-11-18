@@ -1,21 +1,21 @@
 """日常配置：先改工况，必要时再改数值设置。全部使用SI单位。
 
-当前为Hertz示例；功能开关在 main.py。
+当前为统一合成谱的正向混合摩擦对照；不是硅油实验拟合。
 路径相对于项目目录；末尾自动组装程序读取的 PARAMETERS，无需手改。
 """
 
 # 一、工况：材料、粗糙度、流体、几何与压力
 CASE = {
-    'description': 'Hertz example.',
+    'description': 'Common synthetic PSD mixed-friction forward comparison.',
     'material': {
         'model': 'elastic',
         'young_modulus_pa': 3.0e6,
         'poisson_ratio': 0.5,
     },
     'psd': {
-        'path': 'examples/data/roughness_psd.dat',
+        'path': 'inputs/mixed_benchmark_psd.dat',
         'scale_c': 1.0,
-        'tail_is_extrapolated': True,
+        'tail_is_extrapolated': False,
     },
     # 宏观干接触：main.py开启RUN_MACRO_CONTACT；与当前泄漏任务分开运行
     'macro_contact': {
@@ -39,8 +39,8 @@ CASE = {
         # relative_only：material给合并E*，只确定相对变形；显示的上轮廓为等效轮廓
         'body_representation': 'upper_elastic_lower_rigid',
         'contact_model': 'persson',    # persson：模块2+6粗糙干接触；smooth：光滑Hertz检验
-        'line_load_n_m': 100.,         # N/m；可用'normal_force_n':100.替换本行（不能同时给），程序自动除以B
-        'domain_half_width_m': 1.2e-3, # 仅cylinder_plane读取；finite模式从实际长度自动生成，无需估计
+        'line_load_n_m': 2.,         # N/m；可用'normal_force_n':100.替换本行（不能同时给），程序自动除以B
+        'domain_half_width_m': 0.0006770275002573076, # 仅cylinder_plane读取；finite模式从实际长度自动生成，无需估计
         'reference_length_m': None,   # 2D位移参考长度；None取全域长度，只影响绝对位移与刚体偏移
     },
     'leakage': {
@@ -109,7 +109,7 @@ CASE = {
     # 几何、载荷和弹性仍使用macro_contact；固体剪切强度仍在contact_friction填写
     'mixed_friction': {
         # 坐标随上部圆柱移动：圆柱速度为0，下部平面沿+x移动；V_relative=-U_plane
-        'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2],
+        'lower_wall_velocities_m_s': [1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3],
         'rough_surface': 'upper',          # upper弹性圆柱粗糙 / lower刚性平面粗糙；另一侧光滑
         'inlet_pressure_pa': 0.,           # 小坐标端储液边界，表压Pa，必须>=0
         'outlet_pressure_pa': 0.,          # 大坐标端储液边界；允许反向速度，流入端均为满液
@@ -155,7 +155,7 @@ CASE = {
         'model': 'constant_shear_strength', # 日常使用常数；备选gaussian_log_velocity或custom
         'model_parameters': {              # 只读取选中模型；剪切强度均作用在真实接触面积上
             'constant_shear_strength': {
-                'shear_strength_pa': None, # 必填实验值，Pa；不由E或PSD推断，不默认猜测
+                'shear_strength_pa': 1e6, # 对照公开假设tau=1MPa；不是实验拟合结果
             },
             'gaussian_log_velocity': {     # 后续选项：tau=baseline+amplitude*exp(-0.5*z^2)
                 'baseline_pa': None,
@@ -171,7 +171,7 @@ CASE = {
         },
         'relative_velocities_m_s': [0., 1e-6, 1e-4, 1e-2, -1e-2], # 仅干摩擦扫描；混合润滑速度在mixed_friction
         'temperature_k': 298.15,          # 仅传给模型；常数及高斯模型无温度依赖，不求热场
-        'transverse_width_m': None,       # finite模式自动使用轴向长度，请留None；旧cylinder模式可手填B
+        'transverse_width_m': 0.01,       # finite模式自动使用轴向长度，请留None；旧cylinder模式可手填B
         # V=0不求静摩擦：滑动摩擦项及耗散为0，动摩擦系数与静摩擦极限留空
     },
     # 剪切流动：main.py开启COMPUTE_SHEAR_FLOW后读取；首版限牛顿、无滑移、单侧粗糙
@@ -210,7 +210,7 @@ CASE = {
 # 二、模型与数值设置：控制接触模型、积分精度与空间求解
 NUMERICS = {
     'mixed_friction': {
-        'transport_points': 161,          # 独立输运/摩擦查表分辨率；可用321检查
+        'transport_points': 41,          # 独立输运/摩擦查表分辨率；可用321检查
         'relative_tolerance': 1e-8,
         'max_iterations': 100,
         'numerical_checks': {            # 正向与simulate拟合均执行；额外计算，结果单独保存
@@ -225,15 +225,15 @@ NUMERICS = {
     },
     'macro_contact': {
         'solver': {
-            'cells': 257,             # 均匀压力单元数；通常129/257/513检查收敛
+            'cells': 129,             # 均匀压力单元数；通常129/257/513检查收敛
             'relative_tolerance': 1e-9,
             'max_iterations': 80,
             'edge_pressure_ratio_tolerance': 1e-4, # 仅旧圆柱远场截断检查；finite模式的物理边缘不应用此阈值
         },
         'contact_table': {            # 仅persson读取；远场极小压力保留正值，不加压力地板
             'minimum_pressure_pa': 1e-100,
-            'maximum_pressure_pa': 2e6, # 必须覆盖局部峰值；范围不足明确报错，不外推
-            'points': 1201,           # 独立于泄漏数据库；远场尾部与工作区分配不同密度
+            'maximum_pressure_pa': 2e5, # 必须覆盖局部峰值；范围不足明确报错，不外推
+            'points': 601,           # 独立于泄漏数据库；远场尾部与工作区分配不同密度
         },
     },
     'contact_pressure': {             # 接触数据库，不是流体入口压力
@@ -246,11 +246,11 @@ NUMERICS = {
         'pdf_afact': 1.0,             # 分布展宽修正
         'critical_relative_contact_area': 0.42,
         'critical_area_tolerance': 0.005, # 面积分数的绝对容差
-        'n_q': 256,                   # 平均/临界间隙积分分辨率
+        'n_q': 128,                   # 平均/临界间隙积分分辨率
         # conservative：准确谱积分、面积差守恒的尺度积分（推荐）
         # fortran：保留原右矩形和中心差分规则，供历史复算
         'pdf_scale_method': 'conservative',
-        'pdf_log_step': 0.01,         # PDF尺度步长；需独立减半检查，导流分箱收敛不能代替它
+        'pdf_log_step': 0.1,         # PDF尺度步长；需独立减半检查，导流分箱收敛不能代替它
         'pdf_max_relative_contact_area': 0.999,
         'pdf_min_relative_contact_area': 0.0001,
         'pdf_min_u1_m': 1e-12,
@@ -276,7 +276,7 @@ NUMERICS = {
 }
 
 # 三、输出：切换工况或流体后请换目录，已有非空目录不会覆盖
-OUTPUT_DIRECTORY = 'results/leakage'
+OUTPUT_DIRECTORY = 'results/mixed_benchmark_rc5'
 
 # 自动组装，兼容原有程序入口；上面两块的leakage字段合并
 PARAMETERS = {
