@@ -1,5 +1,7 @@
 # Persson 接触、泄漏与混合润滑计算
 
+**rc4积分收敛修正：** 修复40N工况临界节点因默认加密上限不足而中断的问题，允许最多4次自动加密，保持0.2%积分容差与物理零导流。[原因与复现](docs/quadrature_convergence_fix.md)、[rc4纯净试运行包](https://github.com/RXU930630/ECL_BD/archive/refs/heads/local-trial-v0.2.0rc4.zip)、[本次硅油实验完整包（含已填Excel及参数）](https://github.com/RXU930630/ECL_BD/archive/refs/heads/silicone-experiment-rc4.zip)。历史候选版本仍保留。
+
 **Excel输入与结果（rc3）：** 拟合任务直接读取`inputs/experiment.xlsx`，并生成`fit_results.xlsx`。用Excel打开空白模板填写即可，原CSV输入继续兼容。[使用说明](docs/shear_strength_fit.md)。[rc3纯净试运行包](https://github.com/RXU930630/ECL_BD/archive/refs/heads/local-trial-v0.2.0rc3.zip)不含实验数据与历史结果，rc1/rc2快照保留。
 
 **有限曲面几何与本地试运行rc2：** 新增`finite_cylindrical_pad`，直接输入成形半径、流向长度、轴向长度，自动生成物理边界与总力/线载荷换算；厚度仅记录，弹性仍使用半空间模型。[几何说明](docs/finite_geometry.md)。[0.2.0rc2硅油实验预设纯净ZIP](https://github.com/RXU930630/ECL_BD/archive/refs/heads/local-trial-v0.2.0rc2.zip)已填写本次尺寸、E、黏度并开启拟合，不含实验数据或历史结果；旧rc1快照保留。

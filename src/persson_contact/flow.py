@@ -21,7 +21,7 @@ class FlowOptions:
     closure: str = 'fortran_isotropic_bruggeman'
     gap_points: int = 2049
     quadrature_relative_tolerance: float = .002
-    max_gap_refinements: int = 2
+    max_gap_refinements: int = 4
     unresolved_flow_policy: str = 'zero_conductance_with_upper_bound'
 
     def __post_init__(self):
@@ -171,6 +171,7 @@ def integrate_mobility(model, pressure_pa, interface, options=None, *, percolati
     for refinement in range(options.max_gap_refinements+1):
         if count>65537:
             raise ValueError('Flow quadrature exceeded 65537 gap points')
+        used_count=count
         edges=np.r_[0.,np.geomspace(start,stop,count-1)]
         distribution=model.gap_distribution(p,edges)
         fine=homogenize_bins(edges,distribution.continuous_cdf,a,h,interface,
@@ -185,7 +186,10 @@ def integrate_mobility(model, pressure_pa, interface, options=None, *, percolati
             break
         count=2*count-1
     else:
-        raise ValueError('Pressure-flow quadrature not converged; increase pressure_flow.gap_points')
+        raise ValueError(f'Pressure-flow quadrature not converged at p={p:.12g} Pa: '
+            f'gap_points={used_count}, relative_difference={difference:.6g}, '
+            f'tolerance={options.quadrature_relative_tolerance:g}; increase '
+            'pressure_flow.max_gap_refinements (up to 4) or pressure_flow.gap_points')
     return p,a,h,fine,count,difference
 
 

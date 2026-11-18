@@ -122,6 +122,21 @@ class RealSurfaceFlowTests(unittest.TestCase):
                 np.testing.assert_allclose(result.geometric_conductivity_m3,
                     case['reference_geometric_conductivity_m3'],rtol=1e-4,atol=0)
 
+    def test_mixed_40n_critical_node_refines_upper_bound_without_changing_zero_flow(self):
+        # Regression: the 40N contact interpolation puts the explicitly sampled
+        # critical gap just below a=.42. The default K remains exactly zero,
+        # but its tiny nonzero upper bound needs more than 8193 gap nodes.
+        model=PerssonModel(self.psd,2.4e6,.4,n_q=256,pdf_scale_method='conservative')
+        pressure=118403.39947073194
+        with self.assertRaisesRegex(ValueError,'not converged.*gap_points=8193'):
+            pressure_flow(model,pressure,NewtonianNoSlip(1.),FlowOptions(max_gap_refinements=2))
+        result=pressure_flow(model,pressure,NewtonianNoSlip(1.))
+        self.assertEqual(result.geometric_conductivity_m3,0.)
+        self.assertGreater(result.upper_geometric_conductivity_m3,0.)
+        self.assertLess(result.upper_geometric_conductivity_m3,1e-40)
+        self.assertGreater(result.gap_points,8193)
+        self.assertLessEqual(result.quadrature_relative_difference,.002)
+
     def test_nonconverged_flow_marks_partial_output_as_failed(self):
         from parameters import PARAMETERS
         with tempfile.TemporaryDirectory() as directory:

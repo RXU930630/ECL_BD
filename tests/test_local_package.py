@@ -26,7 +26,7 @@ class LocalPackageTests(unittest.TestCase):
 
     def test_manifest_complete_runtime_clean_paths_and_deterministic_build(self):
         manifest=json.loads((self.project/'PACKAGE_MANIFEST.json').read_text())
-        self.assertEqual(manifest['version'],'0.2.0rc3')
+        self.assertEqual(manifest['version'],'0.2.0rc4')
         for name,data in manifest['files'].items():
             self.assertEqual(hashlib.sha256((self.project/name).read_bytes()).hexdigest(),data['sha256'])
             self.assertFalse(any(part in name.split('/') for part in ('tests','results','.git','__pycache__','.venv')))

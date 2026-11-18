@@ -40,8 +40,12 @@ class MixedTransport:
         rows=[]
         for i,h in enumerate(gaps):
             p=float(contact_law.pressure_and_derivative(h)[0])
-            raw=pressure_flow(model,p,interface,flow_options,
-                percolation_relative_contact_area=percolation_relative_contact_area)
+            try:
+                raw=pressure_flow(model,p,interface,flow_options,
+                    percolation_relative_contact_area=percolation_relative_contact_area)
+            except ValueError as exc:
+                raise ValueError(f'混合润滑输运表第{i+1}/{len(gaps)}点 '
+                    f'(mean_gap={h:.12g} m, contact_pressure={p:.12g} Pa): {exc}') from exc
             inv=scale_inverse_gap(model,p,self.minimum_shear_gap_m)
             factors=shear_friction_factors(h,inv['inverse_gap_m_inv'],self.rms,self.hc)
             t=np.clip(h/self.rms-3,0,1);blend=t*t*(3-2*t)

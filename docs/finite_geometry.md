@@ -50,6 +50,6 @@ speed_m_s,friction_coefficient,normal_force_n
 
 ## 本次试运行包
 
-带`silicone_cylinder`预设的0.2.0rc3包已填写上述几何、E=1.8MPa、ν=0.5、η=1Pa·s，启用独立拟合，接触剪切强度保持未知。1000cSt是运动黏度；1Pa·s是本次采用的动力黏度近似，之后可据油品密度修正。
+带`silicone_cylinder`预设的0.2.0rc4包已填写上述几何、E=1.8MPa、ν=0.5、η=1Pa·s，启用独立拟合，接触剪切强度保持未知。1000cSt是运动黏度；1Pa·s是本次采用的动力黏度近似，之后可据油品密度修正。
 
 包内不含实测摩擦数据或已计算结果。填写`inputs/experiment.xlsx`后运行`python main.py`。无需先单独运行混合润滑；拟合任务会按CSV中的各载荷和速度计算。

@@ -43,7 +43,7 @@ def trial_preset(files,preset):
         ("'domain_half_width_m': 1.2e-3","'domain_half_width_m': None"),
         ("'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2]","'lower_wall_velocities_m_s': [1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2]"),
         ("'viscosity_pa_s': 0.1","'viscosity_pa_s': 1.0"),
-        ("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/silicone_fit_excel_01'")]
+        ("OUTPUT_DIRECTORY = 'results/leakage'","OUTPUT_DIRECTORY = 'results/silicone_fit_excel_02'")]
     for before,after in changes:
         if text.count(before)!=1:raise ValueError(f'Cannot apply trial configuration: {before}')
         text=text.replace(before,after)

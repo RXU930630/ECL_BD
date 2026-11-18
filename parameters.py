@@ -246,7 +246,7 @@ NUMERICS = {
         'closure': 'fortran_isotropic_bruggeman',
         'gap_points': 2049,           # 内部导流积分网格，独立于n_gap
         'quadrature_relative_tolerance': 0.002,
-        'max_gap_refinements': 2,
+        'max_gap_refinements': 4,      # 临界点允许2049→4097→8193→16385→32769；不放宽精度要求
         'unresolved_flow_policy': 'zero_conductance_with_upper_bound',
     },
     'leakage': {
