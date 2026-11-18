@@ -36,6 +36,14 @@ python benchmark/export_python_excel.py benchmark_runs/python
 
 直接读取 `benchmark/python_parameters.py`，不用修改日常开关。输出到 `benchmark_runs/python`；重复运行前为旧结果改名。`forward_components.xlsx` 将固体、流体滑动剪切、流体压力驱动剪切和总 μ 分开，并保留原始数据表及 Excel 图。
 
+两版运行完成后，可在同一台电脑汇总原生输出：
+
+```text
+python benchmark/compare_outputs.py --python benchmark_runs/python --fortran benchmark_runs/fortran --fortran-kind pristine --output benchmark_runs/comparison
+```
+
+生成 `comparison.xlsx`、`comparison.json` 和 `comparison.png`，保留原版 hmin 导出问题以及辅助列 NaN 的记录。如果来源是另行标注的 ERF 诊断加速副本，必须使用 `--fortran-kind real-erf-diagnostic`，不能标作 pristine。
+
 ## 运行原版 Fortran
 
 使用本对话**最开始的 ZIP** 中的 `AI.ContactMechanics.14.09.2026.f90`，不是后来泄漏计算的 `GOOD.GNU...f90`。此包提供全部配套 IN 文件，不另外分发原始 Fortran 源码。GNU Fortran 建议 14.x：
@@ -48,7 +56,7 @@ python benchmark/run_fortran.py --source /你的路径/AI.ContactMechanics.14.09
 
 关键 Fortran 选择：`iflag011=31`（有效介质压力流动，并由 A′ 链计算逆间隙），`iflag000=0`，`iflag002=1`，其余任务关闭；`irough=0`、`imoving=0`，`loaddivision=0.4`，`bthin=1e30`，`Cuniversal=0`，`uboundary=1e-9`，滑移长度 0，能量修正 γ=0.4。这些数值在两版输入中已填好。
 
-**Fortran 返回码 0 不足以证明成功。** 原版的 STOP 也可能返回 0；需检查 ERROR 文件、每个速度是否都有有限输出、原生迭代残差以及网格细化。附带脚本只检查执行和输出完整性，不自动声称收敛。
+**Fortran 返回码 0 不足以证明成功。** 原版的 STOP 也可能返回 0；需检查有内容的 ERROR 文件、每个速度是否都有有限输出、原生迭代残差以及网格细化。原版会无条件创建几个空 ERROR 文件。附带脚本检查执行及主比较列的完整性，单独报告辅助列的 NaN，不自动声称收敛。
 
 ## 先检查哪些输出
 
@@ -70,6 +78,8 @@ Python `mixed_cases.csv` 每行一个速度。固体/流体承载、真实面积
 本工况报告**运动下平面**上的正向阻力：Fortran LOW/WITH 文件第 6–8 列先保留符号，再分别取负转换成阻力贡献；μtot=−(c6+c7+c8)。压力剪切可能助推，不能逐项取绝对值。上圆柱的斜面压力力另列，不能随意加到下平面上。
 
 原版用于固体摩擦的面积是 `Ar/B = 2*aH*A(Ws′/(2*aH))`；Python 是 `∫A(pc(x))dx`。原版第 5 列的“相对面积”与全计算域平均面积不是同一定义。可先从 `abs(μs)*W′/τ` 恢复原版原生等效 Ar/B，再单列 Python 积分面积；两者不能直接以同一个 A/A0 标题比较。原版空间导出循环还可能写出计算域外额外行，解析时限定物理 x 区间并检查有效值。
+
+源文件的空间导出和最小间隙搜索循环均写到 `2*Nx+1`，而低速算法本体只计算前 `Nx` 个值。本预检中后续行可能为零，导致原版原生 hmin 文件报告 0；请按每个速度的**前 Nx 行**重算有效 hmin，保留原生 0 作为导出问题记录。此外，LOW/WITH 第 9–12 列的上圆柱斜面受力可能为 NaN；不能将这些值冒充有效的整体受力结果。下平面本次主比较只使用第 1–8 列。应保留全部原生输出，分别检查这些问题。
 
 ## 比较范围和预检状态
 

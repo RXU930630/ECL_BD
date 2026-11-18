@@ -43,8 +43,9 @@
     "note": "Coarse troubleshooting controls. Nodes/tables/domain require refinement; equal physical inputs do not imply identical numerical schemes."
   },
   "files_sha256": {
-    "README.zh-CN.md": "bbc178b5fca002bedec8a18500b0663d7ef07c49c39387f8f145d8368c575d1b",
+    "README.zh-CN.md": "0fc159eed9e8bdd3c5e719c05b3c8bcf560a7e7e3bba3f6eafb427e932e4656a",
     "benchmark_psd.dat": "7a442e27a66ad810f7cdf934cc219e18180fc5df9cd2ca7ef36f2fe92ec041e1",
+    "compare_outputs.py": "5e8151ee22440c5a5ffe80957827f6d50bb916a9aba5c7ddcd228f2ae9c59ce5",
     "export_python_excel.py": "575fa6b368f5637a5364dc26d314916a82ce155e1929410cbc211a419e3910b4",
     "fortran_inputs/IN.1SyringeName.1FluidPressure_MPa.1x_meter.2ContactPressure_MPa": "3dd729ec3f162628d8aad55aa1d6b0cb563af2d2081c1508591ac544ecda57cd",
     "fortran_inputs/IN.ADHESION.mathematical": "3089df462c6458092cb3b0576ae2bfe22c6ff0e7dca1020dcd47b012d30acf06",
@@ -78,7 +79,7 @@
     "fortran_inputs/IN_TREADCOMPOUND.Nonlinear.1strain.2ratioReE.3ratioImE": "c7b062f3dc1ab2cc8d2bcf43c433a8d68088acf136b7c1cdf8e8c7026709ef81",
     "fortran_inputs/IN_npolyCq.npolyab.npolyE": "f456c1ffc6a33cd5dae1ca90cf499aadeabb167b9e687175a8fc62476833374c",
     "python_parameters.py": "6a68a1115f138b560765e43c5f8a43c8bc3812d968a8d47642b960b06be1d3bf",
-    "run_fortran.py": "8a7222d63c91a5d971e2212a520f372695811ac66d3572fbf38868b6d0113d02",
+    "run_fortran.py": "899c52050ef06765c0ec6cf85ba40be334f894ed52a06d08fd1f1963e99c2aeb",
     "run_python.py": "cd3484677755c176a150f7e626c44e6b5c9eb13ff844da82090f4759790099d5"
   }
 }

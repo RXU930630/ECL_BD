@@ -49,18 +49,24 @@ def main():
     errors = [p.name for p in target.glob('ERROR*') if p.is_file() and p.stat().st_size]
     expected = manifest['physical']['speeds_m_s']
     rows_ok = len(rows) == len(expected) and all(
-        len(row) == 16 and all(math.isfinite(x) for x in row)
+        len(row) == 16 and all(math.isfinite(x) for x in row[:8])
         and math.isclose(row[0], speed, rel_tol=1e-3)
         for row, speed in zip(rows, expected))
+    auxiliary_nonfinite = sorted({i + 1 for row in rows for i, x in enumerate(row)
+                                  if i >= 8 and not math.isfinite(x)})
     record = {'source_sha256': digest, 'command': command,
               'returncode': run.returncode, 'native_rows': len(rows),
-              'error_files': errors, 'expected_rows_present_and_finite': rows_ok,
+              'error_files': errors, 'expected_primary_rows_present_and_finite': rows_ok,
+              'nonfinite_auxiliary_columns': auxiliary_nonfinite,
               'convergence_certified': False,
               'note': 'Completion and exit status alone do not establish solver or mesh convergence.'}
     (target / 'execution_record.json').write_text(json.dumps(record, indent=2) + '\n')
     if run.returncode or errors or not rows_ok:
         print('Incomplete or invalid native outputs; inspect execution_record.json and native logs.')
         return 2
+    if auxiliary_nonfinite:
+        print('WARNING: nonfinite auxiliary body/slope-force columns:', auxiliary_nonfinite)
+        print('Only columns 1-8 are usable for the selected lower-plane comparison.')
     print('Native rows present. Check residuals and refinement before treating this as validated.')
     return 0
 
