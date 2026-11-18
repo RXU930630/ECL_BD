@@ -61,3 +61,13 @@ u1、概率权重和剩余高度方差；`transport/` 保存几何导流率和�
 程序或计算环境变化保守地使旧缓存失效；核查中的加密参数分别匹配缓存。
 可删除整个 `.cache/` 强制重算，既有 results 输出不受影响。
 本功能目前接入混合润滑/拟合任务，其他独立任务仍按原流程运行。
+
+## cylinder_plane 自动计算域（rc8）
+
+`macro_contact.domain_half_width_m=None` 或省略该字段时，按实际线载荷和有效模量计算
+`a=sqrt(4 Wprime R/(pi E*))`，初始域半宽自动取 `L=6a`。拟合每个载荷分别计算；
+总载荷仍需通过实际轴向长度换算成线载荷。显式正数仍优先，不会被程序覆盖。
+终端报告 a、L；诊断 geometry 中报告 domain_selection、hertz_half_width_m 和实际区间。
+自动域是初始化估计，不是远场收敛证明；混合润滑的扩大域核查使用实际 L 的两倍，
+而不是重新使用 None 或自动通过。高速液膜、粗糙接触可能需要更大区间。
+finite_cylindrical_pad 仍严格使用实际尺寸，不按 Hertz 估计扩展。

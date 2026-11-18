@@ -105,7 +105,10 @@ def run_checks(parameters,base_directory,summary,cache,settings,runner,out):
                 numerical['cells']=requested
                 probe_cache=dict(cache)  # same constitutive model, different spatial grid only
                 if kind=='domain':
-                    m['domain_half_width_m']*=2
+                    half=m.get('domain_half_width_m')
+                    if half is None:
+                        half=float(summary['geometry']['surface_interval_m'][1])
+                    m['domain_half_width_m']=2*half
                     if m.get('reference_length_m') is not None:
                         m['reference_length_m']=max(m['reference_length_m'],2*m['domain_half_width_m'])
             else:

@@ -40,7 +40,7 @@ CASE = {
         'body_representation': 'upper_elastic_lower_rigid',
         'contact_model': 'persson',    # persson：模块2+6粗糙干接触；smooth：光滑Hertz检验
         'line_load_n_m': 2.,         # N/m；可用'normal_force_n':100.替换本行（不能同时给），程序自动除以B
-        'domain_half_width_m': 0.0006770275002573076, # 仅cylinder_plane读取；finite模式从实际长度自动生成，无需估计
+        'domain_half_width_m': None, # cylinder_plane自动取6倍Hertz半宽；正数指定；finite用实际尺寸
         'reference_length_m': None,   # 2D位移参考长度；None取全域长度，只影响绝对位移与刚体偏移
     },
     'leakage': {

@@ -61,9 +61,14 @@ def prepare_macro(parameters,base):
         not solver['relative_tolerance']<.01 or not solver['edge_pressure_ratio_tolerance']<.01):
         raise ValueError('Invalid macro solver tolerance/iteration limit')
     half=raw.get('domain_half_width_m') if finite is None else finite.domain_half_width_m
+    automatic=finite is None and half is None
+    if automatic:
+        half=6*hertz.half_width_m
+        print(f'自动计算域：Hertz半宽 a={hertz.half_width_m:.6g} m；域半宽 L=6a={half:.6g} m；仍需远场/扩大域核查',flush=True)
     elastic=HalfSpaceLine(half,solver['cells'],effective,raw.get('reference_length_m'))
+    elastic.domain_selection='automatic_6_hertz_half_widths' if automatic else ('physical_surface' if finite is not None else 'explicit')
     if finite is None and elastic.edges_m[-1]<=hertz.half_width_m:
-        raise ValueError('Macro domain must extend beyond the Hertz half-width')
+        raise ValueError('Macro domain must extend beyond the Hertz half-width; set domain_half_width_m=None for automatic sizing or specify a larger domain')
     return raw,solver,hertz,elastic,representation,model
 
 

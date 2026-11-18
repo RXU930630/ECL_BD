@@ -46,7 +46,7 @@ def trial_preset(files,preset):
         ("'young_modulus_pa': 3.0e6","'young_modulus_pa': 1.8e6"),
         ("'geometry': 'cylinder_plane'","'geometry': 'finite_cylindrical_pad'"),
         ("'line_load_n_m': 100.,","'normal_force_n': 100.,"),
-        ("'domain_half_width_m': 1.2e-3","'domain_half_width_m': None"),
+        
         ("'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2]","'lower_wall_velocities_m_s': [1e-6, 3e-6, 1e-5, 3e-5, 1e-4, 3e-4, 1e-3, 3e-3, 1e-2]"),
         ("'viscosity_pa_s': 0.1","'viscosity_pa_s': 1.0"),
         ]
@@ -73,7 +73,7 @@ def mixed_benchmark_preset(files):
         ("'path': 'examples/data/roughness_psd.dat'","'path': 'inputs/mixed_benchmark_psd.dat'"),
         ("'tail_is_extrapolated': True","'tail_is_extrapolated': False"),
         ("'line_load_n_m': 100.,","'line_load_n_m': 2.,"),
-        ("'domain_half_width_m': 1.2e-3","'domain_half_width_m': 0.0006770275002573076"),
+        ("'domain_half_width_m': None","'domain_half_width_m': 0.0006770275002573076"),
         ("'lower_wall_velocities_m_s': [0., 1e-4, 1e-3, 1e-2]",
          "'lower_wall_velocities_m_s': [1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3]"),
         ("'shear_strength_pa': None, # 必填实验值，Pa；不由E或PSD推断，不默认猜测",

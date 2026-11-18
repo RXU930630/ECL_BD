@@ -100,4 +100,6 @@ def geometry_metadata(shape,elastic):
     return {'type':'cylinder_plane','radius_m':shape.radius_m,'profile':'parabolic x^2/(2R)',
         'surface_interval_m':[float(elastic.edges_m[0]),float(elastic.edges_m[-1])],
         'boundary_interpretation':'numerical far-field truncation',
+        'domain_selection':getattr(elastic,'domain_selection','explicit'),
+        'hertz_half_width_m':shape.half_width_m,
         'elastic_approximation':'plane-strain half-space'}

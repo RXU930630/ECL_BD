@@ -1,15 +1,15 @@
 {
   "project": "ECL_BD",
-  "version": "0.2.0rc7",
+  "version": "0.2.0rc8",
   "channel": "stable-file-interface",
   "source_base_commit": "6bb2285fa0807c40058dcd40c4283b3733e59e43",
   "configuration_preset": "mixed_benchmark",
-  "status": "Automatic validated table caching; physical validation remains ongoing.",
+  "status": "Automatic Hertz-based initial domain and validated table caching; physical validation remains ongoing.",
   "scope": "Runtime source and input templates only; no historical calculation results or experimental data.",
   "files": {
     "README.md": {
-      "sha256": "67a2babd76e8a43a6c1cda0cc6c982a04d7bb62086f3978c00eeab4c4ee64835",
-      "bytes": 5823
+      "sha256": "f4b04e840918e272eda83f61bd4f23c12f58bca509957eae595571dae1f23c56",
+      "bytes": 6037
     },
     "docs/finite_geometry.md": {
       "sha256": "880375e8a9a5ba8950e9de3e7d3cffb952f6a752f4f041270e57d27448b57628",
@@ -24,8 +24,8 @@
       "bytes": 5348
     },
     "docs/output_format.md": {
-      "sha256": "2b22efe2c493415ccf11b8094da2e7a6644110949ab66210b19ff9a098128030",
-      "bytes": 6150
+      "sha256": "e1bae9c483c869e36cd2d719244bd562cac2f5736f6a8027621177cea797fd91",
+      "bytes": 6909
     },
     "docs/shear_strength_fit.md": {
       "sha256": "2932ab238739707d9bb5a89922f6ae6eecd03322839538c58f8c0d0c838ec318",
@@ -204,11 +204,11 @@
       "bytes": 3238
     },
     "parameters.py": {
-      "sha256": "c437c8a442033d6d63b1c6f135cd53f7987e0f5ad1103e9f4aff3bc545528144",
-      "bytes": 18349
+      "sha256": "fe8e76568c0c9cbe3c71e7762c59587297c006d6629da25eae09d1ce4b0d5e34",
+      "bytes": 18329
     },
     "pyproject.toml": {
-      "sha256": "11ee73d7dfff9a78a00b579ca1c56838179672e9d335fe4429d9ad54173d4f2e",
+      "sha256": "49fe39b5f02ffc414ba4616332a3dfe8fa84fe72d559de349e501a1ba1414d65",
       "bytes": 503
     },
     "requirements.txt": {
@@ -216,8 +216,8 @@
       "bytes": 128
     },
     "scripts/build_local_package.py": {
-      "sha256": "2ef45af24e208184d5570749cfd7b8e890deb33040fb92eff580be52972ef56f",
-      "bytes": 9466
+      "sha256": "85598983efcc558fd1ea22da9bef702ffb0ec6a2faf28f8f6b6a2e4355cff2ac",
+      "bytes": 9400
     },
     "scripts/check_installation.py": {
       "sha256": "e3489cf896595602b4f96ef7e9659c82984b48f5147297f5653c8da805b46c39",
@@ -236,7 +236,7 @@
       "bytes": 2771
     },
     "src/persson_contact/__init__.py": {
-      "sha256": "19b56003d8bba536714075b51994d3297145a2555f19589c108bd25ecc9074b9",
+      "sha256": "df7793b427d0cbc31c078d8df3d82fe96b5823a9bd80612a50a619f5483b16ba",
       "bytes": 249
     },
     "src/persson_contact/__main__.py": {
@@ -300,8 +300,8 @@
       "bytes": 5145
     },
     "src/persson_contact/geometry.py": {
-      "sha256": "63b7db322d73395f5700ba61dd2d5eb45c25955780b90a41567b2cc50aa47ee0",
-      "bytes": 5461
+      "sha256": "83ffc0a5ba27361f70dfd46414c1b19d9369b3c579b8884cd9c9310898bb9e46",
+      "bytes": 5585
     },
     "src/persson_contact/interface.py": {
       "sha256": "4170558f5f404305adacf18652aca9cc58b9a3f03b7af6f7d915dd28d9f320e3",
@@ -312,8 +312,8 @@
       "bytes": 24865
     },
     "src/persson_contact/macro_output.py": {
-      "sha256": "5596838e569165448be07e52a5fc031b9799c4b5669090789380ab294910abed",
-      "bytes": 17480
+      "sha256": "93557d5b234b380de632ae7d7e021b34ef1ad6c848dedab0a2a18144176a7129",
+      "bytes": 17943
     },
     "src/persson_contact/macroscopic.py": {
       "sha256": "45b4f6d11d2bb5c323bdf56877cbb6c38575aaec1068f8edd4c3b2e8862cf65a",
@@ -332,8 +332,8 @@
       "bytes": 11395
     },
     "src/persson_contact/mixed_checks.py": {
-      "sha256": "1e022a62a0ac34b11eab1936e13dacce16873fb4878c14a5033e734b5a7acdf3",
-      "bytes": 11111
+      "sha256": "f100dcaf9db9ffc9f74bdd3560cd74fa1dcdc1c5fbf275ddb700bb49aa444c5c",
+      "bytes": 11287
     },
     "src/persson_contact/mixed_output.py": {
       "sha256": "30e2c6c478a712ba37bd4c20d56b051f9645c004a1bb520b47d0f0123e6573bf",
@@ -392,5 +392,5 @@
       "bytes": 11216
     }
   },
-  "runtime_source_base_commit": "0461725ee87980578f5a64ce676778c5d28bb98e"
+  "runtime_source_base_commit": "5422e3944bbd09a05b05a3a608fd9b551f2ace3a"
 }
