@@ -20,24 +20,29 @@ from .shear_output import run_shear_flow
 def run_project(parameters, *, base_directory, run_contact=True, run_leakage=False,
                 run_mixed_friction=False, compute_gap_pdf=True, save_plots=True,
                 compute_pressure_flow=False,compute_shear_flow=False,run_macro_contact=False,
-                run_contact_friction=False,run_shear_strength_fit=False):
+                run_contact_friction=False,run_shear_strength_fit=False,run_viscoelastic_friction=False):
     switches = (run_contact, run_leakage, run_mixed_friction, compute_gap_pdf,
-                save_plots,compute_pressure_flow,compute_shear_flow,run_macro_contact,run_contact_friction,run_shear_strength_fit)
+                save_plots,compute_pressure_flow,compute_shear_flow,run_macro_contact,run_contact_friction,run_shear_strength_fit,run_viscoelastic_friction)
     if any(type(value) is not bool for value in switches):
         raise ValueError('所有功能开关必须为 True 或 False。')
-    if not any(switches[:3]) and not compute_shear_flow and not run_macro_contact and not run_contact_friction and not run_shear_strength_fit:
+    if not any(switches[:3]) and not compute_shear_flow and not run_macro_contact and not run_contact_friction and not run_shear_strength_fit and not run_viscoelastic_friction:
         print('没有启用计算功能；未创建任何结果文件。')
         return None
     base = Path(base_directory).resolve()
     problem_keys = {'description', 'psd', 'material', 'pressures_pa', 'contact_pressure', 'options'}
-    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction','shear_strength_fit','roughness_parameters'}
+    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction','shear_strength_fit','roughness_parameters','viscoelastic'}
     if not isinstance(parameters, dict) or set(parameters) - allowed:
         raise ValueError('parameters.py 中存在未知参数分组。')
     for name in ('leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction','shear_strength_fit'):
         if name in parameters and not isinstance(parameters[name], dict):
             raise ValueError(f'{name} 必须为参数字典。')
     from .contact_configuration import resolve_configuration
-    parameters=resolve_configuration(parameters)
+    parameters=resolve_configuration(parameters,allow_viscoelastic_task=run_viscoelastic_friction)
+    if run_viscoelastic_friction:
+        if any((run_leakage,run_macro_contact,run_contact_friction,run_mixed_friction,run_shear_strength_fit,compute_pressure_flow,compute_shear_flow)):
+            raise ValueError('黏弹干摩擦是独立任务，请关闭泄漏、宏观、混合、拟合及独立流动开关')
+        from .viscoelastic_output import run_viscoelastic_project
+        return run_viscoelastic_project(parameters,base_directory=base,save_plots=save_plots)
     if run_shear_strength_fit:
         if run_leakage or run_macro_contact or run_contact_friction or run_mixed_friction:
             raise ValueError('剪切强度拟合是独立任务：关闭RUN_LEAKAGE、RUN_MACRO_CONTACT、RUN_CONTACT_FRICTION和RUN_MIXED_FRICTION；内部自动计算正向解。')

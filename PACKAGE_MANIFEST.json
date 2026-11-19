@@ -1,15 +1,15 @@
 {
   "project": "ECL_BD",
-  "version": "0.2.0rc10",
-  "channel": "stable-file-interface",
+  "version": "0.3.0.dev1",
+  "channel": "viscoelastic-development",
   "source_base_commit": "6bb2285fa0807c40058dcd40c4283b3733e59e43",
   "configuration_preset": "mixed_benchmark",
-  "status": "Sequential multiple-load mixed forward tasks and reserved configuration interfaces; viscoelastic physics not implemented.",
+  "status": "Phase 1: standalone dry Persson viscoelastic friction and material I/O; no viscoelastic mixed coupling.",
   "scope": "Runtime source and input templates only; no historical calculation results or experimental data.",
   "files": {
     "README.md": {
-      "sha256": "7fc89b500b418d4f35e467fc357d5ded249bd69d82097525af5c4bc9bfcf6d88",
-      "bytes": 6423
+      "sha256": "4e31fdea34831d183499c5c34fb2a33bc593749a85221ccb336167f1cefa6503",
+      "bytes": 6809
     },
     "docs/finite_geometry.md": {
       "sha256": "880375e8a9a5ba8950e9de3e7d3cffb952f6a752f4f041270e57d27448b57628",
@@ -30,6 +30,10 @@
     "docs/shear_strength_fit.md": {
       "sha256": "2932ab238739707d9bb5a89922f6ae6eecd03322839538c58f8c0d0c838ec318",
       "bytes": 8093
+    },
+    "docs/viscoelastic.md": {
+      "sha256": "0a57ba6e2a5d70c698942ec5e71650248fb84a027e614aac9e8d8ea2953cc8c7",
+      "bytes": 4804
     },
     "examples/contact_shear_model.py": {
       "sha256": "b74e858dad09afb56a91a781102e9489720b5df59ff2e3fd752173892cb0f5d8",
@@ -187,6 +191,30 @@
       "sha256": "c3aaac0d76dbd9dbf6813e9f16b2d1f025941e650afd41631b8649dd3eb30f09",
       "bytes": 7798
     },
+    "examples/viscoelastic/generate_example.py": {
+      "sha256": "7faa40a4524d1c97fe510617cefc49c24cd8224bf1ed8f63e9f07be8acdccb0a",
+      "bytes": 703
+    },
+    "examples/viscoelastic/master_curve.dat": {
+      "sha256": "5d65205718f4c7e2b30e742e633adde4385bba43c34056778303282287d229f2",
+      "bytes": 145318
+    },
+    "examples/viscoelastic/roughness.dat": {
+      "sha256": "33c2c9cf2fe200b0eba776740fe7ebd1822e10843914011ea265766898d94d69",
+      "bytes": 48
+    },
+    "examples/viscoelastic/run_example.py": {
+      "sha256": "57023dd92f8a09e6f6687e9f355bae74f777ee4306cb11a4d46b8301ceeddd2e",
+      "bytes": 1425
+    },
+    "examples/viscoelastic/shift_factors.dat": {
+      "sha256": "80a5a329a8638834cd8392724ddc74ede72db34f64fa8f5b42b720385944da8b",
+      "bytes": 47
+    },
+    "examples/viscoelastic/verify.py": {
+      "sha256": "82f14c5082576bfe7cda47d4f34b705c9df5d3c9be59fa21678e982bc2bdab31",
+      "bytes": 7214
+    },
     "inputs/experiment_template.csv": {
       "sha256": "1fe8443f0f9230cd6251de0305557dedcfbdb304e44cb567bee798f4fea1911d",
       "bytes": 128
@@ -200,24 +228,24 @@
       "bytes": 7683
     },
     "main.py": {
-      "sha256": "05e8cbe09b60782a435bac7f900ab8ead73d46b6d3f4de2682348f19121dc6ff",
-      "bytes": 3238
+      "sha256": "d31f55b5aab24ccf35ad9501e6cc262ed496b84468ef0b4b097fb45ece159afc",
+      "bytes": 3420
     },
     "parameters.py": {
-      "sha256": "7e81cdd847c9efed6f43216b520d5f3d5bfa97c97a35f6407e292e990b2211a6",
-      "bytes": 18851
+      "sha256": "4ed25b6de77ac8c23d1348fd10944d0fb09f34252ca3ab27956a5d9678dd7d75",
+      "bytes": 19696
     },
     "pyproject.toml": {
-      "sha256": "7728a83cb16d5238f01cc6ddc4e6f0f4f7dbaaa341074e3eb4fcad436f66ad46",
-      "bytes": 504
+      "sha256": "8c6663de89915e33171f9ea8dff48a051045df7aee55047f3611858c0d5d0705",
+      "bytes": 505
     },
     "requirements.txt": {
       "sha256": "d49438b7e781a0a348a74aec180d3707b5bde96856f9d954f3045ecd24d8a898",
       "bytes": 128
     },
     "scripts/build_local_package.py": {
-      "sha256": "85598983efcc558fd1ea22da9bef702ffb0ec6a2faf28f8f6b6a2e4355cff2ac",
-      "bytes": 9400
+      "sha256": "65e35a9227cb0bd80b044fae54df1f6fd694690fff0367920a4c48804f8f0ca0",
+      "bytes": 9538
     },
     "scripts/check_installation.py": {
       "sha256": "e3489cf896595602b4f96ef7e9659c82984b48f5147297f5653c8da805b46c39",
@@ -236,8 +264,8 @@
       "bytes": 2771
     },
     "src/persson_contact/__init__.py": {
-      "sha256": "23b48dbfd41127bdc89feb7d4116cdf55e4a2addc0671ff49e6cb9806505916c",
-      "bytes": 250
+      "sha256": "59f3c4267fe3bf76516bb07eb9e0740d1c1b285a29746bf67b920aeea23bb453",
+      "bytes": 251
     },
     "src/persson_contact/__main__.py": {
       "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
@@ -264,8 +292,8 @@
       "bytes": 8965
     },
     "src/persson_contact/contact_configuration.py": {
-      "sha256": "7e96f16d3d1d9f8e73632a59c59489f53d89f75af70691349abac787a4f73124",
-      "bytes": 2268
+      "sha256": "7ca2e42420d2c1915facc87afa2f8198b39e5f2f1ee0c1976e6c58893f3851ec",
+      "bytes": 2377
     },
     "src/persson_contact/contact_friction.py": {
       "sha256": "c21fc35b8f96b0c99fc8286d95a8b6479c1d1667249405df53ee8c8aad0cb4a2",
@@ -324,8 +352,8 @@
       "bytes": 6791
     },
     "src/persson_contact/material.py": {
-      "sha256": "cce4cc1ca348ae8de1d7370a3657f7cfeeaf403b6c0c62028568ad32e1931403",
-      "bytes": 3588
+      "sha256": "6fe4dd059ef0a5f53489d6d81de9c06ffcacb3d77117f6805f6b655de7756eee",
+      "bytes": 3628
     },
     "src/persson_contact/mechanics.py": {
       "sha256": "65e737518b9726a1fd1a13bc3860cb642b3860766fd9c64ace93c595b014ca73",
@@ -395,10 +423,22 @@
       "sha256": "ecf404412f52ea5be53ab2809b692b6f4a05d121432e9c264baa5d3d291493d9",
       "bytes": 5927
     },
+    "src/persson_contact/viscoelastic_friction.py": {
+      "sha256": "f7b4d5517db6d9bc52a73b16c30b4771789545bef5ccd42f71b45c5930779378",
+      "bytes": 3065
+    },
+    "src/persson_contact/viscoelastic_material.py": {
+      "sha256": "0cb9f82b8ab374cb21bda04300efe4383bbb6a3e79f494262e16784dbe3b7094",
+      "bytes": 7313
+    },
+    "src/persson_contact/viscoelastic_output.py": {
+      "sha256": "c7141d3e816bc8baa359fd0ab96d1ddfab6bbb40e4903ba437bf547ae41137d9",
+      "bytes": 7621
+    },
     "src/persson_contact/workflow.py": {
-      "sha256": "a9e9cc44a975cbbd0244a9326e13db5ba0968f48588b51bbe6f1a1c42fdad031",
-      "bytes": 11349
+      "sha256": "0df11cc51298047eb397180705a7d8a9b85684f48f185db50180b62665b29d97",
+      "bytes": 11982
     }
   },
-  "runtime_source_base_commit": "584c9fc4dc34004f8d4094c8269d82df6e04205b"
+  "runtime_source_base_commit": "4c00444250cd62de707fe081a89a7dd86fa95840"
 }

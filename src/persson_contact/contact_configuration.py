@@ -3,7 +3,7 @@ from copy import deepcopy
 from pathlib import Path
 
 
-def resolve_configuration(parameters):
+def resolve_configuration(parameters,*,allow_viscoelastic_task=False):
     p=deepcopy(parameters)
     rough=p.get('mixed_friction',{}).get('rough_surface','upper')
     if rough=='both':
@@ -26,10 +26,10 @@ def resolve_configuration(parameters):
     macro=p.get('macro_contact',{})
     body=macro.get('deformable_body')
     if body not in (None,'upper','lower'):raise ValueError('deformable_body must be upper/lower')
-    if body=='lower':
+    if body=='lower' and not allow_viscoelastic_task:
         raise NotImplementedError('deformable_body=lower 已预留；真实下壁形变、受力投影及黏弹运动学将在下一阶段实现。当前可使用既有等效弹性表示')
     if body=='upper' and macro.get('body_representation','upper_elastic_lower_rigid')!='upper_elastic_lower_rigid':
         raise ValueError('deformable_body 与旧 body_representation 冲突；只保留一个明确的构型')
-    if p.get('material',{}).get('model')=='viscoelastic':
-        raise NotImplementedError('viscoelastic 为预留材料接口，当前稳定版尚未实现主曲线读取及黏弹性计算，不会回退为弹性')
+    if p.get('material',{}).get('model')=='viscoelastic' and not allow_viscoelastic_task:
+        raise NotImplementedError('viscoelastic主曲线已支持独立黏弹干摩擦；当前宏观/混合/拟合路径尚未实现黏弹耦合，不会回退为弹性')
     return p

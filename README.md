@@ -1,3 +1,9 @@
+# 黏弹性开发版：第一阶段
+
+当前新增的是材料读取与独立Persson黏弹干摩擦。**尚未实现完整黏弹混合润滑或其tau拟合**；日常计算继续使用stable分支rc10。
+
+运行配套双文件合成例子：`python examples/viscoelastic/run_example.py`。输出目录需为空。详见[材料格式、公式、范围与验证](docs/viscoelastic.md)。
+
 本包默认开启统一合成谱的正向混合摩擦及数值核查，可直接运行 python main.py。tau=1MPa为对照假设。配套原版输入和运行说明见 examples/mixed_comparison/README.md。默认有限截断区间存在已知敏感性，核查提示needs_attention是预期诊断，并非非线性求解失败。核查结果不会替换主结果。实验参数示例为 examples/silicone_forward_parameters.py。
 
 # ECL_BD 0.2.0rc6 — 本地试运行版（候选稳定版）

@@ -17,7 +17,7 @@ import zipfile
 def package_files(root):
     root=Path(root)
     names=['main.py','parameters.py','pyproject.toml','requirements.txt',
-        'docs/local_run.md','docs/shear_strength_fit.md','docs/finite_geometry.md','docs/mixed_numerical_checks.md','docs/output_format.md',
+        'docs/local_run.md','docs/viscoelastic.md','docs/shear_strength_fit.md','docs/finite_geometry.md','docs/mixed_numerical_checks.md','docs/output_format.md',
         'inputs/experiment_template.xlsx','inputs/experiment_template.csv','scripts/create_experiment_workbook.py',
         'examples/data/roughness_psd.dat','examples/data/seal_pressure_profile.csv',
         'examples/local_interface.py','examples/contact_shear_model.py','examples/dry_contact.json',
@@ -28,6 +28,7 @@ def package_files(root):
     names+=sorted(str(p.relative_to(root)).replace('\\','/') for p in
                   (root/'examples/mixed_comparison/fortran_inputs').iterdir() if p.is_file())
     names+=sorted(str(p.relative_to(root)).replace('\\','/') for p in (root/'src/persson_contact').rglob('*.py') if '__pycache__' not in p.parts)
+    names+=sorted(p.relative_to(root).as_posix() for p in (root/'examples/viscoelastic').glob('*') if p.is_file())
     files={name:(root/name).read_bytes() for name in names}
     readme=root/'README_LOCAL.md'
     files['README.md']=(readme if readme.exists() else root/'README.md').read_bytes()

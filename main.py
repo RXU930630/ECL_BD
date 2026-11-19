@@ -24,6 +24,8 @@ RUN_MIXED_FRICTION = True
 # 独立实验反演：自动按实验Excel/CSV计算，或复用保存的混合润滑结果；无需预先知道tau
 # 开启时关闭RUN_LEAKAGE、RUN_MACRO_CONTACT、RUN_CONTACT_FRICTION、RUN_MIXED_FRICTION
 RUN_SHEAR_STRENGTH_FIT = False
+# 开发阶段：仅独立黏弹干摩擦，不是完整黏弹混合润滑
+RUN_VISCOELASTIC_FRICTION = False
 
 COMPUTE_PRESSURE_FLOW = False # 独立压力流动任务；混合润滑/拟合会内部自动计算
 COMPUTE_SHEAR_FLOW = False   # 独立剪切流动任务；混合润滑/拟合无需打开此开关
@@ -45,7 +47,8 @@ def main():
                     compute_shear_flow=COMPUTE_SHEAR_FLOW,
                     run_macro_contact=RUN_MACRO_CONTACT,
                     run_contact_friction=RUN_CONTACT_FRICTION,
-                    run_shear_strength_fit=RUN_SHEAR_STRENGTH_FIT)
+                    run_shear_strength_fit=RUN_SHEAR_STRENGTH_FIT,
+                    run_viscoelastic_friction=RUN_VISCOELASTIC_FRICTION)
     except ModuleNotFoundError as exc:
         if exc.name not in {'numpy', 'scipy', 'matplotlib', 'openpyxl'}:
             raise

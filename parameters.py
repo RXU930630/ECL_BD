@@ -23,6 +23,19 @@ CASE = {
         'upper': {'path': None, 'scale_c': 1.0, 'tail_is_extrapolated': False},
         'lower': {'path': None, 'scale_c': 1.0, 'tail_is_extrapolated': False},
     },
+    # 开发阶段独立黏弹干摩擦：参考examples/viscoelastic/run_example.py
+    'viscoelastic': {
+        'reference_temperature_c': 20., # 必须与实际主曲线一致，此处仅示例
+        'temperature_c': 20.,
+        'shift_factors_file': None, # Persson 温度C/aT/bT三列表；与手填shift_factors二选一
+        'shift_factors': None,      # 或 {'aT': 1., 'bT': 1.}；同参考温度时均为1
+        'modulus_type': 'young',    # young / shear / reduced，不能由文件名推断
+        'frequency_policy': 'error', # 覆盖不足时报错；constant_endpoint仅显式选择后启用
+        'pressures_pa': [1e4,1e5],  # 均匀名义压力，不是圆柱总载荷
+        'speeds_m_s': [1e-6,1e-4,1e-2],
+        'q_intervals': 512, 'angular_points': 64, 'kappa': 0.5,
+        'relative_tolerance': 0.002,
+    },
     # 宏观干接触：main.py开启RUN_MACRO_CONTACT；与当前泄漏任务分开运行
     'macro_contact': {
         # cylinder_plane：无限长圆柱的局部抛物线，数值域须自行检查远场收敛

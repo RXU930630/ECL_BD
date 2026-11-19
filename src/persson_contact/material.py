@@ -1,4 +1,4 @@
-"""Mutually exclusive elastic constants and future viscoelastic master curves."""
+"""Elastic constants and material selection; standalone curves live in viscoelastic_material."""
 from dataclasses import dataclass
 import math
 from pathlib import Path
@@ -16,7 +16,7 @@ class Material:
     def elastic_modulus(self):
         if self.model != 'elastic':
             raise NotImplementedError(
-                '黏弹性接口已预留，但主曲线读取及黏弹性接触计算尚未实现。'
+                '此宏观/间隙接触路径的黏弹性耦合尚未实现；主曲线可用于独立黏弹干摩擦任务。'
                 '当前计算请选择 material.model="elastic"；不会自动改用固定杨氏模量。')
         return self.effective_modulus_pa
 

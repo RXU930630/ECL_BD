@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "persson-contact"
-version = "0.2.0rc10"
+version = "0.3.0.dev1"
 description = "Persson contact, elastic mixed lubrication and interface shear-strength fitting"
 requires-python = ">=3.11"
 dependencies = ["numpy>=2.0", "scipy>=1.13", "openpyxl>=3.1.5"]
