@@ -104,6 +104,11 @@ def make_contact_database(parameters,base,macro,solver,hertz,elastic,opts):
 
 def run_mixed_project(parameters,*,base_directory,save_plots=True):
     """Keep the requested solution; independently audit representative states."""
+    from .contact_configuration import resolve_configuration
+    parameters=resolve_configuration(parameters)
+    from .mixed_batch import batch_field,run_mixed_batch
+    if batch_field(parameters) is not None:
+        return run_mixed_batch(parameters,base_directory=base_directory,save_plots=save_plots,runner=run_mixed_project)
     from .mixed_checks import check_settings,run_checks,write_mixed_workbook
     settings=check_settings(parameters.get('mixed_friction',{}).get('numerical_checks',{}))
     cache={}
@@ -236,6 +241,7 @@ def _run_mixed_project(parameters,*,base_directory,save_plots=True,_cache=None,_
         'pressure_convention':'Gauge Pa, cavitation pressure=0; fully flooded reservoirs at boundary inflow. No negative-pressure clipping.',
         'normal_equations':'h=h0+g(x)+C(pc+pf); pc=Persson(h); integral(pc+pf)dx=Wprime; g(x) is the selected geometry profile.',
         'geometry':geometry_metadata(hertz,elastic),
+        'contact_configuration':{'rough_surface':rough,'deformable_body':macro.get('deformable_body') or 'upper','material_model':parameters['material']['model'],'representation':macro.get('body_representation','upper_elastic_lower_rigid')},
         'far_field_edge_pressure_check_applied':not getattr(hertz,'physical_boundaries',False) and pin==pout==0,
         'boundary_note':'Reservoir pressure is imposed at boundary faces, not adjacent cell centres. Edge-cell pressure is diagnostic; physical pad edges need not resemble a far field.',
         'cavitation':'Conservative finite-volume pressure/saturation complementarity p>=0, 0<=theta<=1, p(1-theta)=0; harmonic mobility and upwind theta.',

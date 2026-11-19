@@ -87,3 +87,5 @@ Excel和CSV使用相同的列名与SI单位。旧CSV仍可通过`experiment_file
 自动查表缓存：混合润滑及拟合任务自动复用 `.cache/tables/`；每份表的条件见 CONDITIONS.txt，完整数据见 table.json。无需配置开关。详见 docs/output_format.md。
 
 cylinder_plane：domain_half_width_m=None 时自动使用当前载荷的6倍Hertz半宽作为初始数值域；仍需查看扩大域核查。既有设置不会自动覆盖，请将旧的示例半宽改为 None。
+
+多载荷正向混合润滑：line_load_n_m 可填 [310.,910.,1510.,2110.]，或改用 normal_force_n 总力列表（不能同时给）。按输入顺序保存至 load_000 等子目录，根目录提供汇总CSV、Excel和图。构型及双PSD入口已预留；both、deformable_body=lower、viscoelastic 暂未实现，会明确报错，不会代算。详见 docs/output_format.md。

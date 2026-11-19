@@ -30,12 +30,14 @@ def run_project(parameters, *, base_directory, run_contact=True, run_leakage=Fal
         return None
     base = Path(base_directory).resolve()
     problem_keys = {'description', 'psd', 'material', 'pressures_pa', 'contact_pressure', 'options'}
-    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction','shear_strength_fit'}
+    allowed = problem_keys | {'output_directory', 'leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction','shear_strength_fit','roughness_parameters'}
     if not isinstance(parameters, dict) or set(parameters) - allowed:
         raise ValueError('parameters.py 中存在未知参数分组。')
     for name in ('leakage', 'mixed_friction','interface','pressure_flow','shear_flow','macro_contact','contact_friction','fluid_friction','shear_strength_fit'):
         if name in parameters and not isinstance(parameters[name], dict):
             raise ValueError(f'{name} 必须为参数字典。')
+    from .contact_configuration import resolve_configuration
+    parameters=resolve_configuration(parameters)
     if run_shear_strength_fit:
         if run_leakage or run_macro_contact or run_contact_friction or run_mixed_friction:
             raise ValueError('剪切强度拟合是独立任务：关闭RUN_LEAKAGE、RUN_MACRO_CONTACT、RUN_CONTACT_FRICTION和RUN_MIXED_FRICTION；内部自动计算正向解。')

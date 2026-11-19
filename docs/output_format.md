@@ -89,3 +89,31 @@ mu solid = fitted_solid_coefficient；mu fluid = fluid_coefficient；
 mu total = predicted_total_coefficient（包含表格明确提供的 background_friction_coefficient）。
 若从拟合任务的 forward 目录读取 mixed_cases.csv，则其中固体摩擦按参考 tau 计算，
 而不是最后拟合的 tau；应使用 fit_cases.csv 中的上述列取得最终拟合结果。
+
+## 多载荷正向计算及构型预留（rc10）
+
+RUN_MIXED_FRICTION 正向任务中，macro_contact.line_load_n_m 既接受单个N/m数值，
+也接受非空、正值、无重复的列表，例如 [310.,910.,1510.,2110.]。或者用
+normal_force_n=[31.,91.,151.,211.] 输入总力N，再按轴向长度逐项换算一次。
+两种载荷字段不能同时给出。输入顺序即运行顺序；先校验所有工况再开始。
+单值输入保持原目录结构；列表输入生成固定的load_000、load_001…子目录，
+其中的文件名、列名与单载荷输出一致；每个载荷分别执行速度扫描和数值核查。
+根目录 mixed_cases.csv / mixed_results.xlsx 汇总所有工况，增加load_index、
+line_load_n_m、normal_force_n；原case_index为各载荷内编号。
+根目录 mixed_loads.csv 和Excel「载荷列表」给出载荷、对应子目录和完成状态。
+mixed_diagnostics.json记录运行状态与各载荷状态；中途失败不会报告整批complete，
+已完成的子目录保留。缓存继续自动复用，自动Hertz初始域按各载荷分别计算。
+汇总mixed_friction.png叠加各载荷曲线；空间剖面与几何图保留在各子目录。
+后续saved_forward拟合请明确选择这些单载荷子目录，不能将批量汇总目录作为单一载荷。
+fit仍按实验表组织载荷，不使用正向载荷列表作为实验来源。
+
+旧psd配置继续有效。新增可选roughness_parameters.upper/lower块，每块包含
+path、scale_c、tail_is_extrapolated。仅按mixed_friction.rough_surface读取选中侧，
+另一侧不打开文件。新接口选中path不为空时，旧psd.path应为None；同时给出不一致
+来源会报错。当前只实现upper/lower，both是双侧粗糙预留选择，会明确报未实现，
+不会合并两谱。下表面PSD路径的预留不意味着双侧粗糙模型已经实现。
+
+macro_contact.deformable_body支持upper；lower作为下一阶段真实下壁变形与黏弹
+运动学接口预留，选择会报未实现。旧body_representation继续兼容；新模板不要求
+重复填写它。material.model=viscoelastic及master_curve_file仍为预留，不会用固定
+弹性模量代算。当前实际计算范围保持单侧粗糙、上壁弹性等效表示、牛顿无滑移。

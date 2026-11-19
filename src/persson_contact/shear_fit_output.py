@@ -46,6 +46,8 @@ def read_forward_run(directory):
     directory=Path(directory)
     diagnostic=directory/'mixed_diagnostics.json';table=directory/'mixed_cases.csv'
     diag=json.loads(diagnostic.read_text(encoding='utf-8'))
+    if isinstance(diag.get('loads'),list):
+        raise ValueError('这是多载荷汇总目录；saved_forward.directories 请逐项填写其中的 load_000、load_001 等单载荷目录')
     if diag.get('workflow_status')!='complete' or not isinstance(diag.get('cases'),list):
         raise ValueError(f'混合润滑结果未完成：{directory}')
     load=finite(diag.get('target_line_load_n_m'),'saved target line load',minimum=0,strict=True)

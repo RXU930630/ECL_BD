@@ -31,7 +31,7 @@ def _csv(path,rows):
 def prepare_macro(parameters,base):
     raw=parameters.get('macro_contact',{})
     _keys(raw,{'geometry','geometry_parameters','elastic_model','body_representation','contact_model',
-        'line_load_n_m','normal_force_n','domain_half_width_m','reference_length_m','solver','contact_table'},'macro_contact')
+        'line_load_n_m','normal_force_n','deformable_body','domain_half_width_m','reference_length_m','solver','contact_table'},'macro_contact')
     if raw.get('elastic_model','half_space_plane_strain')!='half_space_plane_strain':
         raise NotImplementedError('Only plane-strain elastic half-space response is implemented')
     if raw.get('geometry') not in ('cylinder_plane','finite_cylindrical_pad'):
@@ -41,7 +41,11 @@ def prepare_macro(parameters,base):
     geometry=presets.get(raw['geometry'],{})
     finite=finite_geometry_parameters(parameters)
     if finite is None:_keys(geometry,{'radius_m'},'cylinder_plane')
+    body=raw.get('deformable_body')
+    if body not in (None,'upper','lower'):raise ValueError('deformable_body must be upper/lower')
+    if body=='lower':raise NotImplementedError('deformable_body=lower 为下一阶段预留，真实下壁变形尚未实现')
     representation=raw.get('body_representation','upper_elastic_lower_rigid')
+    if body=='upper' and representation!='upper_elastic_lower_rigid':raise ValueError('deformable_body conflicts with body_representation')
     if representation not in ('upper_elastic_lower_rigid','relative_only'):
         raise NotImplementedError('Choose upper_elastic_lower_rigid or relative_only; separate two-body displacements are not implemented')
     model=raw.get('contact_model','persson')

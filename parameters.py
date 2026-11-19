@@ -8,7 +8,8 @@
 CASE = {
     'description': 'Common synthetic PSD mixed-friction forward comparison.',
     'material': {
-        'model': 'elastic',
+        'model': 'elastic', # viscoelastic仅预留、当前明确报未实现
+        'master_curve_file': None, # 将来黏弹主曲线；弹性模式保持None
         'young_modulus_pa': 3.0e6,
         'poisson_ratio': 0.5,
     },
@@ -16,6 +17,11 @@ CASE = {
         'path': 'inputs/mixed_benchmark_psd.dat',
         'scale_c': 1.0,
         'tail_is_extrapolated': False,
+    },
+    # 新的可选PSD入口：只读取rough_surface选中的一侧。使用时将上方psd.path设为None。
+    'roughness_parameters': {
+        'upper': {'path': None, 'scale_c': 1.0, 'tail_is_extrapolated': False},
+        'lower': {'path': None, 'scale_c': 1.0, 'tail_is_extrapolated': False},
     },
     # 宏观干接触：main.py开启RUN_MACRO_CONTACT；与当前泄漏任务分开运行
     'macro_contact': {
@@ -37,9 +43,9 @@ CASE = {
         'elastic_model': 'half_space_plane_strain', # 一维线接触、平面应变、线弹性半空间
         # upper_elastic_lower_rigid：上部弹性圆柱/下部刚性平面，material为上部材料
         # relative_only：material给合并E*，只确定相对变形；显示的上轮廓为等效轮廓
-        'body_representation': 'upper_elastic_lower_rigid',
+        'deformable_body': 'upper', # upper已实现；lower预留、选择会明确报未实现。旧body_representation仍兼容
         'contact_model': 'persson',    # persson：模块2+6粗糙干接触；smooth：光滑Hertz检验
-        'line_load_n_m': 2.,         # N/m；可用'normal_force_n':100.替换本行（不能同时给），程序自动除以B
+        'line_load_n_m': 2.,         # N/m不再除以B；正向可填[310.,910.,1510.,2110.]。总力另用normal_force_n，才除以B
         'domain_half_width_m': None, # cylinder_plane自动取6倍Hertz半宽；正数指定；finite用实际尺寸
         'reference_length_m': None,   # 2D位移参考长度；None取全域长度，只影响绝对位移与刚体偏移
     },
@@ -110,7 +116,7 @@ CASE = {
     'mixed_friction': {
         # 坐标随上部圆柱移动：圆柱速度为0，下部平面沿+x移动；V_relative=-U_plane
         'lower_wall_velocities_m_s': [1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3],
-        'rough_surface': 'upper',          # upper弹性圆柱粗糙 / lower刚性平面粗糙；另一侧光滑
+        'rough_surface': 'upper',          # upper / lower；both双侧粗糙为预留，当前明确报未实现
         'inlet_pressure_pa': 0.,           # 小坐标端储液边界，表压Pa，必须>=0
         'outlet_pressure_pa': 0.,          # 大坐标端储液边界；允许反向速度，流入端均为满液
         'cavitation_model': 'mass_conserving', # p>=0、0<=theta<=1、p*(1-theta)=0，不裁剪负压
