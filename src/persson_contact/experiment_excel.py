@@ -51,22 +51,17 @@ def _workbook():
 
 
 def _sheet(book,name,headers,rows):
-    from openpyxl.styles import Alignment,Font,PatternFill
+    """A plain rectangular table, like a CSV opened into separate columns."""
     sheet=book.create_sheet(name);sheet.append(list(headers))
     for row in rows:sheet.append(list(row))
-    sheet.freeze_panes='A2';sheet.auto_filter.ref=sheet.dimensions
     for cell in sheet[1]:
-        cell.font=Font(bold=True,color='FFFFFF');cell.fill=PatternFill('solid',fgColor='24476B')
-        cell.alignment=Alignment(wrap_text=True,vertical='center')
-        sheet.column_dimensions[cell.column_letter].width=min(46,max(19,len(str(cell.value))+2))
-    sheet.row_dimensions[1].height=34
+        sheet.column_dimensions[cell.column_letter].width=min(64,max(12,len(str(cell.value))+2))
     return sheet
 
 
 def write_experiment_workbook(path,rows=()):
     """Blank template or user-supplied values; input columns always use SI units."""
     from openpyxl.comments import Comment
-    from openpyxl.styles import Alignment
     from openpyxl.worksheet.datavalidation import DataValidation
     path=Path(path)
     if path.exists():raise FileExistsError(f'不覆盖已有Excel文件：{path}')
@@ -81,9 +76,6 @@ def write_experiment_workbook(path,rows=()):
         ('standard_uncertainty_mu','等权拟合可空；按测量不确定度加权时填写正值。'),
         ('use_for_fit','TRUE参与拟合；FALSE留作验证；空白默认TRUE。')]
     for cell,(_,note) in zip(sheet[1],notes):cell.comment=Comment(note,'ECL_BD')
-    for row in sheet.iter_rows(min_row=2,max_row=max(28,len(rows)+1),max_col=7):
-        row[0].number_format='0.00E+00';row[1].number_format='0.000000'
-        for cell in row[2:6]:cell.number_format='0.############'
     choice=DataValidation(type='list',formula1='"TRUE,FALSE"',allow_blank=True)
     sheet.add_data_validation(choice);choice.add('G2:G10001')
     instructions=[('使用方法','在experiment工作表中从第2行填写。保存为.xlsx，放到inputs/experiment.xlsx。'),
@@ -91,9 +83,7 @@ def write_experiment_workbook(path,rows=()):
         ('表头','第1行英文表头保持不变；中文解释见本页或表头批注。'),
         ('公式','读取Excel保存的计算值，不重算公式；公式报错或没有保存计算值时会提示单元格。'),
         ('拟合结果','计算结束打开输出目录中的fit_results.xlsx。剪切强度同时显示Pa和MPa。'),*notes]
-    help_sheet=_sheet(book,'填写说明',('项目','说明'),instructions)
-    help_sheet.column_dimensions['A'].width=36;help_sheet.column_dimensions['B'].width=100
-    for row in help_sheet.iter_rows(min_row=2):row[1].alignment=Alignment(wrap_text=True)
+    _sheet(book,'填写说明',('项目','说明'),instructions)
     path.parent.mkdir(parents=True,exist_ok=True);book.save(path);book.close()
 
 

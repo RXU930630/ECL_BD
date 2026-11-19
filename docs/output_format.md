@@ -71,3 +71,21 @@ u1、概率权重和剩余高度方差；`transport/` 保存几何导流率和�
 自动域是初始化估计，不是远场收敛证明；混合润滑的扩大域核查使用实际 L 的两倍，
 而不是重新使用 None 或自动通过。高速液膜、粗糙接触可能需要更大区间。
 finite_cylindrical_pad 仍严格使用实际尺寸，不按 Hertz 估计扩展。
+
+## Excel 简洁表格（rc9）
+
+Excel 输入模板和结果工作簿统一使用普通表格：第一行列名，后续每行一条记录。
+不再设置彩色表头、粗体、自动换行、特殊行高、冻结窗格、自动筛选或强制小数位数；
+仅按表头长度设置列宽。数字保持数值及 General 格式，不预填格式化空行。
+文件名、工作表名、列名、列顺序及输入校验保持原有规则，表头批注和填写说明仍保留。
+
+mixed_cases.csv / mixed_results.xlsx「正向摩擦与面积」：
+mu solid = lower_resisting_solid_coefficient；mu fluid = lower_resisting_fluid_coefficient；
+mu total = lower_resisting_friction_coefficient。均以总法向载荷归一化，fluid 包含滑动和压力流两项。
+带 force_n_m 的列是单位轴向长度的有符号切向力，不是摩擦系数。
+
+fit_cases.csv / fit_results.xlsx「各实验点」：
+mu solid = fitted_solid_coefficient；mu fluid = fluid_coefficient；
+mu total = predicted_total_coefficient（包含表格明确提供的 background_friction_coefficient）。
+若从拟合任务的 forward 目录读取 mixed_cases.csv，则其中固体摩擦按参考 tau 计算，
+而不是最后拟合的 tau；应使用 fit_cases.csv 中的上述列取得最终拟合结果。

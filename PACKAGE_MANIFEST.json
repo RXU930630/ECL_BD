@@ -1,10 +1,10 @@
 {
   "project": "ECL_BD",
-  "version": "0.2.0rc8",
+  "version": "0.2.0rc9",
   "channel": "stable-file-interface",
   "source_base_commit": "6bb2285fa0807c40058dcd40c4283b3733e59e43",
   "configuration_preset": "mixed_benchmark",
-  "status": "Automatic Hertz-based initial domain and validated table caching; physical validation remains ongoing.",
+  "status": "Plain Excel input/output layout; preserved equations, file names, sheet names and column schema.",
   "scope": "Runtime source and input templates only; no historical calculation results or experimental data.",
   "files": {
     "README.md": {
@@ -24,8 +24,8 @@
       "bytes": 5348
     },
     "docs/output_format.md": {
-      "sha256": "e1bae9c483c869e36cd2d719244bd562cac2f5736f6a8027621177cea797fd91",
-      "bytes": 6909
+      "sha256": "6871bfa5523182848b2a635a54023e8b33da2a2d113609effe7a449261618415",
+      "bytes": 8199
     },
     "docs/shear_strength_fit.md": {
       "sha256": "2932ab238739707d9bb5a89922f6ae6eecd03322839538c58f8c0d0c838ec318",
@@ -192,8 +192,8 @@
       "bytes": 128
     },
     "inputs/experiment_template.xlsx": {
-      "sha256": "544f197099dbcc12e48b2a0ac5140a9e40e28bfe66c7a4848ad707b9ae60b335",
-      "bytes": 9412
+      "sha256": "de8a84367dc295f1ff97244b1e4fe397d48a7c786fca14e12620241ab82dba21",
+      "bytes": 8497
     },
     "inputs/mixed_benchmark_psd.dat": {
       "sha256": "7a442e27a66ad810f7cdf934cc219e18180fc5df9cd2ca7ef36f2fe92ec041e1",
@@ -208,7 +208,7 @@
       "bytes": 18329
     },
     "pyproject.toml": {
-      "sha256": "49fe39b5f02ffc414ba4616332a3dfe8fa84fe72d559de349e501a1ba1414d65",
+      "sha256": "f63746a00dc91a0e2a56f489eaa774599d62d4f8f798b82d4c458728f477cfc5",
       "bytes": 503
     },
     "requirements.txt": {
@@ -236,7 +236,7 @@
       "bytes": 2771
     },
     "src/persson_contact/__init__.py": {
-      "sha256": "df7793b427d0cbc31c078d8df3d82fe96b5823a9bd80612a50a619f5483b16ba",
+      "sha256": "930b4529295af62d7521a0ccc3e2a89b847711b72749f3478c6866b733ee0e8b",
       "bytes": 249
     },
     "src/persson_contact/__main__.py": {
@@ -280,8 +280,8 @@
       "bytes": 4585
     },
     "src/persson_contact/experiment_excel.py": {
-      "sha256": "7fb2c0cfd74cc5fbbbfea252ccba945790edfc28a733496aa37d453c7c5b3b43",
-      "bytes": 6936
+      "sha256": "cbb3c220df147bf28cf0df0a70398624b79c9000608907a7078ae44abbb18b56",
+      "bytes": 6234
     },
     "src/persson_contact/flow.py": {
       "sha256": "2ad7baf5e10636a80813035795fcaf209dd51ba7e977bbcb6414ae37a2034cf9",
@@ -392,5 +392,5 @@
       "bytes": 11216
     }
   },
-  "runtime_source_base_commit": "5422e3944bbd09a05b05a3a608fd9b551f2ace3a"
+  "runtime_source_base_commit": "e80a081fb44b4c795bacea21174b1d6e88b0f2fc"
 }
